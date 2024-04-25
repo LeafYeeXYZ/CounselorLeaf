@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   build: {
+    target: ['chrome108', 'edge108', 'firefox101', 'safari15.4'],
     rollupOptions: {
       output: {
         manualChunks: {
