@@ -1,5 +1,5 @@
 :root {
-  --prompt-height: 260px;
+  --prompt-height: 210px;
   --prompt-btn-width: 100%;
   --prompt-btn-gap: 0;
   
@@ -10,31 +10,27 @@
   --text: #ff7171;
   --text-hover: #ff4f4f;
   --text-highlight: #fa255e;
+  --text-dark: #300000;
   --border-textarea: #ff4f4f;
   --back: #fff0f0;
   --back-textarea: #fffafa;
   --back-hover: #ffcece;
   --back-lighter: #fffdfd;
+  --scroll-front: #ff7f7f;
+  --scroll-back: #fff0f0;
 }
 .dark {
   --text: #ff6171;
   --text-hover: #ff4f4f;
   --text-highlight: #fa255e;
+  --text-dark: #ff6171;
   --border-textarea: #000000;
   --back: #000000;
   --back-textarea: #101010;
   --back-hover: #000000;
   --back-lighter: #151515;
-  & .lang-switcher {
-    filter: brightness(0.5) grayscale(0.35);
-  }
-}
-@media screen and (min-width: 768px){
-  :root {
-    --prompt-height: 210px;
-    --prompt-btn-width: calc(50% - 8px);
-    --prompt-btn-gap: 10px;
-  }
+  --scroll-front: #fa3f3f;
+  --scroll-back: #000000;
 }
 
 

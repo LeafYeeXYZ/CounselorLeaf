@@ -1,3 +1,4 @@
 {
-  "SERVER": "https://api.leafyee.xyz"
+  "SERVER": "https://api.leafyee.xyz",
+  "DEFAULT_MSG": "你好~想和我聊些什么呢?"
 }
