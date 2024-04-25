@@ -67,7 +67,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
         name="prompt" 
         cols="30" 
         rows="10" 
-        placeholder="请输入"
+        placeholder="请输入 ..."
         className='prompt-textarea'
         ref={promptRef}
       ></textarea>

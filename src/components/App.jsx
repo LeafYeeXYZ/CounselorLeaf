@@ -5,12 +5,16 @@ import useDialog from '../libs/useDialog.jsx'
 import Prompt from './Prompt.jsx'
 import Messages from './Messages.jsx'
 import Dialog from './Dialog.jsx'
+import Header from './Header.jsx'
 
 // 主组件
 function App() {
   /** 
    * 创建一个保存对话内容的状态 
-   * @type {Array<{role: string, content: string}>}
+   * @type {Array<{
+   *   role: 'user' | 'assistant' | 'loading',
+   *   content: string
+   * }>[]}
    */
   const [messages, setMessages] = useState([])
   // 使用 useDialog 自定义 Hook
@@ -18,6 +22,8 @@ function App() {
 
   return (
     <main className="container">
+
+      <Header />
 
       <Messages 
         messages={messages}

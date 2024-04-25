@@ -3,8 +3,8 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: var(--images-height);
-  padding: 1rem 0;
+  height: var(--messages-height);
+  padding: 0.7rem 8%;
   background-color: var(--back);
   overflow-y: auto;
   scrollbar-width: thin;
@@ -15,16 +15,16 @@
   & .message-loading {
     width: 100%;
     display: flex;
-    justify-content: flex-start;
-    align-items: center;
+    align-items: normal;
     padding: 0.5rem 1rem;
     & .message-content {
-      max-width: calc(100% - 5rem);
+      max-width: calc(100% - 6rem);
       padding: 0.7rem 1rem;
       border-radius: 0.5rem;
       background-color: var(--back-lighter);
       color: var(--text-dark);
       line-height: 1.5;
+      /* Markdown 内容 */
       & > * {
         margin-bottom: 0.7rem;
         &:nth-last-child(1) { margin-bottom: 0; }
@@ -36,30 +36,36 @@
         & p { display: inline; }
       }    
     }
-  }
-  & .message-assistant {
-    justify-content: flex-end;
-    &::after {
+    &::after,
+    &::before {
       content: '';
       display: block;
-      background-image: url('/avatar.jpg');
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      margin-top: 0.5rem;
       background-size: cover;
       background-position: center;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      margin-left: 0.5rem;
     }
   }
+  & .message-assistant::before {
+    margin-right: 1rem;
+    background-image: var(--assistant-avatar);
+  }
   & .message-user {
-    &::before { 
-      content: '';
-      display: block;
-      background-color: lightblue;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      margin-right: 0.5rem;
+    justify-content: flex-end;
+    &::after { 
+      background-color: var(--user-avatar);
+      margin-left: 1rem;
     }
+  }
+  & .message-loading {
+    justify-content: center;
+  }
+}
+
+@media screen and (max-width: 512px) {
+  .messages-container {
+    padding: 1rem 0;
   }
 }

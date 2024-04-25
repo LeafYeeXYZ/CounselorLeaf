@@ -3,18 +3,18 @@
   width: 100%;
   height: var(--prompt-height);
   background-color: var(--back-lighter);
-  padding: 30px 10%;
+  padding: 20px 10%;
   margin: 0;
   overflow: hidden;
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.05);
 
   & .prompt-textarea {
     width: 100%;
-    height: 100px;
+    height: 80px;
     resize: none;
     padding: 10px 15px;
     border: 1px solid var(--border-textarea);
     border-radius: 20px;
-    transition: all 0.2s ease;
     font-family: Microsoft YaHei;
     font-weight: bold;
     color: var(--text);
@@ -43,7 +43,6 @@
     font-weight: bold;
     color: var(--text);
     background-color: var(--back);
-    transition: all 0.2s ease;
     &:hover {
       transform: scale(1.02);
       background-color: var(--back-hover);

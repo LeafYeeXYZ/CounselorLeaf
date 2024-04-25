@@ -1,36 +1,48 @@
 :root {
-  --prompt-height: 210px;
+  --prompt-height: 170px;
   --prompt-btn-width: 100%;
   --prompt-btn-gap: 0;
+
+  --header-height: 50px;
   
-  --images-height: calc(100dvh - var(--prompt-height));
-  --image-margin: calc( (var(--images-height) - var(--image-size)) / 2 ) calc( (100dvw - var(--image-size)) / 2 );
-  --image-size: min((100dvh - var(--prompt-height))*0.9, 100dvw*0.9);
+  --messages-height: calc(100dvh - var(--prompt-height) - var(--header-height));
 
   --text: #ff7171;
   --text-hover: #ff4f4f;
   --text-highlight: #fa255e;
   --text-dark: #300000;
+
   --border-textarea: #ff4f4f;
-  --back: #fff0f0;
   --back-textarea: #fffafa;
+
+  --back: #fff0f0;
   --back-hover: #ffcece;
   --back-lighter: #fffdfd;
+
   --scroll-front: #ff7f7f;
   --scroll-back: #fff0f0;
+
+  --assistant-avatar: url('/avatar.jpg');
+  --user-avatar: #d0c0ff;
 }
 .dark {
   --text: #ff6171;
   --text-hover: #ff4f4f;
   --text-highlight: #fa255e;
   --text-dark: #ff6171;
+
   --border-textarea: #000000;
-  --back: #000000;
   --back-textarea: #101010;
+
+  --back: #000000;
   --back-hover: #000000;
   --back-lighter: #151515;
+
   --scroll-front: #fa3f3f;
   --scroll-back: #000000;
+
+  --assistant-avatar: url('/avatar.jpg');
+  --user-avatar: #d0c0ff;
 }
 
 
@@ -66,4 +78,7 @@ a {
 button {
   border: none;
   outline: none;
+}
+* {
+  transition: all 0.2s ease;
 }

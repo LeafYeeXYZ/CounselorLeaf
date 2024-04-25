@@ -1,0 +1,27 @@
+.header {
+  width: 100%;
+  height: var(--header-height);
+  background-color: var(--back-lighter);
+  box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.05);
+
+  & .header-title {
+    width: 100%;
+    height: 100%;
+    line-height: var(--header-height);
+    text-align: center;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--text);
+  }
+}
+
+.theme-switcher {
+  position: absolute;
+  height: var(--header-height);
+  top: 0;
+  right: 0;
+  margin-right: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
