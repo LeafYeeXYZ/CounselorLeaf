@@ -30,7 +30,6 @@
       color: var(--text);
     }
   }
-  & .prompt-models,
   & .prompt-submit {
     display: inline-block;
     width: var(--prompt-btn-width);
@@ -59,8 +58,5 @@
     &:disabled {
       cursor: progress;
     } 
-  }
-  & .prompt-models {
-    appearance: none;
   }
 }

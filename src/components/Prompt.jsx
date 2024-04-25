@@ -25,7 +25,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
       submitRef.current.textContent = '思考中...'
       // 获取用户输入的提示词
       const text = promptRef.current.value
-      if (!text) throw { title: '提示', message: '请输入提示词', self: true }
+      if (!text) throw { title: '提示', message: '请输入对话内容', self: true }
       // 更新对话内容
       flushUpdates([...originalMessages, { role: 'user', content: text }, { role: 'loading', content: '思考中...' }])
       // 发送请求
@@ -37,7 +37,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
         body: JSON.stringify({ messages: body })
       })
       const data = await res.json()
-      if (!data.success) throw { title: '生成失败', message: data.message, self: true }
+      if (!data.success) throw { title: '生成失败', message: `Prompt -> handleSubmit -> ${data.message}`, self: true }
       // 更新对话内容
       const mdMessage = await marked.parse(data.result.response)
       flushUpdates([...originalMessages, { role: 'user', content: text }, { role: 'assistant', content: mdMessage }])
@@ -46,7 +46,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
     } 
     catch (error) {
       if (typeof error === 'object' && error.self) {
-        dialogAction({ type: 'open', title: '生成失败', content: error.message })
+        dialogAction({ type: 'open', title: error.title, content: error.message })
       } else {
         dialogAction({ type: 'open', title: '生成失败', content: `Prompt -> handleSubmit -> ${error.name}: ${error.message}` })
       }
@@ -67,7 +67,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
         name="prompt" 
         cols="30" 
         rows="10" 
-        placeholder="请输入 ..."
+        placeholder="请在此输入"
         className='prompt-textarea'
         ref={promptRef}
       ></textarea>

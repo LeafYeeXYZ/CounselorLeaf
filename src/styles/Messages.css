@@ -22,7 +22,7 @@
       padding: 0.7rem 1rem;
       border-radius: 0.5rem;
       background-color: var(--back-lighter);
-      color: var(--text-dark);
+      color: var(--text-messages);
       line-height: 1.5;
       /* Markdown 内容 */
       & > * {

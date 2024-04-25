@@ -7,6 +7,9 @@ import Messages from './Messages.jsx'
 import Dialog from './Dialog.jsx'
 import Header from './Header.jsx'
 
+import { get } from 'idb-keyval'
+const initMessages = await get('currentMessages') || []
+
 // 主组件
 function App() {
   /** 
@@ -16,14 +19,17 @@ function App() {
    *   content: string
    * }>[]}
    */
-  const [messages, setMessages] = useState([])
+  const [messages, setMessages] = useState(initMessages)
   // 使用 useDialog 自定义 Hook
   const { dialogState, dialogAction, dialogRef } = useDialog()
 
   return (
     <main className="container">
 
-      <Header />
+      <Header 
+        messages={messages}
+        setMessages={setMessages}
+      />
 
       <Messages 
         messages={messages}

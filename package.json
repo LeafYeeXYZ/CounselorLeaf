@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.3.6",
     "antd": "^5.16.4",
+    "idb-keyval": "^6.2.1",
     "lodash-es": "^4.17.21",
     "marked": "^12.0.2",
     "prop-types": "^15.8.1",

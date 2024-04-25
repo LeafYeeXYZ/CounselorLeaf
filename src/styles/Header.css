@@ -9,7 +9,7 @@
     height: 100%;
     line-height: var(--header-height);
     text-align: center;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: bold;
     color: var(--text);
   }
@@ -24,4 +24,35 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.new-chat {
+  position: absolute;
+  height: var(--header-height);
+  top: 0;
+  left: 0;
+  margin-left: 0.7rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  & .new-chat-button {
+    padding: 0.25rem 0.7rem;
+    border-radius: 2rem;
+    font-weight: bold;
+    font-size: 0.8rem;
+    color: var(--text);
+    background-color: var(--back);
+    cursor: pointer;
+    &:hover {
+      color: var(--text-hover);
+      background-color: var(--back-hover);
+      transform: scale(1.02);
+    }
+    &:active {
+      color: var(--text-hover);
+      background-color: var(--back-hover);
+      transform: scale(0.98);
+    }
+  }
 }

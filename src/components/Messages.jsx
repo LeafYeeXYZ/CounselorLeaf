@@ -2,6 +2,7 @@ import '../styles/Messages.css'
 import PropTypes from 'prop-types'
 import { DEFAULT_MSG } from '../config.json'
 import { useEffect } from 'react'
+import { set } from 'idb-keyval'
 
 export default function Messages({ messages }) {
   const messagesList = [{ role: 'assistant', content: DEFAULT_MSG }]
@@ -12,10 +13,12 @@ export default function Messages({ messages }) {
       </div>
     ))
 
-  // 滚动到底部
-  useEffect(() => {
+    useEffect(() => {
+    // 滚动到底部
     const messagesContainer = document.querySelector('.messages-container')
     messagesContainer.scrollTop = messagesContainer.scrollHeight
+    // 保存对话内容
+    set('currentMessages', messages) // Promise
   }, [messages])
 
   return (
