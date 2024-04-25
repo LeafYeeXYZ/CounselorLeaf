@@ -1,6 +1,7 @@
 import '../styles/Messages.css'
 import PropTypes from 'prop-types'
 import { DEFAULT_MSG } from '../config.json'
+import { useEffect } from 'react'
 
 export default function Messages({ messages }) {
   const messagesList = [{ role: 'assistant', content: DEFAULT_MSG }]
@@ -10,6 +11,12 @@ export default function Messages({ messages }) {
         <div className='message-content' dangerouslySetInnerHTML={{ __html: message.content }} />
       </div>
     ))
+
+  // 滚动到底部
+  useEffect(() => {
+    const messagesContainer = document.querySelector('.messages-container')
+    messagesContainer.scrollTop = messagesContainer.scrollHeight
+  }, [messages])
 
   return (
     <div className='messages-container'>
