@@ -6,12 +6,10 @@ import { cloneDeep } from 'lodash-es'
 import { SERVER } from '../config.json'
 import NewChat from './widgets/NewChat.jsx'
 
-function Prompt({ messages, setMessages, dialogAction }) {
+function Prompt({ messages, setMessages, dialogAction, duringChat, history, setHistory }) {
   // 引用元素
   const submitRef = useRef(null)
   const promptRef = useRef(null)
-  // 用一个 ref 来表示是否在生成过程中点击了新对话按钮
-  const duringChat = useRef(false)
   // 封装立即更新函数
   function flushUpdates(newMessages) {
     if (!duringChat.current) return
@@ -82,6 +80,8 @@ function Prompt({ messages, setMessages, dialogAction }) {
         duringChat={duringChat}
         submitRef={submitRef}
         promptRef={promptRef}
+        history={history}
+        setHistory={setHistory}
       />
 
       <button 
@@ -98,6 +98,9 @@ Prompt.propTypes = {
   messages: PropTypes.array.isRequired,
   setMessages: PropTypes.func.isRequired,
   dialogAction: PropTypes.func.isRequired,
+  duringChat: PropTypes.object.isRequired,
+  history: PropTypes.array.isRequired,
+  setHistory: PropTypes.func.isRequired,
 }
 
 export default Prompt

@@ -1,0 +1,46 @@
+:root {
+  --prompt-height: 170px;
+  --header-height: 50px;
+  --messages-height: calc(100dvh - var(--prompt-height) - var(--header-height));
+  --sidebar-width: 300px;
+  --assistant-avatar: url('/avatar.jpg');
+  --user-avatar: #d0c0ff;
+  
+  --text: #ff7171;
+  --text-hover: #ff4f4f;
+  --text-highlight: #fa255e;
+  --text-messages: #300000;
+
+  --border-textarea: #ff4f4f;
+  --back-textarea: #fffafa;
+
+  --back: #fff0f0;
+  --back-hover: #ffcece;
+  --back-lighter: #fffdfd;
+  --back-darker: #ffe8e8;
+  --back-code: #f2efef;
+  --back-sidebar: #fff7f7;
+
+  --scroll-front: #ff7f7f80;
+  --scroll-back: #fff0f0;
+
+}
+.dark {
+  --text: #ff773d;
+  --text-hover: #ff4f4f;
+  --text-highlight: #fa255e;
+  --text-messages: #f5e0e0;
+
+  --border-textarea: #000000;
+  --back-textarea: #101010;
+
+  --back: #000000;
+  --back-hover: #000000;
+  --back-lighter: #151515;
+  --back-darker: #111111;
+  --back-code: #101010;
+  --back-sidebar: #202020;
+
+  --scroll-front: #ff773d80;
+  --scroll-back: #000000;
+}

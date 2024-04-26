@@ -78,7 +78,7 @@
   }
 }
 
-@media screen and (max-width: 512px) {
+@media screen and (max-width: 900px) {
   .messages-container {
     padding: 1rem 0;
   }

@@ -25,3 +25,25 @@
   justify-content: center;
   align-items: center;
 }
+
+.sidebar-switcher {
+  position: absolute;
+  --switcher-size: 2rem;
+  width: var(--switcher-size);
+  height: var(--switcher-size);
+  color: var(--text);
+  background-color: var(--back);
+  padding: 0.5rem;
+  margin: calc((var(--header-height) - var(--switcher-size)) / 2) 0.7rem;
+  top: 0;
+  left: 0;
+  border-radius: 20px;
+  &:hover {
+    color: var(--text-hover);
+    background-color: var(--back-hover);
+    transform: scale(1.02);
+  }
+  &:active {
+    transform: scale(0.98);
+  }
+}

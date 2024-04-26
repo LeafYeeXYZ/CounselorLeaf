@@ -74,8 +74,6 @@
       }
       &:active {
         transform: scale(0.98);
-        background-color: var(--back-hover);
-        color: var(--text-hover);
       }
     }
   }

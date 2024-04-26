@@ -1,0 +1,86 @@
+.history-item {
+  display: grid;
+  grid-template-columns: 3.5fr 1fr 1fr;
+  width: 80%;
+  height: 40px;
+  border-radius: 20px;
+  margin: 0.4rem 0;
+
+  & .history-item-title {
+    color: var(--text);
+    background-color: var(--back-darker);
+    line-height: 20px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    text-overflow: ellipsis;
+    padding: 10px 15px;
+    overflow: hidden;
+    border-radius: 20px 0 0 20px;
+    &:hover {
+      color: var(--text-hover);
+      background-color: var(--back-hover);
+      cursor: pointer;
+    }
+    &:active {
+      filter: brightness(0.95);
+    }
+  }
+  & input.history-item-title {
+    cursor: text!important;
+  }
+
+  & .history-item-edit,
+  & .history-item-delete,
+  & .history-item-save,
+  & .history-item-cancel {
+    color: var(--text);
+    background-color: var(--back);
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    &:hover {
+      color: var(--text-hover);
+      background-color: var(--back-hover);
+    }
+    &:active {
+      filter: brightness(0.95);
+    }
+  }
+  & .history-item-delete,
+  & .history-item-cancel {
+    border-radius: 0 20px 20px 0;
+  }
+}
+
+.history-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0.7rem 0;
+  color: var(--text-messages);
+  opacity: 0.8;
+}
+
+.history-note {
+  font-size: 0.9rem;
+  color: var(--text-messages);
+  margin: 0.7rem 0;
+  opacity: 0.7;
+}
+
+.history-empty {
+  width: 80%;
+  height: 40px;
+  border-radius: 20px;
+  margin: 0.4rem 0;
+  color: var(--text);
+  background-color: var(--back-darker);
+  line-height: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  padding: 10px 15px;
+  overflow: hidden;
+  border-radius: 20px;
+}
