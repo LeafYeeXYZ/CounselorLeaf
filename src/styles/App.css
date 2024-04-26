@@ -60,7 +60,8 @@ button {
 * {
   transition: all 0.2s ease;
 }
-:root {
+body,
+html {
   background-color: var(--back-lighter);
 }
 @media screen and (max-height: 440px){
