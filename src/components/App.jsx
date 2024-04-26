@@ -26,10 +26,7 @@ function App() {
   return (
     <main className="container">
 
-      <Header 
-        messages={messages}
-        setMessages={setMessages}
-      />
+      <Header />
 
       <Messages 
         messages={messages}

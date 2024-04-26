@@ -4,22 +4,27 @@ import { useRef } from 'react'
 import { flushSync } from 'react-dom'
 import { cloneDeep } from 'lodash-es'
 import { SERVER } from '../config.json'
-import { marked } from 'marked'
+import NewChat from './widgets/NewChat.jsx'
 
 function Prompt({ messages, setMessages, dialogAction }) {
-  // 封装立即更新函数
-  function flushUpdates(newMessages) {
-    flushSync(() => setMessages(newMessages))
-  }
   // 引用元素
   const submitRef = useRef(null)
   const promptRef = useRef(null)
+  // 用一个 ref 来表示是否在生成过程中点击了新对话按钮
+  const duringChat = useRef(false)
+  // 封装立即更新函数
+  function flushUpdates(newMessages) {
+    if (!duringChat.current) return
+    flushSync(() => setMessages(newMessages))
+  }
   // 点击生成按钮时的事件处理函数
   async function handleSubmit(event) {
     event.preventDefault()
     const originalMessages = cloneDeep(messages)
     // 异步处理
     try {
+      // 设置标志位
+      duringChat.current = true
       // 禁用按钮
       submitRef.current.disabled = true
       submitRef.current.textContent = '思考中...'
@@ -39,8 +44,7 @@ function Prompt({ messages, setMessages, dialogAction }) {
       const data = await res.json()
       if (!data.success) throw { title: '生成失败', message: `Prompt -> handleSubmit -> ${data.message}`, self: true }
       // 更新对话内容
-      const mdMessage = await marked.parse(data.result.response)
-      flushUpdates([...originalMessages, { role: 'user', content: text }, { role: 'assistant', content: mdMessage }])
+      flushUpdates([...originalMessages, { role: 'user', content: text }, { role: 'assistant', content: data.result.response }])
       // 删除输入框内容
       promptRef.current.value = ''
     } 
@@ -54,6 +58,8 @@ function Prompt({ messages, setMessages, dialogAction }) {
       flushUpdates(originalMessages)
     } 
     finally {
+      // 清除标志位
+      duringChat.current = false
       // 启用按钮
       submitRef.current.disabled = false
       submitRef.current.textContent = '发送'
@@ -65,12 +71,18 @@ function Prompt({ messages, setMessages, dialogAction }) {
 
       <textarea
         name="prompt" 
-        cols="30" 
-        rows="10" 
         placeholder="请在此输入"
         className='prompt-textarea'
         ref={promptRef}
       ></textarea>
+
+      <NewChat
+        messages={messages}
+        setMessages={setMessages}
+        duringChat={duringChat}
+        submitRef={submitRef}
+        promptRef={promptRef}
+      />
 
       <button 
         className='prompt-submit'

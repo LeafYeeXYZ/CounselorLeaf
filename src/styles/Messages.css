@@ -34,7 +34,21 @@
         list-style-position: inside;
         &::marker { display: inline; }
         & p { display: inline; }
-      }    
+      }
+      & pre > code,
+      & pre {
+        padding: 0.5rem;
+        overflow-x: auto;
+        border-radius: 0.5rem;
+        background-color: var(--back-code);
+        scrollbar-width: none;
+      }
+      & p code {
+        padding: 0.2rem;
+        margin: 0 0.2rem;
+        border-radius: 0.2rem;
+        background-color: var(--back-code);
+      }
     }
     &::after,
     &::before {

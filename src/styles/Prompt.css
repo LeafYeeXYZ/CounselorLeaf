@@ -30,9 +30,10 @@
       color: var(--text);
     }
   }
+  & .prompt-clear,
   & .prompt-submit {
     display: inline-block;
-    width: var(--prompt-btn-width);
+    width: calc(50% - 5px);
     height: 40px;
     border: none;
     outline: none;
@@ -47,16 +48,14 @@
       background-color: var(--back-hover);
       color: var(--text-hover);
     }
-  }
-  & .prompt-submit {
-    margin-left: var(--prompt-btn-gap);
     &:active {
       transform: scale(0.98);
       background-color: var(--back-hover);
       color: var(--text-hover);
     }
-    &:disabled {
-      cursor: progress;
-    } 
+  }
+  & .prompt-submit {
+    margin-left: 10px;
+    &:disabled { cursor: progress; } 
   }
 }
