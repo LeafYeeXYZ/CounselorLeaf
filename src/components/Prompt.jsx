@@ -4,9 +4,8 @@ import { useRef } from 'react'
 import { flushSync } from 'react-dom'
 import { cloneDeep } from 'lodash-es'
 import { SERVER } from '../config.json'
-import NewChat from './widgets/NewChat.jsx'
 
-function Prompt({ messages, setMessages, dialogAction, duringChat, history, setHistory }) {
+export default function Prompt({ children, messages, setMessages, dialogAction, duringChat }) {
   // 引用元素
   const submitRef = useRef(null)
   const promptRef = useRef(null)
@@ -74,15 +73,7 @@ function Prompt({ messages, setMessages, dialogAction, duringChat, history, setH
         ref={promptRef}
       ></textarea>
 
-      <NewChat
-        messages={messages}
-        setMessages={setMessages}
-        duringChat={duringChat}
-        submitRef={submitRef}
-        promptRef={promptRef}
-        history={history}
-        setHistory={setHistory}
-      />
+      {children}
 
       <button 
         className='prompt-submit'
@@ -95,12 +86,9 @@ function Prompt({ messages, setMessages, dialogAction, duringChat, history, setH
 }
 
 Prompt.propTypes = {
+  children: PropTypes.element.isRequired,
   messages: PropTypes.array.isRequired,
   setMessages: PropTypes.func.isRequired,
   dialogAction: PropTypes.func.isRequired,
   duringChat: PropTypes.object.isRequired,
-  history: PropTypes.array.isRequired,
-  setHistory: PropTypes.func.isRequired,
 }
-
-export default Prompt

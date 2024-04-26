@@ -1,9 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
-import { set } from 'idb-keyval'
-import { cloneDeep } from 'lodash-es'
 
-export default function NewChat({ messages, setMessages, duringChat, submitRef, promptRef, history, setHistory }) {
+export default function NewChat({ messages, clear, duringChat, dialogAction }) {
 
   const [btn, setBtn] = useState(null)
 
@@ -12,7 +10,9 @@ export default function NewChat({ messages, setMessages, duringChat, submitRef, 
       className='prompt-clear'
       onClick={e => {
         e.preventDefault()
-        if (messages.length) setBtn(confireButton)
+        if (messages.length) {
+          setBtn(confireButton)
+        }
       }}
     >新对话</button>
   )
@@ -25,19 +25,14 @@ export default function NewChat({ messages, setMessages, duringChat, submitRef, 
         className='prompt-clear-confirm'
         onClick={e => {
           e.preventDefault()
-          duringChat.current = false
-          promptRef.current.value = ''
-          if (submitRef.current.textContent !== '发送') submitRef.current.textContent = '请稍候...'
+          if (duringChat.current) {
+            dialogAction({ type: 'open', title: '请稍候', content: '请等待当前请求结束再开启新对话' })
+            return
+          }
           // 更新历史对话
-          const newHistory = cloneDeep(history) || []
-          const time = Date.now()
-          newHistory.unshift({ time, title: '', messages: cloneDeep(messages) })
-          setHistory(newHistory)
-          set('historyMessages', newHistory).then(() => {
-            // 更新当前对话
-            setMessages([])
-            setBtn(clearButton)
-          })
+          clear('', [])
+          // 更换按钮
+          setBtn(clearButton)
         }}      
       >确定</button>
       <button
@@ -55,10 +50,7 @@ export default function NewChat({ messages, setMessages, duringChat, submitRef, 
 
 NewChat.propTypes = {
   messages: PropTypes.array.isRequired,
-  setMessages: PropTypes.func.isRequired,
+  clear: PropTypes.func.isRequired,
   duringChat: PropTypes.object.isRequired,
-  submitRef: PropTypes.object.isRequired,
-  promptRef: PropTypes.object.isRequired,
-  history: PropTypes.array.isRequired,
-  setHistory: PropTypes.func.isRequired,
+  dialogAction: PropTypes.func.isRequired,
 }

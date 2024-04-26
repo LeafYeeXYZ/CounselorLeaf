@@ -5,40 +5,34 @@ import { set } from 'idb-keyval'
 import { cloneDeep } from 'lodash-es'
 import { useState, useRef } from 'react'
 
-function HistoryItem({ time, title, itemMessages, updateHistory, messages, setMessages }) {
+function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
   // 用于切换编辑状态
   const [edit, setEdit] = useState(false)
   // 引用
   const inputRef = useRef(null)
   const titleRef = useRef(null)
+
+  const backupMessages = cloneDeep(itemMessages)
   // 一般状态的组件
   const normalState = (
     <div className='history-item'>
 
-      <div className='history-item-title'
+      <button className='history-item-title'
         ref={titleRef}
         onClick={e => {
           e.preventDefault()
+          // 禁用标题输入框
           titleRef.current.disabled = true
-          // 1. 将当前对话保存到历史对话中, 并清空当前对话
-          if (messages.length) document.querySelector('.prompt-clear').click()
-          setTimeout(() => {
-            if (messages.length) document.querySelector('.prompt-clear-confirm').click()
-            // 2. 将历史对话覆盖到当前对话中
-            setMessages(itemMessages)
-            // 3. 更新历史对话
-            updateHistory(history => {
-              const result = history.filter(item => item.time !== time)
-              return result
-            })     
-            // 如果是手机端, 点一下侧边栏按钮
-            if (window.innerWidth <= 768) {
-              document.querySelector('.sidebar-switcher').click()
-            } 
-            titleRef.current.disabled = false
-          }, 300)
+          // 将当前对话保存到历史对话中, 并清空当前对话
+          clear(time, backupMessages)
+          // 如果是手机端, 点一下侧边栏按钮
+          if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar-switcher').click()
+          } 
+          // 启用标题输入框
+          titleRef.current.disabled = false        
         }}      
-      >{title || '无标题对话'}</div>
+      >{title || '无标题对话'}</button>
 
       <button className='history-item-edit'
         onClick={e => {
@@ -91,7 +85,7 @@ function HistoryItem({ time, title, itemMessages, updateHistory, messages, setMe
   return edit ? editState : normalState
 }
 
-export default function History({ messages, setMessages, history, setHistory }) {
+export default function History({ history, setHistory, clear }) {
 
   /** 用来给子组件更新 history 的函数
    * @param {function} callback 接受 history 作为参数, 返回新的 history
@@ -110,12 +104,11 @@ export default function History({ messages, setMessages, history, setHistory }) 
     historyItems.push(
       <HistoryItem
         key={item.time}
-        time={item.time}
+        time={item.time.toString()}
         title={item.title || ''}
         itemMessages={item.messages}
         updateHistory={updateHistory}
-        messages={messages}
-        setMessages={setMessages}
+        clear={clear}
       />
     )
   }  
@@ -130,10 +123,9 @@ export default function History({ messages, setMessages, history, setHistory }) 
 }
 
 History.propTypes = {
-  messages: PropTypes.array.isRequired,
-  setMessages: PropTypes.func.isRequired,
   history: PropTypes.array.isRequired,
   setHistory: PropTypes.func.isRequired,
+  clear: PropTypes.func.isRequired,
 }
 
 HistoryItem.propTypes = {
@@ -141,6 +133,5 @@ HistoryItem.propTypes = {
   title: PropTypes.string,
   itemMessages: PropTypes.array.isRequired,
   updateHistory: PropTypes.func.isRequired,
-  messages: PropTypes.array.isRequired,
-  setMessages: PropTypes.func.isRequired,
+  clear: PropTypes.func.isRequired,
 }

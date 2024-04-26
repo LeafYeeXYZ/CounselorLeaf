@@ -2,12 +2,14 @@ import '../styles/App.css'
 import '../styles/Theme.css'
 import { useState, useRef } from 'react'
 import useDialog from '../libs/useDialog.jsx'
+import clearCurrent from '../libs/clearCurrent.jsx'
 
 import Prompt from './Prompt.jsx'
 import Messages from './Messages.jsx'
 import Dialog from './Dialog.jsx'
 import Header from './Header.jsx'
 import History from './History.jsx'
+import NewChat from './widgets/NewChat.jsx'
 
 import { get } from 'idb-keyval'
 const initMessages = await get('currentMessages') || []
@@ -44,6 +46,8 @@ function App() {
   const sidebarRef = useRef(null)
   const contentRef = useRef(null)
   const duringChat = useRef(false) // 表示是否正在向服务器发送请求, 如果手动设置为 false, 则不会将新消息同步
+  // 用于清除当前 messages 并将其保存到 history 中的函数
+  const clear = clearCurrent({ messages, setMessages, duringChat, history, setHistory })
 
   return (
     <main className="container">
@@ -51,10 +55,9 @@ function App() {
       <div className='sidebar' ref={sidebarRef}>
 
         <History
-          messages={messages}
-          setMessages={setMessages}
           history={history}
           setHistory={setHistory}
+          clear={clear}
         />
         
       </div>
@@ -75,9 +78,16 @@ function App() {
           setMessages={setMessages}
           dialogAction={dialogAction}
           duringChat={duringChat}
-          history={history}
-          setHistory={setHistory}
-        />
+        >
+          <NewChat
+            // 设置 key 以便在 messages 更新时重新渲染
+            key={JSON.stringify(messages).length.toString() + Date.now()}
+            messages={messages}
+            clear={clear}
+            duringChat={duringChat}
+            dialogAction={dialogAction}
+          />
+        </Prompt>
 
         <Dialog 
           ref={dialogRef}

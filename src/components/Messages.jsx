@@ -6,18 +6,6 @@ import { set } from 'idb-keyval'
 import { marked } from 'marked'
 
 export default function Messages({ messages }) {
-  const messagesList = [{ role: 'assistant', content: DEFAULT_MSG }]
-    .concat(messages)
-    .map((message, index) => {
-      // 更新对话内容, 修复 <br> <hr> 标签
-      let msg = marked.parse(message.content)
-      msg.replace(/<br>/g, '<br />').replace(/<hr>/g, '<hr />')
-      return (
-        <div key={index} className={`message-${message.role}`}>
-          <div className='message-content' dangerouslySetInnerHTML={{ __html: msg }} />
-        </div>
-      )
-    })
 
   useEffect(() => {
     // 滚动到底部
@@ -29,7 +17,22 @@ export default function Messages({ messages }) {
 
   return (
     <div className='messages-container'>
-      {messagesList}
+      <div key={-1} className='message-assistant'>
+        <div className='message-content'>
+          {DEFAULT_MSG}
+        </div>
+      </div>
+      {
+        messages.map((message, index) => {
+          let msg = marked.parse(message.content)
+          msg.replace(/<br>/g, '<br />').replace(/<hr>/g, '<hr />')
+          return (
+            <div key={index} className={`message-${message.role}`}>
+              <div className='message-content' dangerouslySetInnerHTML={{ __html: msg }} />
+            </div>
+          )
+        })
+      }
     </div>
   )
 }
