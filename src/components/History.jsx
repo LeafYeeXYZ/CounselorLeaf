@@ -28,7 +28,11 @@ function HistoryItem({ time, title, itemMessages, updateHistory, messages, setMe
           updateHistory(history => {
             const result = history.filter(item => item.time !== time)
             return result
-          })          
+          })     
+          // 如果是手机端, 点一下侧边栏按钮
+          if (window.innerWidth <= 768) {
+            document.querySelector('.sidebar-switcher').click()
+          }     
         }}      
       >{title || '无标题对话'}</div>
 
