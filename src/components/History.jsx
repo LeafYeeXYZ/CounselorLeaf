@@ -8,31 +8,35 @@ import { useState, useRef } from 'react'
 function HistoryItem({ time, title, itemMessages, updateHistory, messages, setMessages }) {
   // 用于切换编辑状态
   const [edit, setEdit] = useState(false)
-  // 输入框的引用
+  // 引用
   const inputRef = useRef(null)
+  const titleRef = useRef(null)
   // 一般状态的组件
   const normalState = (
     <div className='history-item'>
 
       <div className='history-item-title'
+        ref={titleRef}
         onClick={e => {
           e.preventDefault()
+          titleRef.current.disabled = true
           // 1. 将当前对话保存到历史对话中, 并清空当前对话
-          if (messages.length) {
-            document.querySelector('.prompt-clear').click()
-            document.querySelector('.prompt-clear-confirm').click()
-          }
-          // 2. 将历史对话覆盖到当前对话中
-          setMessages(itemMessages)
-          // 3. 更新历史对话
-          updateHistory(history => {
-            const result = history.filter(item => item.time !== time)
-            return result
-          })     
-          // 如果是手机端, 点一下侧边栏按钮
-          if (window.innerWidth <= 768) {
-            document.querySelector('.sidebar-switcher').click()
-          }     
+          if (messages.length) document.querySelector('.prompt-clear').click()
+          setTimeout(() => {
+            if (messages.length) document.querySelector('.prompt-clear-confirm').click()
+            // 2. 将历史对话覆盖到当前对话中
+            setMessages(itemMessages)
+            // 3. 更新历史对话
+            updateHistory(history => {
+              const result = history.filter(item => item.time !== time)
+              return result
+            })     
+            // 如果是手机端, 点一下侧边栏按钮
+            if (window.innerWidth <= 768) {
+              document.querySelector('.sidebar-switcher').click()
+            } 
+            titleRef.current.disabled = false
+          }, 300)
         }}      
       >{title || '无标题对话'}</div>
 
