@@ -23,10 +23,10 @@ function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
           e.preventDefault()
           // 禁用标题输入框
           titleRef.current.disabled = true
-          // 设置标题
-          localStorage.setItem('currentTitle', title)
           // 将当前对话保存到历史对话中, 并清空当前对话
           clear(time, backupMessages)
+          // 设置标题
+          localStorage.setItem('currentTitle', title)
           // 如果是手机端, 点一下侧边栏按钮
           if (window.innerWidth <= 768) {
             document.querySelector('.sidebar-switcher').click()
