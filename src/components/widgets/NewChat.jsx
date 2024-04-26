@@ -22,7 +22,7 @@ export default function NewChat({ messages, setMessages, duringChat, submitRef, 
       }} 
       onBlur={e => {
         e.preventDefault()
-        if (text === '确认开启新对话') setText('新对话')
+        setText('新对话')
       }}
     >{text}</button>
   )
