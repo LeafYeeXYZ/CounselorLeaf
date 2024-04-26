@@ -15,11 +15,13 @@ export default function clearCurrent({ messages, setMessages, duringChat, histor
    */
   function clear(deleteTime = '', newMessages = []) {
     duringChat.current = false
+    // 获取标题
+    const title = localStorage.getItem('currentTitle') || ''
     // 更新历史对话
     let newHistory = cloneDeep(history) || []
     if (messages.length) {
       const time = Date.now().toString()
-      newHistory.unshift({ time, title: '', messages: cloneDeep(messages) })
+      newHistory.unshift({ time, title, messages: cloneDeep(messages) })
     }
     if (deleteTime) {
       // 删除指定对话
@@ -30,6 +32,8 @@ export default function clearCurrent({ messages, setMessages, duringChat, histor
       setMessages(newMessages)
       document.querySelector('.prompt-textarea').value = ''
     })
+    // 重置标题
+    localStorage.setItem('currentTitle', '')
   }
 
   return clear
