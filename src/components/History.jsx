@@ -1,18 +1,18 @@
 import PropTypes from 'prop-types'
 import '../styles/History.css'
 import { DeleteFilled, EditFilled, CheckOutlined, CloseOutlined } from '@ant-design/icons'
-import { set } from 'idb-keyval'
 import { cloneDeep } from 'lodash-es'
 import { useState, useRef } from 'react'
+import { set } from 'idb-keyval'
 
-function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
+function HistoryItem({ item, history, setHistory, clear, dialogAction }) {
   // 用于切换编辑状态
   const [edit, setEdit] = useState(false)
   // 引用
   const inputRef = useRef(null)
   const titleRef = useRef(null)
-
-  const backupMessages = cloneDeep(itemMessages)
+  // 初始对话内容
+  const backup = cloneDeep(item)
   // 一般状态的组件
   const normalState = (
     <div className='history-item'>
@@ -21,20 +21,23 @@ function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
         ref={titleRef}
         onClick={e => {
           e.preventDefault()
+          const systemStatus = localStorage.getItem('systemStatus')
+          if (systemStatus !== 'idle') {
+            dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
+            return
+          }
           // 禁用标题输入框
           titleRef.current.disabled = true
           // 将当前对话保存到历史对话中, 并清空当前对话
-          clear(time, backupMessages)
-          // 设置标题
-          localStorage.setItem('currentTitle', title)
+          clear(backup.time, backup)
           // 如果是手机端, 点一下侧边栏按钮
           if (window.innerWidth <= 768) {
             document.querySelector('.sidebar-switcher').click()
           } 
-          // 启用标题输入框
-          titleRef.current.disabled = false        
+          // 启用标题输入框 (不需要, 因为页面会刷新)
+          // titleRef.current.disabled = false        
         }}      
-      >{title || '无标题对话'}</button>
+      >{item.title || '无标题对话'}</button>
 
       <button className='history-item-edit'
         onClick={e => {
@@ -46,7 +49,15 @@ function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
       <button className='history-item-delete'
         onClick={e => {
           e.preventDefault()
-          updateHistory(history => history.filter(item => item.time !== time))
+          const systemStatus = localStorage.getItem('systemStatus')
+          if (systemStatus !== 'idle') {
+            dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
+            return
+          }
+          localStorage.setItem('systemStatus', '更新本地数据 (HistoryItem.jsx -> normalState -> delete)')
+          const data = cloneDeep(history).filter(i => i.time !== item.time)
+          setHistory(data)
+          set('historyMessages', data).then(() => localStorage.setItem('systemStatus', 'idle'))
         }}
       ><DeleteFilled /></button>
 
@@ -56,22 +67,27 @@ function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
   const editState = (
     <div className='history-item'>
 
-      <input className='history-item-title' defaultValue={title || '无标题对话'} ref={inputRef} />
+      <input className='history-item-title' defaultValue={item.title || '无标题对话'} ref={inputRef} />
 
       <button className='history-item-save'
         onClick={e => {
           e.preventDefault()
-          updateHistory(history => {
-            const newHistory = history.map(item => {
-              if (item.time === time) {
-                return { ...item, title: inputRef.current.value || '' }
-              } else {
-                return item
-              }
-            })
-            return newHistory
+          const systemStatus = localStorage.getItem('systemStatus')
+          if (systemStatus !== 'idle') {
+            dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
+            return
+          }
+          localStorage.setItem('systemStatus', '更新本地数据 (HistoryItem.jsx -> editState -> save)')
+          const data = cloneDeep(history).map(i => {
+            if (i.time === item.time) {
+              return { ...i, title: inputRef.current.value || '' }
+            } else {
+              return i
+            }
           })
+          setHistory(data)
           setEdit(false)
+          set('historyMessages', data).then(() => localStorage.setItem('systemStatus', 'idle'))          
         }}      
       ><CheckOutlined /></button>
 
@@ -87,18 +103,7 @@ function HistoryItem({ time, title, itemMessages, updateHistory, clear }) {
   return edit ? editState : normalState
 }
 
-export default function History({ history, setHistory, clear }) {
-
-  /** 用来给子组件更新 history 的函数
-   * @param {function} callback 接受 history 作为参数, 返回新的 history
-   * @returns {void}
-   */
-  function updateHistory(callback) {
-    const temp = cloneDeep(history) || []
-    const newHistory = callback(temp)
-    setHistory(newHistory)
-    set('historyMessages', newHistory) // Promise
-  }
+export default function History({ history, setHistory, clear, dialogAction }) {
 
   // 渲染历史对话
   const historyItems = []
@@ -106,11 +111,11 @@ export default function History({ history, setHistory, clear }) {
     historyItems.push(
       <HistoryItem
         key={item.time}
-        time={item.time.toString()}
-        title={item.title || ''}
-        itemMessages={item.messages}
-        updateHistory={updateHistory}
+        item={item}
+        history={history}
+        setHistory={setHistory}
         clear={clear}
+        dialogAction={dialogAction}
       />
     )
   }  
@@ -128,12 +133,13 @@ History.propTypes = {
   history: PropTypes.array.isRequired,
   setHistory: PropTypes.func.isRequired,
   clear: PropTypes.func.isRequired,
+  dialogAction: PropTypes.func.isRequired,
 }
 
 HistoryItem.propTypes = {
-  time: PropTypes.string.isRequired,
-  title: PropTypes.string,
-  itemMessages: PropTypes.array.isRequired,
-  updateHistory: PropTypes.func.isRequired,
+  item: PropTypes.object.isRequired,
+  history: PropTypes.array.isRequired,
+  setHistory: PropTypes.func.isRequired,
   clear: PropTypes.func.isRequired,
+  dialogAction: PropTypes.func.isRequired,
 }

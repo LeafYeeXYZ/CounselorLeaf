@@ -3,8 +3,6 @@
   --header-height: 50px;
   --messages-height: calc(100dvh - var(--prompt-height) - var(--header-height));
   --sidebar-width: 300px;
-  --assistant-avatar: url('/avatar.jpg');
-  --user-avatar: #d0c0ff;
   
   --text: #ff7171;
   --text-hover: #ff4f4f;

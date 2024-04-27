@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { useState } from 'react'
 
-export default function NewChat({ messages, clear, duringChat, dialogAction }) {
+export default function NewChat({ current, clear, dialogAction }) {
 
   const [btn, setBtn] = useState(null)
 
@@ -10,7 +10,7 @@ export default function NewChat({ messages, clear, duringChat, dialogAction }) {
       className='prompt-clear'
       onClick={e => {
         e.preventDefault()
-        if (messages.length) {
+        if (current.messages.length) {
           setBtn(confireButton)
         }
       }}
@@ -25,12 +25,13 @@ export default function NewChat({ messages, clear, duringChat, dialogAction }) {
         className='prompt-clear-confirm'
         onClick={e => {
           e.preventDefault()
-          if (duringChat.current) {
-            dialogAction({ type: 'open', title: '请稍候', content: '请等待当前请求结束再开启新对话' })
+          const systemStatus = localStorage.getItem('systemStatus')
+          if (systemStatus !== 'idle') {
+            dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
             return
           }
-          // 更新历史对话
-          clear('', [])
+          // 更新历史对话, 创造新对话
+          clear()
           // 更换按钮
           setBtn(clearButton)
         }}      
@@ -49,8 +50,7 @@ export default function NewChat({ messages, clear, duringChat, dialogAction }) {
 }
 
 NewChat.propTypes = {
-  messages: PropTypes.array.isRequired,
+  current: PropTypes.object.isRequired,
   clear: PropTypes.func.isRequired,
-  duringChat: PropTypes.object.isRequired,
   dialogAction: PropTypes.func.isRequired,
 }

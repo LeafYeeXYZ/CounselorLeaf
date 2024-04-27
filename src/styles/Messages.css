@@ -10,6 +10,8 @@
   scrollbar-width: thin;
   scrollbar-color: var(--scroll-front) var(--scroll-back);
 
+  --avatar-gap: 0.7rem;
+
   & .message-assistant,
   & .message-user,
   & .message-loading {
@@ -17,8 +19,10 @@
     display: flex;
     align-items: normal;
     padding: 0.5rem 1rem;
+    gap: var(--avatar-gap);
+
     & .message-content {
-      max-width: calc(100% - 6rem);
+      max-width: calc(100% - 4rem - 2 * var(--avatar-gap));
       padding: 0.7rem 1rem;
       border-radius: 0.5rem;
       background-color: var(--back-lighter);
@@ -50,28 +54,21 @@
         background-color: var(--back-code);
       }
     }
-    &::after,
-    &::before {
-      content: '';
-      display: block;
-      width: 2rem;
-      height: 2rem;
-      border-radius: 50%;
-      margin-top: 0.5rem;
-      background-size: cover;
-      background-position: center;
-    }
   }
-  & .message-assistant::before {
-    margin-right: 1rem;
-    background-image: var(--assistant-avatar);
+  & .message-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    margin-top: 0.5rem;
+    background-size: cover;
+    background-position: center;
+  }
+
+  & .message-assistant {
+    justify-content: flex-start;
   }
   & .message-user {
     justify-content: flex-end;
-    &::after { 
-      background-color: var(--user-avatar);
-      margin-left: 1rem;
-    }
   }
   & .message-loading {
     justify-content: center;
