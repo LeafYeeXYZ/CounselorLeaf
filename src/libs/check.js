@@ -39,7 +39,7 @@ export default async function clearDB(targetVersion) {
   // 获取当前版本号
   const thisVersion = Number(localStorage.getItem('dbVersion')) || 0
   // 如果当前版本号不同于目标版本号则清空 IndexedDB
-  if (thisVersion !== targetVersion && thisVersion !== 0) {
+  if (thisVersion !== targetVersion) {
     const dbStatu = localStorage.getItem('dbStatu')
     if (dbStatu === 'readyToClear') {
       await clear()
@@ -47,10 +47,8 @@ export default async function clearDB(targetVersion) {
       localStorage.setItem('dbStatu', 'cleared')
     } else {
       localStorage.setItem('dbStatu', 'readyToClear')
-      return { type: 'open', title: '提示', content: '网站数据需要更新, 请保存重要数据，并刷新网页' }
+      return { type: 'open', title: '提示', content: '网站数据需要更新, 请保存重要数据后刷新网页; 在网页刷新前, 一些功能可能无法正常使用' }
     }
-  } else if (thisVersion === 0) {
-    localStorage.setItem('dbVersion', targetVersion)
   }
   return
 }
