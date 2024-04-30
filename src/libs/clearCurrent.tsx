@@ -1,19 +1,23 @@
 import { cloneDeep } from 'lodash-es'
 import { set } from 'idb-keyval'
+import { Message } from '../components/App.jsx'
 
-/**
- * 用于清除当前对话并保存到历史对话中
- * @returns {Function} clear
- */
-export default function clearCurrent({ current, setCurrent, history, setHistory }) {
+interface clearCurrentParams {
+  current: Message
+  setCurrent: React.Dispatch<React.SetStateAction<Message>>
+  history: Message[]
+  setHistory: React.Dispatch<React.SetStateAction<Message[]>>
+}
 
+export default function clearCurrent({ current, setCurrent, history, setHistory }: clearCurrentParams) {
   /**
    * 清除当前对话并保存到历史对话中  
    * 如果需要在历史对话中删除指定对话, 则传入对话的时间戳
-   * @param {string} deleteTime 要删除的对话的时间戳
-   * @param {array} newCurrent 新的对话内容
    */
-  function clear(deleteTime = '', newCurrent = { time: Date.now().toString(), title: '', messages: [] }) {
+  function clear(
+    deleteTime: string = '', 
+    newCurrent: Message = { time: Date.now().toString(), title: '', messages: [] }
+  ): void {
     const systemStatus = localStorage.getItem('systemStatus')
     if (systemStatus !== 'idle') {
       alert(`致命错误, 请确保在调用 clearCurrent.jsx -> clear() 时, 系统状态为 'idle', 当前系统状态为: ${systemStatus}`)

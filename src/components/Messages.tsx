@@ -1,9 +1,9 @@
 import '../styles/Messages.css'
-import PropTypes from 'prop-types'
 import { DEFAULT_MSG } from '../config.json'
 import { useEffect } from 'react'
 import { marked } from 'marked'
 import { get, set } from 'idb-keyval'
+import { Message } from './App.tsx'
 
 // 将头像以 base64 的形式保存在 idb-keyval 中
 let assistantAvatar = await get('assistantAvatar')
@@ -20,7 +20,7 @@ if (!assistantAvatar) {
 }
 
 // 随机颜色头像 (渐变色)
-function randomColor() {
+function randomColor(): string {
   const max = 240
   const min = 180
   const deg = `${Math.floor(Math.random() * 360)}deg`
@@ -29,11 +29,11 @@ function randomColor() {
   return `linear-gradient(${deg}, ${color()}, ${color()})`
 }
 
-export default function Messages({ current }) {
+export default function Messages({ current }: { current: Message }) {
 
   useEffect(() => {
     // 滚动到底部
-    const messagesContainer = document.querySelector('.messages-container')
+    const messagesContainer = document.querySelector('.messages-container')!
     messagesContainer.scrollTop = messagesContainer.scrollHeight
   }, [current.messages])
 
@@ -49,7 +49,7 @@ export default function Messages({ current }) {
       </div>
       {
         current.messages.map((message, index) => {
-          let msg = marked.parse(message.content)
+          let msg = marked.parse(message.content) as string
           msg.replace(/<br>/g, '<br />').replace(/<hr>/g, '<hr />')
           return (
             <div key={index} className={`message-${message.role}`}>
@@ -68,8 +68,4 @@ export default function Messages({ current }) {
       }
     </div>
   )
-}
-
-Messages.propTypes = {
-  current: PropTypes.object.isRequired,
 }

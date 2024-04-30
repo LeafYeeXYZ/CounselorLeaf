@@ -1,11 +1,19 @@
 import { forwardRef } from 'react'
 import '../styles/Dialog.css'
-import PropTypes from 'prop-types'
+import { DialogState, DialogAction } from '../libs/useDialog.tsx'
 
-function DialogComponent({ dialogState, dialogAction }, ref) {
+interface DialogProps {
+  dialogState: DialogState
+  dialogAction: React.Dispatch<DialogAction>
+}
+
+function DialogComponent(
+  { dialogState, dialogAction }: DialogProps,
+  ref: React.ForwardedRef<HTMLDialogElement>
+) {
   // 关闭对话框
   function closeDialog() {
-    dialogAction({ type: 'close' })
+    dialogAction({ type: 'close', title: '', content: '' })
   }
 
   return (
@@ -24,17 +32,5 @@ function DialogComponent({ dialogState, dialogAction }, ref) {
 }
 
 const Dialog = forwardRef(DialogComponent)
-
-DialogComponent.propTypes = {
-  dialogRef: PropTypes.shape({
-    current: PropTypes.instanceOf(Element),
-  }).isRequired,
-  dialogState: PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    content: PropTypes.string.isRequired,
-    ele: PropTypes.instanceOf(Element),
-  }).isRequired,
-  dialogAction: PropTypes.func.isRequired,
-}
 
 export default Dialog

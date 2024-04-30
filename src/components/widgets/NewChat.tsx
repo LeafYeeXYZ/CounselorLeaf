@@ -1,9 +1,16 @@
-import PropTypes from 'prop-types'
-import { useState } from 'react'
+import { ReactElement, useState } from 'react'
+import { Message } from '../App.tsx'
+import { DialogAction } from '../../libs/useDialog.tsx'
 
-export default function NewChat({ current, clear, dialogAction }) {
+interface NewChatProps {
+  current: Message
+  clear: () => void
+  dialogAction: React.Dispatch<DialogAction>
+}
 
-  const [btn, setBtn] = useState(null)
+export default function NewChat({ current, clear, dialogAction }: NewChatProps) {
+
+  const [btn, setBtn] = useState<ReactElement | null>(null)
 
   const clearButton = (
     <button
@@ -47,10 +54,4 @@ export default function NewChat({ current, clear, dialogAction }) {
   )
 
   return btn || clearButton
-}
-
-NewChat.propTypes = {
-  current: PropTypes.object.isRequired,
-  clear: PropTypes.func.isRequired,
-  dialogAction: PropTypes.func.isRequired,
 }

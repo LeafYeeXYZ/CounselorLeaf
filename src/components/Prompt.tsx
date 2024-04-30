@@ -1,19 +1,40 @@
 import '../styles/Prompt.css'
-import PropTypes from 'prop-types'
-import { useRef } from 'react'
+import React, { useRef } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { SERVER } from '../config.json'
 import { flushSync } from 'react-dom'
 import { set } from 'idb-keyval'
+import { Message } from './App.tsx'
+import { DialogAction } from '../libs/useDialog.tsx'
 
-export default function Prompt({ children, current, setCurrent, dialogAction }) {
+interface PromptProps {
+  children: React.ReactNode
+  current: Message
+  setCurrent: React.Dispatch<React.SetStateAction<Message>>
+  dialogAction: React.Dispatch<DialogAction>
+}
+
+class ErrorInfo {
+  title: string
+  message: string
+  self: boolean
+  
+  constructor(title: string, message: string) {
+    this.title = title
+    this.message = message
+    this.self = true
+  }
+}
+
+export default function Prompt({ children, current, setCurrent, dialogAction }: PromptProps) {
   // 引用元素
-  const submitRef = useRef(null)
-  const promptRef = useRef(null)
+  const submitRef = useRef<HTMLButtonElement>(null)
+  const promptRef = useRef<HTMLTextAreaElement>(null)
 
   // 点击生成按钮时的事件处理函数
-  async function handleSubmit(event) {
+  async function handleSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
+    if (submitRef.current || promptRef.current) return
     const systemStatus = localStorage.getItem('systemStatus')
     if (systemStatus !== 'idle') {
       dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
@@ -24,11 +45,11 @@ export default function Prompt({ children, current, setCurrent, dialogAction }) 
     try {
       localStorage.setItem('systemStatus', '小叶子组织语言')
       // 禁用按钮
-      submitRef.current.disabled = true
-      submitRef.current.textContent = '思考中...'
+      submitRef.current!.disabled = true
+      submitRef.current!.textContent = '思考中...'
       // 获取用户输入的提示词
-      const text = promptRef.current.value
-      if (!text) throw { title: '提示', message: '请输入对话内容', self: true }
+      const text = promptRef.current!.value
+      if (!text) throw new ErrorInfo('提示', '请输入对话内容')
       // 更新对话内容
       flushSync(() => setCurrent({ ...backup, messages: [...backup.messages, { role: 'user', content: text }, { role: 'loading', content: '思考中...' }] }))
       // 发送请求
@@ -40,23 +61,23 @@ export default function Prompt({ children, current, setCurrent, dialogAction }) 
         body: JSON.stringify({ messages: body })
       })
       const data = await res.json()
-      if (!data.success) throw { title: '生成失败', message: `Prompt -> handleSubmit -> ${data.message}`, self: true }
+      if (!data.success) throw new ErrorInfo('生成失败', `Prompt -> handleSubmit -> ${data.message}`)
       // 更新对话内容
-      const newCurrent = cloneDeep({
+      const newCurrent: Message = cloneDeep({
         time: backup.time,
         title: backup.title,
         messages: [...backup.messages, { role: 'user', content: text }, { role: 'assistant', content: data.result.response }]
       })
       setCurrent(newCurrent)
       // 删除输入框内容
-      promptRef.current.value = ''
+      promptRef.current!.value = ''
       set('currentMessages', newCurrent)
       .then(() => localStorage.setItem('systemStatus', 'idle'))
     } 
     catch (error) {
-      if (typeof error === 'object' && error.self) {
+      if (error instanceof ErrorInfo) {
         dialogAction({ type: 'open', title: error.title, content: error.message })
-      } else {
+      } else if (error instanceof Error) {
         dialogAction({ type: 'open', title: '生成失败', content: `Prompt -> handleSubmit -> ${error.name}: ${error.message}` })
       }
       // 恢复对话内容
@@ -65,8 +86,8 @@ export default function Prompt({ children, current, setCurrent, dialogAction }) 
     } 
     finally {
       // 启用按钮
-      submitRef.current.disabled = false
-      submitRef.current.textContent = '发送'
+      submitRef.current!.disabled = false
+      submitRef.current!.textContent = '发送'
     }
   }
 
@@ -90,11 +111,4 @@ export default function Prompt({ children, current, setCurrent, dialogAction }) 
 
     </form>
   )
-}
-
-Prompt.propTypes = {
-  children: PropTypes.element.isRequired,
-  current: PropTypes.object.isRequired,
-  setCurrent: PropTypes.func.isRequired,
-  dialogAction: PropTypes.func.isRequired,
 }

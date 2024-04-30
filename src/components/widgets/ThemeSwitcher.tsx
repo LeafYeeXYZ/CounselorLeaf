@@ -4,11 +4,11 @@ import { useState, useEffect, useRef } from 'react'
 
 export default function ThemeSwitcher() {
   // 主题按钮
-  const button = useRef(null)
+  const button = useRef<HTMLButtonElement>(null)
   // 设置主题切换按钮颜色
   const [themeBtnColor, setThemeBtnColor] = useState('#fff0f0')
   // 主题切换事件处理函数
-  const handleThemeChange = (checked) => {
+  const handleThemeChange = (checked: boolean) => {
     const htmlClasses = document.documentElement.classList
     if (checked) {
       setThemeBtnColor('#FFD700') // 设置为亮色
@@ -21,7 +21,7 @@ export default function ThemeSwitcher() {
   // 如果系统是暗色模式，则点一下按钮
   useEffect(() => {
     if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      button.current.click() 
+      button.current!.click()
     }
   }, [])
   // 渲染

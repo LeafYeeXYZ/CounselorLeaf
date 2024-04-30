@@ -1,16 +1,32 @@
-import PropTypes from 'prop-types'
 import '../styles/History.css'
 import { DeleteFilled, EditFilled, CheckOutlined, CloseOutlined } from '@ant-design/icons'
 import { cloneDeep } from 'lodash-es'
 import { useState, useRef } from 'react'
 import { set } from 'idb-keyval'
+import { DialogAction } from '../libs/useDialog.tsx'
+import { Message } from './App.tsx'
 
-function HistoryItem({ item, history, setHistory, clear, dialogAction }) {
+interface HistoryItemProps {
+  item: Message
+  history: Message[]
+  setHistory: React.Dispatch<React.SetStateAction<Message[]>>
+  clear: (time: string, item: Message) => void
+  dialogAction: React.Dispatch<DialogAction>
+}
+
+interface HistoryProps {
+  history: Message[]
+  setHistory: React.Dispatch<React.SetStateAction<Message[]>>
+  clear: (time: string, item: Message) => void
+  dialogAction: React.Dispatch<DialogAction>
+}
+
+function HistoryItem({ item, history, setHistory, clear, dialogAction }: HistoryItemProps) {
   // 用于切换编辑状态
   const [edit, setEdit] = useState(false)
   // 引用
-  const inputRef = useRef(null)
-  const titleRef = useRef(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const titleRef = useRef<HTMLButtonElement>(null)
   // 初始对话内容
   const backup = cloneDeep(item)
   // 一般状态的组件
@@ -27,12 +43,13 @@ function HistoryItem({ item, history, setHistory, clear, dialogAction }) {
             return
           }
           // 禁用标题输入框
-          titleRef.current.disabled = true
+          titleRef.current!.disabled = true
           // 将当前对话保存到历史对话中, 并清空当前对话
           clear(backup.time, backup)
           // 如果是手机端, 点一下侧边栏按钮
           if (window.innerWidth <= 768) {
-            document.querySelector('.sidebar-switcher').click()
+            const sidebarSwitcher: HTMLButtonElement | null = document.querySelector('.sidebar-switcher')
+            sidebarSwitcher && sidebarSwitcher.click()
           } 
           // 启用标题输入框 (不需要, 因为页面会刷新)
           // titleRef.current.disabled = false        
@@ -80,7 +97,7 @@ function HistoryItem({ item, history, setHistory, clear, dialogAction }) {
           localStorage.setItem('systemStatus', '更新本地数据 (HistoryItem.jsx -> editState -> save)')
           const data = cloneDeep(history).map(i => {
             if (i.time === item.time) {
-              return { ...i, title: inputRef.current.value || '' }
+              return { ...i, title: inputRef.current!.value || '' }
             } else {
               return i
             }
@@ -103,7 +120,7 @@ function HistoryItem({ item, history, setHistory, clear, dialogAction }) {
   return edit ? editState : normalState
 }
 
-export default function History({ history, setHistory, clear, dialogAction }) {
+export default function History({ history, setHistory, clear, dialogAction }: HistoryProps) {
 
   // 渲染历史对话
   const historyItems = []
@@ -127,19 +144,4 @@ export default function History({ history, setHistory, clear, dialogAction }) {
       <div className='history-note'>开启新对话时会自动保存</div>
     </>
   )
-}
-
-History.propTypes = {
-  history: PropTypes.array.isRequired,
-  setHistory: PropTypes.func.isRequired,
-  clear: PropTypes.func.isRequired,
-  dialogAction: PropTypes.func.isRequired,
-}
-
-HistoryItem.propTypes = {
-  item: PropTypes.object.isRequired,
-  history: PropTypes.array.isRequired,
-  setHistory: PropTypes.func.isRequired,
-  clear: PropTypes.func.isRequired,
-  dialogAction: PropTypes.func.isRequired,
 }
