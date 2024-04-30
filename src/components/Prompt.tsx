@@ -34,7 +34,6 @@ export default function Prompt({ children, current, setCurrent, dialogAction }: 
   // 点击生成按钮时的事件处理函数
   async function handleSubmit(event: React.MouseEvent<HTMLButtonElement>) {
     event.preventDefault()
-    if (submitRef.current || promptRef.current) return
     const systemStatus = localStorage.getItem('systemStatus')
     if (systemStatus !== 'idle') {
       dialogAction({ type: 'open', title: '请稍候', content: `请等待${systemStatus}完成后重试` })
