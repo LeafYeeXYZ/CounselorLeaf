@@ -1,11 +1,12 @@
 import '../styles/Prompt.css'
-import React, { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { cloneDeep } from 'lodash-es'
 import { SERVER } from '../config.json'
 import { flushSync } from 'react-dom'
 import { set } from 'idb-keyval'
 import { Message } from './App.tsx'
 import { DialogAction } from '../libs/useDialog.tsx'
+import { LoadingOutlined } from '@ant-design/icons'
 
 interface PromptProps {
   children: React.ReactNode
@@ -28,7 +29,8 @@ class ErrorInfo {
 
 export default function Prompt({ children, current, setCurrent, dialogAction }: PromptProps) {
   // 引用元素
-  const submitRef = useRef<HTMLButtonElement>(null)
+  const [submitContent, setSubmitContent] = useState<React.JSX.Element | null>(null)
+  // const submitRef = useRef<HTMLButtonElement>(null)
   const promptRef = useRef<HTMLTextAreaElement>(null)
 
   // 点击生成按钮时的事件处理函数
@@ -44,8 +46,7 @@ export default function Prompt({ children, current, setCurrent, dialogAction }: 
     try {
       localStorage.setItem('systemStatus', '小叶子组织语言')
       // 禁用按钮
-      submitRef.current!.disabled = true
-      submitRef.current!.textContent = '思考中...'
+      setSubmitContent(<span>思考中 <LoadingOutlined /></span>)
       // 获取用户输入的提示词
       const text = promptRef.current!.value
       if (!text) throw new ErrorInfo('提示', '请输入对话内容')
@@ -85,8 +86,7 @@ export default function Prompt({ children, current, setCurrent, dialogAction }: 
     } 
     finally {
       // 启用按钮
-      submitRef.current!.disabled = false
-      submitRef.current!.textContent = '发送'
+      setSubmitContent(null)
     }
   }
 
@@ -104,9 +104,9 @@ export default function Prompt({ children, current, setCurrent, dialogAction }: 
 
       <button 
         className='prompt-submit'
-        ref={submitRef}
+        disabled={submitContent !== null}
         onClick={handleSubmit}
-      >发送</button>
+      >{submitContent ?? '发送'}</button>
 
     </form>
   )
