@@ -25,12 +25,3 @@ export type Chat = {
 export type LoadChat = () => Promise<Chat[]>
 export type SaveChat = (chat: Chat) => Promise<void>
 export type DeleteChat = (uuid: string) => Promise<void>
-
-export type API = {
-  speak: SpeakApi
-  chat: ChatApi
-  loadLive2d: LoadLive2d
-  loadChat: LoadChat
-  saveChat: SaveChat
-  deleteChat: DeleteChat
-}
