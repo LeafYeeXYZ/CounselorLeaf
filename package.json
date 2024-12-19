@@ -1,18 +1,20 @@
 {
-  "name": "counselor-leaf",
+  "name": "cyber-leaf",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "d": "bunx tauri dev",
+    "b": "bunx tauri build"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@tauri-apps/plugin-store": "~2",
     "antd": "^5.22.5",
-    "idb-keyval": "^6.2.1",
     "oh-my-live2d": "^0.19.3",
     "ollama": "^0.5.11",
     "react": "^19.0.0",
@@ -21,6 +23,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
+    "@tauri-apps/cli": "^2.1.0",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react-swc": "^3.7.2",

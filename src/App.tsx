@@ -4,7 +4,7 @@ import { History } from './components/History.tsx'
 import { Config } from './components/Config'
 import { useStates } from './lib/useStates.ts'
 import { useApi } from './lib/useApi.ts'
-import { Segmented } from 'antd'
+import { Segmented, message } from 'antd'
 import { SettingOutlined, BookOutlined, CommentOutlined } from '@ant-design/icons'
 
 const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: boolean }[] = [
@@ -15,7 +15,7 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 
 export default function App() {
 
-  const { setLive2d } = useStates()
+  const { setLive2d, setMessageApi } = useStates()
   const { loadLive2d } = useApi()
   useEffect(() => {
     const live2d = loadLive2d(document.getElementById('live2d')!)
@@ -24,6 +24,11 @@ export default function App() {
       document.getElementById('live2d')!.innerHTML = ''
     }
   }, [setLive2d, loadLive2d])
+  const [messageApi, messageElement] = message.useMessage()
+  useEffect(() => {
+    setMessageApi(messageApi)
+  }, [messageApi, setMessageApi])
+
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
 
   return (
@@ -39,6 +44,7 @@ export default function App() {
           onChange={(value) => setPage(PAGES.find(({ label }) => label === value)!.element)}
         />
       </nav>
+      {messageElement}
       <div id='live2d' className='-z-50 w-0 h-0 fixed top-0 left-0'></div>
     </main>
   )

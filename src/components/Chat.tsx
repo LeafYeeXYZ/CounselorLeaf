@@ -13,7 +13,7 @@ interface FormValues {
 export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
-  const { disabled, setDisabled, live2d, currentChat, setCurrentChat } = useStates()
+  const { disabled, setDisabled, live2d, currentChat, setCurrentChat, messageApi } = useStates()
   const { chat, currentLive2d } = useApi()
   const chatRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -23,54 +23,58 @@ export function Chat() {
   }, [currentChat.messages])
 
   const onFinish = async (values: FormValues) => {
-    // TODO: 语音
-    const { text } = values
-    const input = [...clone(currentChat.messages), { role: 'user', content: text }]
-    flushSync(() => setCurrentChat({ ...currentChat, messages: input }))
-    const answer = await chat(input)
-    let response = ''
-    let current = ''
-    let buffer = ''
-    live2d?.clearTips()
-    for await (const chunk of answer) {
-      const text = chunk.response ?? ''
-      buffer += text
-      response += text
-      const splited = buffer.split(/。|？|！|,|，|;|；/).filter((s) => s.length !== 0)
-      if (splited.length > 1) {
-        for (const s of splited.slice(0, -1)) {
-          let words = ''
-          for (const w of s) {
-            current += w
-            flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+    try {
+      // TODO: 语音
+      const { text } = values
+      const input = [...clone(currentChat.messages), { role: 'user', content: text }]
+      flushSync(() => setCurrentChat({ ...currentChat, messages: input }))
+      const answer = await chat(input)
+      let response = ''
+      let current = ''
+      let buffer = ''
+      live2d?.clearTips()
+      for await (const chunk of answer) {
+        const text = chunk.response ?? ''
+        buffer += text
+        response += text
+        const splited = buffer.split(/。|？|！|,|，|;|；/).filter((s) => s.length !== 0)
+        if (splited.length > 1) {
+          for (const s of splited.slice(0, -1)) {
+            let words = ''
+            for (const w of s) {
+              current += w
+              flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+              words += w
+              live2d?.tipsMessage(words, 10000, Date.now())
+              await sleep(30)
+            }
+            const comma = response[current.length]
+            if (comma.match(/。|？|！|,|，|;|；/)) {
+              current += comma
+              flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+              await sleep(30)
+            }
+            await sleep(1000) // 每个句子之间的间隔
+          }
+          buffer = splited[splited.length - 1]
+        }
+      }
+      if (buffer.length !== 0) {
+        let words = ''
+        for (const w of buffer) {
+          current += w
+          flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+          if (!w.match(/。|？|！|,|，|;|；/)) {
             words += w
-            live2d?.tipsMessage(words, 10000, Date.now())
-            await sleep(30)
           }
-          const comma = response[current.length]
-          if (comma.match(/。|？|！|,|，|;|；/)) {
-            current += comma
-            flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
-            await sleep(30)
-          }
-          await sleep(1000) // 每个句子之间的间隔
+          live2d?.tipsMessage(words, 2000, Date.now())
+          await sleep(30)
         }
-        buffer = splited[splited.length - 1]
       }
+      setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: response }] })
+    } catch (error) {
+      messageApi?.error(error instanceof Error ? error.message : '未知错误')
     }
-    if (buffer.length !== 0) {
-      let words = ''
-      for (const w of buffer) {
-        current += w
-        flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
-        if (!w.match(/。|？|！|,|，|;|；/)) {
-          words += w
-        }
-        live2d?.tipsMessage(words, 2000, Date.now())
-        await sleep(30)
-      }
-    }
-    setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: response }] })
   }
 
   return (

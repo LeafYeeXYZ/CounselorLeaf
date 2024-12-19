@@ -31,7 +31,7 @@ export const catBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const blueBoy: LoadLive2d = (element) => {
+export const foxBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -43,9 +43,9 @@ export const blueBoy: LoadLive2d = (element) => {
       idleTips: { message: [] },
     },
     models: [{
-      path: '/live2d/blue-boy/Estella2.0 Belongs_to_DG_STUDIO.model3.json',
-      position: [200, 500],
-      scale: 0.16,
+      path: '/live2d/fox-boy/hlxz.model3.json',
+      scale: 0.08,
+      position: [0, 70],
     }],
   })
   return live2d

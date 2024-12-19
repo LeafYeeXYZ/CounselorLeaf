@@ -17,7 +17,3 @@ export type Chat = {
   title: string
   messages: { role: string, content: string }[]
 }
-
-export type LoadChat = () => Promise<Chat[]>
-export type SaveChat = (chat: Chat) => Promise<void>
-export type DeleteChat = (uuid: string) => Promise<void>
