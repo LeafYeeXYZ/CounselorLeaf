@@ -14,7 +14,7 @@ export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
   const { disabled, setDisabled, live2d, currentChat, setCurrentChat } = useStates()
-  const { chat } = useApi()
+  const { chat, currentLive2d } = useApi()
   const chatRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (chatRef.current) {
@@ -63,7 +63,9 @@ export function Chat() {
       for (const w of buffer) {
         current += w
         flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
-        words += w
+        if (!w.match(/。|？|！|,|，|;|；/)) {
+          words += w
+        }
         live2d?.tipsMessage(words, 2000, Date.now())
         await sleep(30)
       }
@@ -74,7 +76,7 @@ export function Chat() {
   return (
     <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
-        className='w-full overflow-auto p-6 pb-2 bg-white rounded-md border border-yellow-950'
+        className='w-full overflow-auto p-6 pb-2 rounded-md border border-yellow-950'
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
@@ -116,7 +118,7 @@ export function Chat() {
                     {currentChat.messages.map(({ role, content }, index) => (
                       <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
                         <div className='w-full text-sm font-bold'>
-                          {role === 'user' ? '我' : '他'}
+                          {role === 'user' ? '我' : currentLive2d}
                         </div>
                         <div className='w-full text-sm'>
                           {content}

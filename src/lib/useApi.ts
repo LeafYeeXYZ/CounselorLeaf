@@ -10,7 +10,8 @@ import {
   speak as speak_browser,
 } from './api.browser.ts'
 import {
-  xyz as live2d_xyz,
+  catBoy as live2d_cat,
+  blueBoy as live2d_blue,
 } from './api.live2d.ts'
 
 type API = {
@@ -23,18 +24,18 @@ type API = {
 }
 
 type ApiState = {
-  getSpeakApiList: () => string[]
-  getStoreApiList: () => string[]
-  getChatApiList: () => string[]
-  getLive2dList: () => string[]
+  speakApiList: string[]
+  storeApiList: string[]
+  chatApiList: string[]
+  live2dList: string[]
   setSpeakApi: (name: string) => void
   setStoreApi: (name: string) => void
   setChatApi: (name: string) => void
   setLive2d: (name: string) => void
-  getCurrentSpeakApi: () => string
-  getCurrentStoreApi: () => string
-  getCurrentChatApi: () => string
-  getCurrentLive2d: () => string
+  currentSpeakApi: string
+  currentStoreApi: string
+  currentChatApi: string
+  currentLive2d: string
 } & API
 
 const speakApiList: { name: string, api: SpeakApi | null }[] = [
@@ -48,38 +49,49 @@ const chatApiList: { name: string, api: ChatApi }[] = [
   { name: 'Ollama', api: chat_ollama },
 ]
 const live2dList: { name: string, api: LoadLive2d }[] = [
-  { name: '小叶子', api: live2d_xyz },
+  { name: '猫猫小叶子', api: live2d_cat },
+  { name: '校园小叶子', api: live2d_blue },
 ]
 
-export const useApi = create<ApiState>()((set, get) => ({
-  speak: speakApiList[0].api,
-  loadChat: storeApiList[0].load,
-  saveChat: storeApiList[0].save,
-  deleteChat: storeApiList[0].delete,
-  chat: chatApiList[0].api,
-  loadLive2d: live2dList[0].api,
-  getSpeakApiList: () => speakApiList.map(({ name }) => name),
-  getStoreApiList: () => storeApiList.map(({ name }) => name),
-  getChatApiList: () => chatApiList.map(({ name }) => name),
-  getLive2dList: () => live2dList.map(({ name }) => name),
-  setSpeakApi: (name) => {
-    const api = speakApiList.find(api => api.name === name)?.api
-    if (api) set({ speak: api })
-  },
-  setStoreApi: (name) => {
-    const api = storeApiList.find(api => api.name === name)
-    if (api) set({ loadChat: api.load, saveChat: api.save, deleteChat: api.delete })
-  },
-  setChatApi: (name) => {
-    const api = chatApiList.find(api => api.name === name)?.api
-    if (api) set({ chat: api })
-  },
-  setLive2d: (name) => {
-    const api = live2dList.find(api => api.name === name)?.api
-    if (api) set({ loadLive2d: api })
-  },  
-  getCurrentSpeakApi: () => speakApiList.find(({ api }) => api === get().speak)!.name,
-  getCurrentStoreApi: () => storeApiList.find(({ load }) => load === get().loadChat)!.name,
-  getCurrentChatApi: () => chatApiList.find(({ api }) => api === get().chat)!.name,
-  getCurrentLive2d: () => live2dList.find(({ api }) => api === get().loadLive2d)!.name,
-}))
+export const useApi = create<ApiState>()((set) => {
+  const localSpeakApi = localStorage.getItem('speakApi')
+  const localStoreApi = localStorage.getItem('storeApi')
+  const localChatApi = localStorage.getItem('chatApi')
+  const localLive2d = localStorage.getItem('live2d')
+  const defaultSpeakApi = speakApiList.find(({ name }) => name === localSpeakApi) ?? speakApiList[0]
+  const defaultStoreApi = storeApiList.find(({ name }) => name === localStoreApi) ?? storeApiList[0]
+  const defaultChatApi = chatApiList.find(({ name }) => name === localChatApi) ?? chatApiList[0]
+  const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? live2dList[0]
+  return {
+    speak: defaultSpeakApi.api,
+    loadChat: defaultStoreApi.load,
+    saveChat: defaultStoreApi.save,
+    deleteChat: defaultStoreApi.delete,
+    chat: defaultChatApi.api,
+    loadLive2d: defaultLive2d.api,
+    speakApiList: speakApiList.map(({ name }) => name),
+    storeApiList: storeApiList.map(({ name }) => name),
+    chatApiList: chatApiList.map(({ name }) => name),
+    live2dList: live2dList.map(({ name }) => name),
+    setSpeakApi: (name) => {
+      const item = speakApiList.find(api => api.name === name)
+      if (item) set({ speak: item.api, currentSpeakApi: name })
+    },
+    setStoreApi: (name) => {
+      const item = storeApiList.find(api => api.name === name)
+      if (item) set({ loadChat: item.load, saveChat: item.save, deleteChat: item.delete, currentStoreApi: name })
+    },
+    setChatApi: (name) => {
+      const item = chatApiList.find(api => api.name === name)
+      if (item) set({ chat: item.api, currentChatApi: name })
+    },
+    setLive2d: (name) => {
+      const item = live2dList.find(api => api.name === name)
+      if (item) set({ loadLive2d: item.api, currentLive2d: name })
+    },
+    currentSpeakApi: defaultSpeakApi.name,
+    currentStoreApi: defaultStoreApi.name,
+    currentChatApi: defaultChatApi.name,
+    currentLive2d: defaultLive2d.name,
+  }
+})

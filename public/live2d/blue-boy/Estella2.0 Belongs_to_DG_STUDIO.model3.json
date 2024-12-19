@@ -1,0 +1,28 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Estella2.0 Belongs_to_DG_STUDIO.moc3",
+		"Textures": [
+			"Estella2.0 Belongs_to_DG_STUDIO.8192/texture_00.png"
+		],
+		"Physics": "Estella2.0 Belongs_to_DG_STUDIO.physics3.json",
+		"DisplayInfo": "Estella2.0 Belongs_to_DG_STUDIO.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamMouthOpenY"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		}
+	]
+}

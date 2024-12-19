@@ -20,11 +20,14 @@ export default function App() {
   useEffect(() => {
     const live2d = loadLive2d(document.getElementById('live2d')!)
     setLive2d(live2d)
+    return () => {
+      document.getElementById('live2d')!.innerHTML = ''
+    }
   }, [setLive2d, loadLive2d])
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
 
   return (
-    <main className='w-dvw h-dvh overflow-hidden flex flex-col justify-center items-center bg-yellow-50'>
+    <main className='w-dvw h-dvh overflow-hidden flex flex-col justify-center items-center'>
       <div className='w-full max-w-sm overflow-hidden flex flex-col justify-center items-center'>
         {page}
       </div>
@@ -36,7 +39,7 @@ export default function App() {
           onChange={(value) => setPage(PAGES.find(({ label }) => label === value)!.element)}
         />
       </nav>
-      <div id='live2d' className='w-0 h-0 fixed top-0 left-0'></div>
+      <div id='live2d' className='-z-50 w-0 h-0 fixed top-0 left-0'></div>
     </main>
   )
 }

@@ -1,7 +1,12 @@
 import { loadOml2d } from 'oh-my-live2d'
 import type { LoadLive2d } from './types.ts'
 
-export const xyz: LoadLive2d = (element) => {
+// 1. 对话框的样式自定义异常
+// 2. 要是上面那个不好修也可以加个 onMessage 事件, 来手动渲染对话框
+// 3. 要是实例原生有个 destroy 方法就好了
+// 4. 模型没能定位到 parentElement 上
+
+export const catBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -21,6 +26,26 @@ export const xyz: LoadLive2d = (element) => {
       scale: 0.08,
       // 用来临时替代上面的属性的方案
       position: [0, 70],
+    }],
+  })
+  return live2d
+}
+
+export const blueBoy: LoadLive2d = (element) => {
+  const live2d = loadOml2d({
+    parentElement: element,
+    dockedPosition: 'right',
+    mobileDisplay: true,
+    menus: { disable: true },
+    sayHello: false,
+    tips: {
+      copyTips: { message: [] },
+      idleTips: { message: [] },
+    },
+    models: [{
+      path: '/live2d/blue-boy/Estella2.0 Belongs_to_DG_STUDIO.model3.json',
+      position: [200, 500],
+      scale: 0.16,
     }],
   })
   return live2d
