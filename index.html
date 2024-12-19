@@ -2,12 +2,53 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <title>见习咨询师小叶子</title>
+    <title>赛博小叶子</title>
+    <link rel="icon" href="/favicon.ico" />
+    <script defer type="module" src="./src/main.tsx"></script>
   </head>
-  <body>
+  <body style="overflow: hidden;">
+    <style id="loading-style">
+      #loading-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100dvw;
+        height: 100dvh;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
+      #loading-animation {
+        display: inline-block;
+        width: 1em;
+        height: 1em;
+        border-radius: 50%;
+        border: 0.1em solid currentColor;
+        border-top-color: transparent;
+        animation: loading 0.6s infinite linear;
+        margin-left: 0.3rem;
+      }
+      @keyframes loading {
+        to {
+          transform: rotate(1turn);
+        }
+      }
+    </style>
+    <div id="loading-content">
+      <span style="font-size: 1.2rem;">加载中</span>
+      <span id="loading-animation"></span>
+    </div>
+    <script id="loading-script">
+      window.onload = () => {
+        const loadingStyle = document.getElementById('loading-style')
+        const loadingContent = document.getElementById('loading-content')
+        const loadingScript = document.getElementById('loading-script')
+        loadingStyle?.remove()
+        loadingContent?.remove()
+        loadingScript?.remove()
+      }
+    </script>
     <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

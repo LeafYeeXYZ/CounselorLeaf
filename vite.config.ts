@@ -1,17 +1,10 @@
 import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import react from '@vitejs/plugin-react-swc'
 
-// https://vitejs.dev/config/
+// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   build: {
-    target: ['chrome108', 'edge108', 'firefox101', 'safari15.4'],
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          antd: ['antd', '@ant-design/icons'],
-        },
-      },
-    },
+    target: 'esnext',
   },
 })
