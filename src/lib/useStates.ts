@@ -1,27 +1,24 @@
-import type { Live2dApi } from './types.ts'
 import { create } from 'zustand'
+import { uuid } from './utils.ts'
+import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
+import type { Chat } from './types.ts'
 
-type Message = {
-  role: string
-  content: string
-}
-
-type State = {
+type GlobalState = {
   disabled: boolean
   setDisabled: (disabled: boolean) => void
-  live2d: Live2dApi | null
-  setLive2d: (live2d: Live2dApi | null) => void
-  messages: Message[]
-  setMessages: (messages: Message[]) => void
-  updateMessages: (updater: (old: Message[]) => Message[]) => void
+  live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null
+  setLive2d: (live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null) => void
+  currentChat: Chat
+  setCurrentChat: (currentChat: Chat) => void
+  updateCurrentChat: (updater: (currentChat: Chat) => Chat) => void
 }
 
-export const useStates = create<State>()((set) => ({
+export const useStates = create<GlobalState>()((set) => ({
   disabled: false,
   setDisabled: (disabled) => set({ disabled }),
   live2d: null,
   setLive2d: (live2d) => set({ live2d }),
-  messages: [],
-  setMessages: (messages) => set({ messages }),
-  updateMessages: (updater) => set((state) => ({ messages: updater(state.messages) })),
+  currentChat: { uuid: uuid(), title: '', messages: [] },
+  setCurrentChat: (currentChat) => set({ currentChat }),
+  updateCurrentChat: (updater) => set((state) => ({ currentChat: updater(state.currentChat) })),
 }))

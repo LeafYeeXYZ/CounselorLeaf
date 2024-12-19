@@ -10,19 +10,19 @@ import {
   speak as speak_browser,
 } from './api.browser.ts'
 import {
-  cat as live2d_cat,
+  xyz as live2d_xyz,
 } from './api.live2d.ts'
 
 type API = {
   chat: ChatApi
-  speak: SpeakApi
+  speak: SpeakApi | null
   loadLive2d: LoadLive2d
   loadChat: LoadChat
   saveChat: SaveChat
   deleteChat: DeleteChat
 }
 
-type State = {
+type ApiState = {
   getSpeakApiList: () => string[]
   getStoreApiList: () => string[]
   getChatApiList: () => string[]
@@ -31,9 +31,14 @@ type State = {
   setStoreApi: (name: string) => void
   setChatApi: (name: string) => void
   setLive2d: (name: string) => void
+  getCurrentSpeakApi: () => string
+  getCurrentStoreApi: () => string
+  getCurrentChatApi: () => string
+  getCurrentLive2d: () => string
 } & API
 
-const speakApiList: { name: string, api: SpeakApi }[] = [
+const speakApiList: { name: string, api: SpeakApi | null }[] = [
+  { name: '关闭', api: null },
   { name: 'Web Speech API', api: speak_browser },
 ]
 const storeApiList: { name: string, load: LoadChat, save: SaveChat, delete: DeleteChat }[] = [
@@ -43,10 +48,10 @@ const chatApiList: { name: string, api: ChatApi }[] = [
   { name: 'Ollama', api: chat_ollama },
 ]
 const live2dList: { name: string, api: LoadLive2d }[] = [
-  { name: 'Cat', api: live2d_cat },
+  { name: '小叶子', api: live2d_xyz },
 ]
 
-export const useApi = create<State>()((set) => ({
+export const useApi = create<ApiState>()((set, get) => ({
   speak: speakApiList[0].api,
   loadChat: storeApiList[0].load,
   saveChat: storeApiList[0].save,
@@ -73,4 +78,8 @@ export const useApi = create<State>()((set) => ({
     const api = live2dList.find(api => api.name === name)?.api
     if (api) set({ loadLive2d: api })
   },  
+  getCurrentSpeakApi: () => speakApiList.find(({ api }) => api === get().speak)!.name,
+  getCurrentStoreApi: () => storeApiList.find(({ load }) => load === get().loadChat)!.name,
+  getCurrentChatApi: () => chatApiList.find(({ api }) => api === get().chat)!.name,
+  getCurrentLive2d: () => live2dList.find(({ api }) => api === get().loadLive2d)!.name,
 }))

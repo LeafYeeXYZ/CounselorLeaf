@@ -1,7 +1,7 @@
 import { loadOml2d } from 'oh-my-live2d'
 import type { LoadLive2d } from './types.ts'
 
-export const cat: LoadLive2d = (element) => {
+export const xyz: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -9,22 +9,19 @@ export const cat: LoadLive2d = (element) => {
     menus: { disable: true },
     sayHello: false,
     tips: {
-      style: {
-        minWidth: '200px',
-      }
+      copyTips: { message: [] },
+      idleTips: { message: [] },
+      // BUG: 加了这个属性就会导致对话框无法显示
+      // style: {
+      //   top: 'calc(100%-680px)',
+      // },
     },
-    models: [
-      {
-        path: 'https://model.oml2d.com/cat-white/model.json',
-        position: [0, 20],
-      }
-    ],
+    models: [{
+      path: '/live2d/cat-boy/白猫正太.model3.json',
+      scale: 0.08,
+      // 用来临时替代上面的属性的方案
+      position: [0, 70],
+    }],
   })
-  return {
-    stop: () => live2d.clearTips(),
-    say: (text: string) => live2d.tipsMessage(text, 10000, Date.now()),
-    remove: () => { 
-      element.innerHTML = '' 
-    },
-  }
+  return live2d
 }

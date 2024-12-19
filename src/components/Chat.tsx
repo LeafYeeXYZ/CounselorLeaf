@@ -1,43 +1,37 @@
-import { useState, useEffect, useRef } from 'react'
 import { flushSync } from 'react-dom'
-import { Button, Form, Select, Input, Collapse } from 'antd'
-import type { Live2dApi } from '../lib/types.ts'
-import { uuid } from '../lib/utils.ts'
+import { useRef, useEffect } from 'react'
+import { Button, Form, Input, Collapse } from 'antd'
+import { FileDoneOutlined, MessageOutlined } from '@ant-design/icons'
+import { useApi } from '../lib/useApi.ts'
+import { useStates } from '../lib/useStates.ts'
+import { sleep, clone } from '../lib/utils.ts'
 
 interface FormValues {
   text: string
-  voice: boolean
 }
 
 export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
-  const [disabled, setDisabled] = useState(true)
-  const [live2d, setLive2d] = useState<Live2dApi | null>(null)
-
-  const [messages, setMessages] = useState<{ role: string, content: string }[]>([])
+  const { disabled, setDisabled, live2d, currentChat, setCurrentChat } = useStates()
+  const { chat } = useApi()
+  const chatRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
-    api.loadChat().then(chats => {
-      const chat = chats[0]
-      chat && setMessages(chat.messages)
-    })
-  }, [])
-  const container = useRef<HTMLDivElement>(null)
-  useEffect(() => {
-    if (container.current) {
-      container.current.scrollTop = container.current.scrollHeight
+    if (chatRef.current) {
+      chatRef.current.scrollTop = chatRef.current.scrollHeight
     }
-  }, [messages])
+  }, [currentChat.messages])
 
   const onFinish = async (values: FormValues) => {
-    const { text, voice } = values
-    const newMessages = [...messages, { role: 'user', content: text }]
-    flushSync(() => setMessages(newMessages))
-    const answer = await api.chat(newMessages)
+    // TODO: 语音
+    const { text } = values
+    const input = [...clone(currentChat.messages), { role: 'user', content: text }]
+    flushSync(() => setCurrentChat({ ...currentChat, messages: input }))
+    const answer = await chat(input)
     let response = ''
     let current = ''
     let buffer = ''
-    live2d?.stop()
+    live2d?.clearTips()
     for await (const chunk of answer) {
       const text = chunk.response ?? ''
       buffer += text
@@ -45,53 +39,42 @@ export function Chat() {
       const splited = buffer.split(/。|？|！|,|，|;|；/).filter((s) => s.length !== 0)
       if (splited.length > 1) {
         for (const s of splited.slice(0, -1)) {
+          let words = ''
           for (const w of s) {
-            flushSync(() => setMessages([...newMessages, { role: 'assistant', content: current + w }]))
             current += w
-            await new Promise((resolve) => setTimeout(resolve, 30))
+            flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+            words += w
+            live2d?.tipsMessage(words, 10000, Date.now())
+            await sleep(30)
           }
           const comma = response[current.length]
           if (comma.match(/。|？|！|,|，|;|；/)) {
-            flushSync(() => setMessages([...newMessages, { role: 'assistant', content: current + comma }]))
             current += comma
-            await new Promise((resolve) => setTimeout(resolve, 30))
+            flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+            await sleep(30)
           }
-          live2d?.say(s)
-          voice && await api.speak(s)
+          await sleep(1000) // 每个句子之间的间隔
         }
         buffer = splited[splited.length - 1]
       }
     }
     if (buffer.length !== 0) {
+      let words = ''
       for (const w of buffer) {
-        flushSync(() => setMessages([...newMessages, { role: 'assistant', content: current + w }]))
         current += w
-        await new Promise((resolve) => setTimeout(resolve, 30))
+        flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+        words += w
+        live2d?.tipsMessage(words, 2000, Date.now())
+        await sleep(30)
       }
-      live2d?.say(buffer)
-      voice && await api.speak(buffer)
     }
-    const resultMessages = [...newMessages, { role: 'assistant', content: response }]
-    setMessages(resultMessages)
-    await api.saveChat({ uuid: uuid(), title: '对话', messages: resultMessages })
-    live2d?.stop()
+    setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: response }] })
   }
 
-  useEffect(() => {
-    const live2d = api.loadLive2d(document.getElementById('live2d')!)
-    setLive2d(live2d)
-    setDisabled(false)
-    return () => {
-      live2d.remove()
-      setLive2d(null)
-      setDisabled(true)
-    }
-  }, [])
-
   return (
-    <main className='w-dvw h-dvh overflow-hidden flex flex-row justify-center items-center bg-yellow-50'>
+    <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
-        className='max-w-md w-full overflow-auto p-6 pb-2 bg-white rounded-md border border-yellow-950'
+        className='w-full overflow-auto p-6 pb-2 bg-white rounded-md border border-yellow-950'
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
@@ -102,21 +85,8 @@ export function Chat() {
         disabled={disabled}
         initialValues={{
           text: '你好!',
-          voice: true,
         }}
       >
-        <Form.Item
-          label='语音'
-          name='voice'
-          rules={[{ required: true, message: '请选择是否开启语音' }]}
-        >
-          <Select
-            options={[
-              { label: '开启', value: true },
-              { label: '关闭', value: false },
-            ]}
-          />
-        </Form.Item>
         <Form.Item
           label='输入'
           name='text'
@@ -124,34 +94,42 @@ export function Chat() {
         >
           <Input.TextArea />
         </Form.Item>
+        <Form.Item >
+          <div className='grid grid-cols-2 gap-4'>
+            <Button htmlType='submit' className='mr-4 w-full' icon={<MessageOutlined />}>
+              提交
+            </Button>
+            <Button className='w-full' icon={<FileDoneOutlined />}> 
+              保存并重置
+            </Button>
+          </div>
+        </Form.Item>
         <Form.Item>
-          <Button htmlType='submit' className='mr-4'>
-            提交
-          </Button>
-          <Button onClick={() => speechSynthesis.cancel()}>
-            停止
-          </Button>
+          <Collapse
+            defaultActiveKey={['current']}
+            items={[{
+              key: 'current',
+              label: '文字记录',
+              children: (
+                <div className='w-full max-h-40 overflow-auto' ref={chatRef}>
+                  <div className='w-full flex flex-col gap-3'>
+                    {currentChat.messages.map(({ role, content }, index) => (
+                      <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
+                        <div className='w-full text-sm font-bold'>
+                          {role === 'user' ? '我' : '他'}
+                        </div>
+                        <div className='w-full text-sm'>
+                          {content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ),
+            }]}
+          />
         </Form.Item>
       </Form>
-      <Collapse
-        defaultActiveKey={['messages']}
-        className='w-1/3 ml-8 overflow-hidden bg-white rounded-md border border-yellow-950'
-        items={[
-          {
-            key: 'messages',
-            label: '文字记录',
-            children: (<div className='w-full max-h-[30rem] overflow-auto' ref={container}>
-              {messages.map((message, index) => (
-                <div key={index} className={`mb-4 ${message.role === 'user' ? 'text-right' : 'text-left'}`}>
-                  <span className='text-gray-500'>{message.role === 'user' ? '我' : '小叶子'}</span>
-                  <p className='mt-2'>{message.content}</p>
-                </div>
-              ))}
-            </div>)
-          }
-        ]}
-      />
-      <div id='live2d' className='w-0 h-[40rem]'></div>
-    </main>
+    </section>
   )
 }

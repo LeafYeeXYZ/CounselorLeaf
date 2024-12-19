@@ -1,8 +1,8 @@
 export function History() {
 
   return (
-    <main>
+    <section className='w-full h-full flex flex-col justify-center items-center'>
       History
-    </main>
+    </section>
   )
 }

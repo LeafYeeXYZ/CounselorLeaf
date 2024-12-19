@@ -1,3 +1,5 @@
+import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
+
 export type SpeakApi = (
   text: string
 ) => Promise<void>
@@ -8,13 +10,7 @@ export type ChatApi = (
 
 export type LoadLive2d = (
   element: HTMLElement,
-) => Live2dApi
-
-export type Live2dApi = {
-  stop: () => void
-  say: (text: string) => void
-  remove: () => void
-}
+) => Oml2dMethods & Oml2dEvents & Oml2dProperties
 
 export type Chat = {
   uuid: string

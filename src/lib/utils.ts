@@ -5,3 +5,11 @@ export function uuid() {
     return v.toString(16)
   })
 }
+
+export function sleep(ms: number) {
+  return new Promise<void>(resolve => setTimeout(resolve, ms))
+}
+
+export function clone<T>(value: T): T {
+  return JSON.parse(JSON.stringify(value))
+}
