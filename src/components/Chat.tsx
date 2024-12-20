@@ -1,7 +1,7 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { Button, Form, Input, Collapse } from 'antd'
-import { FileDoneOutlined, MessageOutlined } from '@ant-design/icons'
+import { MessageOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
 import { sleep, clone } from '../lib/utils.ts'
@@ -13,21 +13,22 @@ interface FormValues {
 export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
-  const { disabled, setDisabled, live2d, currentChat, setCurrentChat, messageApi } = useStates()
+  const { disabled, setDisabled, live2d, messageApi } = useStates()
+  const [currentChat, setCurrentChat] = useState<{ role: string, content: string }[]>([])
   const { chat, currentLive2d } = useApi()
   const chatRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (chatRef.current) {
       chatRef.current.scrollTop = chatRef.current.scrollHeight
     }
-  }, [currentChat.messages])
+  }, [currentChat])
 
   const onFinish = async (values: FormValues) => {
     try {
       // TODO: 语音
       const { text } = values
-      const input = [...clone(currentChat.messages), { role: 'user', content: text }]
-      flushSync(() => setCurrentChat({ ...currentChat, messages: input }))
+      const input = [...clone(currentChat), { role: 'user', content: text }]
+      flushSync(() => setCurrentChat(input))
       const answer = await chat(input)
       let response = ''
       let current = ''
@@ -43,7 +44,7 @@ export function Chat() {
             let words = ''
             for (const w of s) {
               current += w
-              flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+              flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
               words += w
               live2d?.tipsMessage(words, 10000, Date.now())
               await sleep(30)
@@ -51,7 +52,7 @@ export function Chat() {
             const comma = response[current.length]
             if (comma.match(/。|？|！|,|，|;|；/)) {
               current += comma
-              flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+              flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
               await sleep(30)
             }
             await sleep(1000) // 每个句子之间的间隔
@@ -63,7 +64,7 @@ export function Chat() {
         let words = ''
         for (const w of buffer) {
           current += w
-          flushSync(() => setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: current }] }))
+          flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
           if (!w.match(/。|？|！|,|，|;|；/)) {
             words += w
           }
@@ -71,7 +72,7 @@ export function Chat() {
           await sleep(30)
         }
       }
-      setCurrentChat({ ...currentChat, messages: [...input, { role: 'assistant', content: response }] })
+      setCurrentChat([...input, { role: 'assistant', content: response }])
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
     }
@@ -94,21 +95,16 @@ export function Chat() {
         }}
       >
         <Form.Item
-          label='输入'
+          label='消息'
           name='text'
           rules={[{ required: true, message: '请输入消息' }]}
         >
           <Input.TextArea />
         </Form.Item>
         <Form.Item >
-          <div className='grid grid-cols-2 gap-4'>
-            <Button htmlType='submit' className='mr-4 w-full' icon={<MessageOutlined />}>
-              提交
-            </Button>
-            <Button className='w-full' icon={<FileDoneOutlined />}> 
-              保存并重置
-            </Button>
-          </div>
+          <Button htmlType='submit' className='mr-4 w-full' icon={<MessageOutlined />}>
+            发送
+          </Button>
         </Form.Item>
         <Form.Item>
           <Collapse
@@ -119,7 +115,7 @@ export function Chat() {
               children: (
                 <div className='w-full max-h-40 overflow-auto' ref={chatRef}>
                   <div className='w-full flex flex-col gap-3'>
-                    {currentChat.messages.map(({ role, content }, index) => (
+                    {currentChat.map(({ role, content }, index) => (
                       <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
                         <div className='w-full text-sm font-bold'>
                           {role === 'user' ? '我' : currentLive2d}

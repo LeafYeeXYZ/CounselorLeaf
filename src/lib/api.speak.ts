@@ -1,4 +1,6 @@
-import type { SpeakApi } from './types.ts'
+export type SpeakApi = (
+  text: string
+) => Promise<void>
 
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {

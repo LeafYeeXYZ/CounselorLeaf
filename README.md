@@ -6,6 +6,7 @@
 bun install # 安装依赖
 bun d # 运行
 bun b # 构建
+bun b:win # 在 Mac 下构建 Windows 版本
 ```
 
 TODO:

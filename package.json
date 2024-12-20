@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "d": "bunx tauri dev",
-    "b": "bunx tauri build"
+    "b": "bunx tauri build",
+    "b:win": "bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",

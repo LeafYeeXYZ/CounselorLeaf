@@ -1,0 +1,15 @@
+{
+    "Type": "Live2D Expression",
+    "Parameters": [
+        {
+            "Id": "Param96",
+            "Value": 1.0,
+            "Blend": "Add"
+        },
+        {
+            "Id": "Param94",
+            "Value": 1.0,
+            "Blend": "Add"
+        }
+    ]
+}

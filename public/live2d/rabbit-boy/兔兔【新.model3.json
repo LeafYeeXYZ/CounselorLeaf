@@ -1,0 +1,30 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "兔兔【新.moc3",
+		"Textures": [
+			"兔兔【新.4096/texture_00.png"
+		],
+		"Physics": "兔兔【新.physics3.json",
+		"DisplayInfo": "兔兔【新.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeROpen",
+				"ParamEyeLOpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": [
+				"ParamEyeRSmile",
+				"ParamEyeLSmile",
+				"ParamMouthForm"
+			]
+		}
+	]
+}

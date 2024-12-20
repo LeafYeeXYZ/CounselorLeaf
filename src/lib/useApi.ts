@@ -1,12 +1,12 @@
-import type { SpeakApi, LoadLive2d, ChatApi } from './types.ts'
 import { create } from 'zustand'
-import { chat_ollama } from './api.chat.ts'
-import { speak_browser } from './api.speak.ts'
-import { catBoy, foxBoy } from './api.live2d.ts'
+import { chat_ollama, test_ollama, type ChatApi, type ChatApiTest } from './api.chat.ts'
+import { speak_browser, type SpeakApi } from './api.speak.ts'
+import { catBoy, foxBoy, rabbitBoy, evilBoy, type LoadLive2d } from './api.live2d.ts'
 import { set, get, update } from './api.store.ts'
 
 type API = {
   chat: ChatApi
+  testChat: ChatApiTest
   speak: SpeakApi | null
   loadLive2d: LoadLive2d
   set: typeof set
@@ -30,10 +30,12 @@ const speakApiList: { name: string, api: SpeakApi | null }[] = [
   { name: '关闭', api: null },
   { name: 'Web Speech API', api: speak_browser },
 ]
-const chatApiList: { name: string, api: ChatApi }[] = [
-  { name: 'Ollama', api: chat_ollama },
+const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
+  { name: 'Ollama', api: chat_ollama, test: test_ollama },
 ]
 const live2dList: { name: string, api: LoadLive2d }[] = [
+  { name: '兔兔小叶子', api: rabbitBoy },
+  { name: '恶魔小叶子', api: evilBoy },
   { name: '狐狸小叶子', api: foxBoy },
   { name: '猫猫小叶子', api: catBoy },
 ]
@@ -51,6 +53,7 @@ export const useApi = create<ApiState>()((setState) => ({
   update,
   speak: defaultSpeakApi.api,
   chat: defaultChatApi.api,
+  testChat: defaultChatApi.test,
   loadLive2d: defaultLive2d.api,
   speakApiList: speakApiList.map(({ name }) => name),
   chatApiList: chatApiList.map(({ name }) => name),
@@ -66,7 +69,7 @@ export const useApi = create<ApiState>()((setState) => ({
   setChatApi: async (name) => {
     const item = chatApiList.find(api => api.name === name)
     if (item) {
-      setState({ chat: item.api, currentChatApi: name })
+      setState({ chat: item.api, currentChatApi: name, testChat: item.test })
       await set('default_chat_api', name)
     }
     return
