@@ -13,14 +13,13 @@ export function Config() {
     currentSpeakApi,
     currentChatApi,
     currentLive2d,
-    set,
   } = useApi()
 
   return (
     <section className='w-full h-full flex flex-col justify-center items-center'>
       <Form 
         layout='vertical' 
-        className='w-full border border-yellow-950 rounded-md p-6 pb-2 overflow-auto'
+        className='w-full border border-yellow-950 rounded-md p-5 pb-1 overflow-auto'
       >
         <Form.Item label='语音合成服务'>
           <Select 
@@ -28,7 +27,6 @@ export function Config() {
             value={currentSpeakApi}
             onChange={async (value) => { 
               await setSpeakApi(value)
-              await set('default_speak_api', value)
             }}
           />
         </Form.Item>
@@ -38,7 +36,6 @@ export function Config() {
             defaultValue={currentChatApi}
             onChange={async (value) => { 
               await setChatApi(value)
-              await set('default_chat_api', value)
             }}
           />
         </Form.Item>
@@ -48,7 +45,6 @@ export function Config() {
             defaultValue={currentLive2d}
             onChange={async (value) => { 
               await setLive2d(value)
-              await set('default_live2d', value)
             }}
           />
         </Form.Item>

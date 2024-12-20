@@ -3,8 +3,8 @@ import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
 import type { MessageInstance } from 'antd/es/message/interface'
 
 type GlobalState = {
-  disabled: boolean
-  setDisabled: (disabled: boolean) => void
+  disabled: false | string
+  setDisabled: (disabled: false | string) => void
 
   live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null
   setLive2d: (live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null) => void

@@ -9,6 +9,7 @@ export type ShortTermMemory = {
 }
 
 export type LongTermMemory = {
+  uuid: string
   start: number
   end: number
   summary: string
@@ -46,20 +47,5 @@ export function set(key: StoreKeys, value: string | LongTermMemory[] | ShortTerm
 export async function set(key: StoreKeys, value: string | LongTermMemory[] | ShortTermMemory[]): Promise<void> {
   await db.set(key, value)
   await db.save()
-  return
-}
-
-export function update(key: 'default_live2d', updater: (prev: string | undefined) => string | Promise<string>): Promise<void>
-export function update(key: 'default_chat_api', updater: (prev: string | undefined) => string | Promise<string>): Promise<void>
-export function update(key: 'default_speak_api', updater: (prev: string | undefined) => string | Promise<string>): Promise<void>
-export function update(key: 'memory_about_self', updater: (prev: string | undefined) => string | Promise<string>): Promise<void>
-export function update(key: 'memory_about_user', updater: (prev: string | undefined) => string | Promise<string>): Promise<void>
-export function update(key: 'long_term_memory', updater: (prev: LongTermMemory[] | undefined) => LongTermMemory[] | Promise<LongTermMemory[]>): Promise<void>
-export function update(key: 'short_term_memory', updater: (prev: ShortTermMemory[] | undefined) => ShortTermMemory[] | Promise<ShortTermMemory[]>): Promise<void>
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function update(key: StoreKeys, updater: (prev: any) => any | Promise<any>): Promise<void> {
-  const prev = await get(key)
-  const next = await updater(prev)
-  await set(key, next)
   return
 }
