@@ -14,6 +14,8 @@ bun b:win # 在 Mac 下构建 Windows 版本
 bun b:web # 构建 Web 版本 (使用 IndexedDB 取代 Tauri 的文件系统)
 bun preview:web # 预览 Web 版本
 # 注意输出目录为 /dist-web
+# 并请设置 VITE_WEB_SERVER_URL 为你的服务器地址, 如 https://api.xxx.workers.dev, 不带末尾斜杠
+# 上述服务器见 https://github.com/LeafYeeXYZ/MyAPIs
 ```
 
 TODO:
