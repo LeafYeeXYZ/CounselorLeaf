@@ -132,6 +132,7 @@ export function Chat() {
             <Button 
               className='w-[48%]' 
               icon={<ClearOutlined />} 
+              disabled={disabled !== false || shortTermMemory.length === 0}
               onClick={async () => { 
                 flushSync(() => setDisabled('更新记忆中...'))
                 await onUpdate()
