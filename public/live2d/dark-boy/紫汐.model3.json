@@ -1,0 +1,27 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "紫汐.moc3",
+		"Textures": [
+			"紫汐.4096/texture_00.png",
+			"紫汐.4096/texture_01.png"
+		],
+		"Physics": "紫汐.physics3.json",
+		"DisplayInfo": "紫汐.cdi3.json"
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": [
+				"ParamEyeLOpen",
+				"ParamEyeROpen"
+			]
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	]
+}
