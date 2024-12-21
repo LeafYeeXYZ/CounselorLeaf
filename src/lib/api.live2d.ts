@@ -20,15 +20,10 @@ export const catBoy: LoadLive2d = (element) => {
     sayHello: false,
     tips: {
       copyTips: { message: [] },
-      // BUG: 加了这个属性就会导致对话框无法显示
-      // style: {
-      //   top: 'calc(100%-680px)',
-      // },
     },
     models: [{
       path: '/live2d/cat-boy/白猫正太.model3.json',
       scale: 0.08,
-      // 用来临时替代上面的属性的方案
       position: [0, 70],
     }],
   })
@@ -88,6 +83,44 @@ export const evilBoy: LoadLive2d = (element) => {
     models: [{
       path: '/live2d/evil-boy/no4.新（基础）.model3.json',
       scale: 0.11,
+      position: [0, 70],
+    }],
+  })
+  return live2d
+}
+
+export const bearBoy: LoadLive2d = (element) => {
+  const live2d = loadOml2d({
+    parentElement: element,
+    dockedPosition: 'right',
+    mobileDisplay: true,
+    menus: { disable: true },
+    sayHello: false,
+    tips: {
+      copyTips: { message: [] },
+    },
+    models: [{
+      path: '/live2d/bear-boy/karien.model3.json',
+      scale: 0.15,
+      position: [0, 50],
+    }],
+  })
+  return live2d
+}
+
+export const sickBoy: LoadLive2d = (element) => {
+  const live2d = loadOml2d({
+    parentElement: element,
+    dockedPosition: 'right',
+    mobileDisplay: true,
+    menus: { disable: true },
+    sayHello: false,
+    tips: {
+      copyTips: { message: [] },
+    },
+    models: [{
+      path: '/live2d/sick-boy/71全身无按键.model3.json',
+      scale: 0.13,
       position: [0, 70],
     }],
   })

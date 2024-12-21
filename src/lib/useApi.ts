@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { uuid } from './utils.ts'
 import { chat_ollama, test_ollama, type ChatApi, type ChatApiTest } from './api.chat.ts'
 import { speak_browser, type SpeakApi } from './api.speak.ts'
-import { catBoy, foxBoy, rabbitBoy, evilBoy, type LoadLive2d } from './api.live2d.ts'
+import { catBoy, foxBoy, rabbitBoy, evilBoy, bearBoy, sickBoy, type LoadLive2d } from './api.live2d.ts'
 import { set, get, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
 import { save } from '@tauri-apps/plugin-dialog'
 import { invoke } from '@tauri-apps/api/core'
@@ -55,8 +55,10 @@ const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
 ]
 const live2dList: { name: string, api: LoadLive2d }[] = [
   { name: '恶魔小叶子', api: evilBoy },
+  { name: '病娇小叶子', api: sickBoy },
   { name: '兔兔小叶子', api: rabbitBoy },
   { name: '狐狸小叶子', api: foxBoy },
+  { name: '熊熊小叶子', api: bearBoy },
   { name: '猫猫小叶子', api: catBoy },
 ]
 

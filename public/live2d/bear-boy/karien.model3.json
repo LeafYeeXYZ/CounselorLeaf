@@ -1,0 +1,74 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "Karien.moc3",
+		"Textures": [
+			"Karien.4096/texture_00.png"
+		],
+		"Physics": "Karien.physics3.json",
+		"DisplayInfo": "Karien.cdi3.json",
+		"Expressions": [
+			{
+				"Name": "x相机",
+				"File": "expressions/Camera.exp3.json"
+			},
+			{
+				"Name": "Z反转",
+				"File": "expressions/ZReflect.exp3.json"
+			},
+			{
+				"Name": "X反转",
+				"File": "expressions/XReflect.exp3.json"
+			},
+			{
+				"Name": "兽化",
+				"File": "expressions/Beast.exp3.json"
+			},
+			{
+				"Name": "裤子2",
+				"File": "expressions/Shorts2.exp3.json"
+			},
+			{
+				"Name": "裤子3",
+				"File": "expressions/Shorts3.exp3.json"
+			},
+			{
+				"Name": "裤子1",
+				"File": "expressions/Shorts1.exp3.json"
+			},
+			{
+				"Name": "裤子4",
+				"File": "expressions/Shorts4.exp3.json"
+			},
+			{
+				"Name": "生气-嘴眼眉",
+				"File": "expressions/Angry.exp3.json"
+			},
+			{
+				"Name": "悲伤-眉眼",
+				"File": "expressions/Sad.exp3.json"
+			},
+			{
+				"Name": "脸红",
+				"File": "expressions/AkaFace.exp3.json"
+			},
+			{
+				"Name": "脸黑",
+				"File": "expressions/DarkFace.exp3.json"
+			}
+		]
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}
