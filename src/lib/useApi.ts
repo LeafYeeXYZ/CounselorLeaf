@@ -1,9 +1,9 @@
 import { create } from 'zustand'
 import { uuid } from './utils.ts'
-import { speakApiList, type SpeakApi } from './api.speak.ts'
-import { chatApiList, type ChatApi, type ChatApiTest } from './api.chat.ts'
-import { live2dList, type LoadLive2d } from './api.live2d.ts'
-import { set, get, save, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
+import { speakApiList, type SpeakApi } from './tauri/api.speak.ts'
+import { chatApiList, type ChatApi, type ChatApiTest } from './tauri/api.chat.ts'
+import { live2dList, type LoadLive2d } from './tauri/api.live2d.ts'
+import { set, get, save, type LongTermMemory, type ShortTermMemory } from './tauri/api.store.ts'
 
 type API = {
 

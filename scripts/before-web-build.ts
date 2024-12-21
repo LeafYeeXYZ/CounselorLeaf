@@ -5,11 +5,7 @@ const PATH_TO_COPY_DURING_BUILD = ['rabbit-boy', 'evil-boy']
 
 const path = resolve(__dirname ?? import.meta.dirname, '../src/lib/useApi.ts')
 const content = await fs.readFile(path, 'utf-8')
-await fs.writeFile(path, content
-  .replace('./api.store.ts', '../web/api.store.ts')
-  .replace('./api.live2d.ts', '../web/api.live2d.ts')
-  .replace('./api.chat.ts', '../web/api.chat.ts')
-)
+await fs.writeFile(path, content.replace(/\.\/tauri\/api\./g, './web/api.'))
 
 await fs.mkdir(resolve(__dirname ?? import.meta.dirname, '../public-web'))
 await fs.copyFile(resolve(__dirname ?? import.meta.dirname, '../public/favicon.ico'), resolve(__dirname ?? import.meta.dirname, '../public-web/favicon.ico'))

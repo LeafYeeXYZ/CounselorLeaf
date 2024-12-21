@@ -37,7 +37,7 @@ export default function App() {
   }, [messageApi, setMessageApi, ready])
   // 检查服务状态
   useEffect(() => {
-    // 最小宽度
+    // 最小宽度, 主要是为了适配网页端, 桌面端已由 Tauri 设置最小宽度和高度
     if (window.innerWidth < 780 || window.innerHeight < 600) {
       document.body.innerHTML = '<div class="w-dvw h-dvh flex justify-center items-center">窗口过小, 请调整后刷新</div>'
       return
