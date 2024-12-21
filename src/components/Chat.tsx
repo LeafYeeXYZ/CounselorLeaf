@@ -37,6 +37,7 @@ export function Chat() {
       
       // -------------------------- 以下为对话显示逻辑 --------------------------
       flushSync(() => setCurrentChat(input))
+      const reg = /。|？|！|,|，|;|；|~/
       let current = ''
       let buffer = ''
       live2d?.clearTips()
@@ -44,7 +45,7 @@ export function Chat() {
         const text = chunk.response ?? ''
         buffer += text
         response += text
-        const splited = buffer.split(/。|？|！|,|，|;|；/).filter((s) => s.length !== 0)
+        const splited = buffer.split(reg).filter((s) => s.length !== 0)
         if (splited.length > 1) {
           for (const s of splited.slice(0, -1)) {
             let words = ''
@@ -56,7 +57,7 @@ export function Chat() {
               await sleep(30)
             }
             const comma = response[current.length]
-            if (comma.match(/。|？|！|,|，|;|；/)) {
+            if (comma.match(reg)) {
               current += comma
               flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
               await sleep(30)
@@ -71,7 +72,7 @@ export function Chat() {
         for (const w of buffer) {
           current += w
           flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
-          if (!w.match(/。|？|！|,|，|;|；/)) {
+          if (!w.match(reg)) {
             words += w
           }
           live2d?.tipsMessage(words, 2000, Date.now())
