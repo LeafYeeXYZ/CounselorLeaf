@@ -3,9 +3,7 @@ import { uuid } from './utils.ts'
 import { chat_ollama, test_ollama, type ChatApi, type ChatApiTest } from './api.chat.ts'
 import { speak_browser, type SpeakApi } from './api.speak.ts'
 import { catBoy, foxBoy, rabbitBoy, evilBoy, bearBoy, sickBoy, type LoadLive2d } from './api.live2d.ts'
-import { set, get, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
-import { save } from '@tauri-apps/plugin-dialog'
-import { invoke } from '@tauri-apps/api/core'
+import { set, get, save, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
 
 type API = {
 
@@ -102,24 +100,15 @@ export const useApi = create<API>()((setState, getState) => ({
     return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n${memoryAboutUser || '(无)'}\n\n# 对你的要求\n${formatPrompt}`
   },
   formatPrompt: '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.',
-  saveAllMemory: async () => {
+  saveAllMemory: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory } = getState()
-    const path = await save({
-      title: '保存记忆',
-      defaultPath: 'memory.json',
-      filters: [
-        { name: 'JSON', extensions: ['json'] },
-        { name: 'TXT', extensions: ['txt'] },
-      ],
-    })
-    if (!path) throw new Error('取消保存')
     const data = JSON.stringify({
       memoryAboutSelf,
       memoryAboutUser,
       longTermMemory,
       shortTermMemory,
     }, null, 2)
-    return invoke('save_memory', { path, data })
+    return save(data)
   },
   resetAllMemory: async () => {
     const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory } = getState()

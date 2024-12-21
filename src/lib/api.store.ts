@@ -1,4 +1,6 @@
 import { load } from '@tauri-apps/plugin-store'
+import { save as _save } from '@tauri-apps/plugin-dialog'
+import { invoke } from '@tauri-apps/api/core'
 
 const db = await load('data.json')
 
@@ -48,4 +50,17 @@ export async function set(key: StoreKeys, value: string | LongTermMemory[] | Sho
   await db.set(key, value)
   await db.save()
   return
+}
+
+export async function save(data: string): Promise<string> {
+  const path = await _save({
+    title: '保存记忆',
+    defaultPath: 'memory.json',
+    filters: [
+      { name: 'JSON', extensions: ['json'] },
+      { name: 'TXT', extensions: ['txt'] },
+    ],
+  })
+  if (!path) throw new Error('取消保存')
+  return invoke('save_memory', { path, data })
 }
