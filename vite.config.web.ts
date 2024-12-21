@@ -7,6 +7,13 @@ export default defineConfig({
   build: {
     target: 'es2022',
     outDir: 'dist-web',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'live2d': ['oh-my-live2d'],
+        },
+      },
+    },
   },
   publicDir: 'public-web',
 })

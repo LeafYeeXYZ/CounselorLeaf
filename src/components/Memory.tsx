@@ -87,6 +87,7 @@ export function Memory() {
                     onClick={async () => {
                       if (deleteMemoryText.current === '删除所有记忆') {
                         await resetAllMemory()
+                        messageApi?.success('已重置所有记忆')
                       } else {
                         messageApi?.error('输入错误')
                       }
