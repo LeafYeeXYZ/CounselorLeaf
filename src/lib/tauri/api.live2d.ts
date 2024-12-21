@@ -89,7 +89,7 @@ const evilBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const bearBoy: LoadLive2d = (element) => {
+const goldBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -100,26 +100,7 @@ const bearBoy: LoadLive2d = (element) => {
       copyTips: { message: [] },
     },
     models: [{
-      path: '/live2d/bear-boy/karien.model3.json',
-      scale: 0.15,
-      position: [0, 50],
-    }],
-  })
-  return live2d
-}
-
-const sickBoy: LoadLive2d = (element) => {
-  const live2d = loadOml2d({
-    parentElement: element,
-    dockedPosition: 'right',
-    mobileDisplay: true,
-    menus: { disable: true },
-    sayHello: false,
-    tips: {
-      copyTips: { message: [] },
-    },
-    models: [{
-      path: '/live2d/sick-boy/71全身无按键.model3.json',
+      path: '/live2d/gold-boy/71全身无按键.model3.json',
       scale: 0.13,
       position: [0, 70],
     }],
@@ -147,12 +128,31 @@ const darkBoy: LoadLive2d = (element) => {
   return live2d
 }
 
+const jiniqi: LoadLive2d = (element) => {
+  const live2d = loadOml2d({
+    parentElement: element,
+    dockedPosition: 'right',
+    mobileDisplay: true,
+    menus: { disable: true },
+    sayHello: false,
+    tips: {
+      copyTips: { message: [] },
+    },
+    models: [{
+      path: '/live2d/jiniqi/基尼奇.model3.json',
+      scale: 0.08,
+      position: [0, 70],
+    }],
+  })
+  return live2d
+}
+
 export const live2dList: { name: string, api: LoadLive2d }[] = [
   { name: '恶魔小叶子', api: evilBoy },
   { name: '兔兔小叶子', api: rabbitBoy },
   { name: '紫色小叶子', api: darkBoy },
-  { name: '病娇小叶子', api: sickBoy },
-  { name: '狐狸小叶子', api: foxBoy },
-  { name: '熊熊小叶子', api: bearBoy },
-  { name: '猫猫小叶子', api: catBoy },
+  { name: '金毛小叶子', api: goldBoy },
+  { name: '狐狸小叶子', api: foxBoy }, // 太大了, 不放进 Web 版
+  { name: '猫猫小叶子', api: catBoy }, // 太大了, 不放进 Web 版
+  { name: '基尼奇', api: jiniqi },
 ]

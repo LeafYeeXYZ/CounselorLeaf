@@ -15,7 +15,7 @@ export function Chat() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, currentLive2d, getPrompt, shortTermMemory, setShortTermMemory } = useApi()
+  const { chat, getPrompt, shortTermMemory, setShortTermMemory } = useApi()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -149,7 +149,7 @@ export function Chat() {
               {shortTermMemory.map(({ role, content }, index) => (
                 <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
                   <div className='w-full text-sm font-bold'>
-                    {role === 'user' ? '我' : currentLive2d}
+                    {role === 'user' ? '我' : '他'}
                   </div>
                   <div className='w-full text-sm'>
                     {content}
