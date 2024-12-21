@@ -5,7 +5,7 @@ export type ChatApiTest = () => Promise<boolean>
 
 const URL = import.meta.env.VITE_WEB_SERVER_URL ?? ''
 const chat_web = async function* (messages: { role: string, content: string }[]) {
-  const response = await fetch(URL + '/api/chat', {
+  const response = await fetch(URL + '/being/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -27,7 +27,7 @@ const chat_web = async function* (messages: { role: string, content: string }[])
   }
 }
 const test_web: ChatApiTest = async () => {
-  const response = await fetch(URL + '/api/test', {
+  const response = await fetch(URL + '/being/test', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
