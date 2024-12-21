@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 import { uuid } from './utils.ts'
-import { chat_ollama, test_ollama, type ChatApi, type ChatApiTest } from './api.chat.ts'
-import { speak_browser, type SpeakApi } from './api.speak.ts'
-import { catBoy, foxBoy, rabbitBoy, evilBoy, bearBoy, sickBoy, type LoadLive2d } from './api.live2d.ts'
+import { speakApiList, type SpeakApi } from './api.speak.ts'
+import { chatApiList, type ChatApi, type ChatApiTest } from './api.chat.ts'
+import { live2dList, type LoadLive2d } from './api.live2d.ts'
 import { set, get, save, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
 
 type API = {
@@ -43,22 +43,6 @@ type API = {
   getPrompt: () => string
 
 }
-
-const speakApiList: { name: string, api: SpeakApi | null }[] = [
-  { name: '关闭', api: null },
-  { name: 'Web Speech API', api: speak_browser },
-]
-const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
-  { name: 'Ollama - qwen2.5:7b', api: chat_ollama, test: test_ollama },
-]
-const live2dList: { name: string, api: LoadLive2d }[] = [
-  { name: '恶魔小叶子', api: evilBoy },
-  { name: '病娇小叶子', api: sickBoy },
-  { name: '兔兔小叶子', api: rabbitBoy },
-  { name: '狐狸小叶子', api: foxBoy },
-  { name: '熊熊小叶子', api: bearBoy },
-  { name: '猫猫小叶子', api: catBoy },
-]
 
 const localSpeakApi = await get('default_speak_api')
 const localChatApi = await get('default_chat_api')

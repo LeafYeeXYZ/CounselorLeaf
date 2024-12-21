@@ -11,7 +11,7 @@ export type LoadLive2d = (
 // 4. 模型没能定位到 parentElement 上
 // 5. 说话时没能张嘴
 
-export const catBoy: LoadLive2d = (element) => {
+const catBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -30,7 +30,7 @@ export const catBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const foxBoy: LoadLive2d = (element) => {
+const foxBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -49,7 +49,7 @@ export const foxBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const rabbitBoy: LoadLive2d = (element) => {
+const rabbitBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -70,7 +70,7 @@ export const rabbitBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const evilBoy: LoadLive2d = (element) => {
+const evilBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -89,7 +89,7 @@ export const evilBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const bearBoy: LoadLive2d = (element) => {
+const bearBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -108,7 +108,7 @@ export const bearBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const sickBoy: LoadLive2d = (element) => {
+const sickBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -126,3 +126,12 @@ export const sickBoy: LoadLive2d = (element) => {
   })
   return live2d
 }
+
+export const live2dList: { name: string, api: LoadLive2d }[] = [
+  { name: '恶魔小叶子', api: evilBoy },
+  { name: '病娇小叶子', api: sickBoy },
+  { name: '兔兔小叶子', api: rabbitBoy },
+  { name: '狐狸小叶子', api: foxBoy },
+  { name: '熊熊小叶子', api: bearBoy },
+  { name: '猫猫小叶子', api: catBoy },
+]

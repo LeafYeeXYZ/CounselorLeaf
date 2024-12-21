@@ -7,7 +7,7 @@ export type ChatApi = (
 export type ChatApiTest = () => Promise<boolean>
 
 const model = 'qwen2.5:7b'
-const _chat_ollama = async function* (messages: { role: string, content: string }[]) {
+const chat_ollama = async function* (messages: { role: string, content: string }[]) {
   const response = await ollama.chat({
     model,
     messages,
@@ -21,10 +21,7 @@ const _chat_ollama = async function* (messages: { role: string, content: string 
     }
   }
 }
-export const chat_ollama: ChatApi = (messages) => {
-  return Promise.resolve(_chat_ollama(messages))
-}
-export const test_ollama: ChatApiTest = async () => {
+const test_ollama: ChatApiTest = async () => {
   const { models } = await ollama.list().catch((err) => {
     if (err.message === 'Load failed') {
       throw new Error('Ollama 服务未启动')
@@ -35,3 +32,11 @@ export const test_ollama: ChatApiTest = async () => {
   }
   return true
 }
+
+export const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
+  { 
+    name: 'Ollama - qwen2.5:7b', 
+    api: (messages) => Promise.resolve(chat_ollama(messages)),
+    test: test_ollama,
+  },
+]

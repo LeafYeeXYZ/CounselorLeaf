@@ -7,8 +7,7 @@ while (voices.length === 0) {
   await new Promise(resolve => setTimeout(resolve, 50))
   voices = speechSynthesis.getVoices()
 }
-
-export const speak_browser: SpeakApi = (text: string) => {
+const speak_browser: SpeakApi = (text: string) => {
   const utterance = new SpeechSynthesisUtterance(text)
   const voice = voices.find(v => v.lang === 'zh-CN')
   if (voice) {
@@ -23,3 +22,8 @@ export const speak_browser: SpeakApi = (text: string) => {
     speechSynthesis.speak(utterance)
   })
 }
+
+export const speakApiList: { name: string, api: SpeakApi | null }[] = [
+  { name: '关闭', api: null },
+  { name: 'Web Speech API', api: speak_browser },
+]

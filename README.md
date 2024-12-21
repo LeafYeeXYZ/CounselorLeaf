@@ -4,9 +4,16 @@
 
 ```bash
 bun install # 安装依赖
+
+# 桌面版本 (推荐)
 bun d # 运行
 bun b # 构建
 bun b:win # 在 Mac 下构建 Windows 版本
+
+# Web 版本
+bun b:web # 构建 Web 版本 (使用 IndexedDB 取代 Tauri 的文件系统)
+bun preview:web # 预览 Web 版本
+# 注意输出目录为 /dist-web
 ```
 
 TODO:
