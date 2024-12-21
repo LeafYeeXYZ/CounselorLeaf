@@ -1,5 +1,5 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect } from 'react'
 import { Button, Form, Input } from 'antd'
 import { MessageOutlined, ClearOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
@@ -14,29 +14,30 @@ export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
-  const [currentChat, setCurrentChat] = useState<{ role: string, content: string }[]>([])
   const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, currentLive2d, getPrompt } = useApi()
+  const { chat, currentLive2d, getPrompt, shortTermMemory, setShortTermMemory } = useApi()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
     }
-  }, [currentChat])
+  }, [shortTermMemory])
 
   const onFinish = async (values: FormValues) => {
+    const prev = clone(shortTermMemory)
+    const time = Date.now()
     try {
       const input = [
-        ...clone(currentChat), 
-        { role: 'user', content: values.text },
+        ...prev,
+        { role: 'user', content: values.text, timestamp: time },
       ]
       const answer = await chat([
         { role: 'system', content: getPrompt() },
-        ...input,
+        ...input.map(({ role, content }) => ({ role, content })),
       ])
       let response = ''
       
-      // -------------------------- 以下为对话显示逻辑 --------------------------
-      flushSync(() => setCurrentChat(input))
+      // flushSync(() => setCurrentChat(input))
+      await setShortTermMemory(input)
       const reg = /。|？|！|,|，|;|；|~/
       let current = ''
       let buffer = ''
@@ -51,7 +52,8 @@ export function Chat() {
             let words = ''
             for (const w of s) {
               current += w
-              flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+              // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+              await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
               words += w
               live2d?.tipsMessage(words, 10000, Date.now())
               await sleep(30)
@@ -59,7 +61,8 @@ export function Chat() {
             const comma = response[current.length]
             if (comma.match(reg)) {
               current += comma
-              flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+              // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+              await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
               await sleep(30)
             }
             await sleep(1000) // 每个句子之间的间隔
@@ -71,7 +74,8 @@ export function Chat() {
         let words = ''
         for (const w of buffer) {
           current += w
-          flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+          // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
+          await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
           if (!w.match(reg)) {
             words += w
           }
@@ -79,12 +83,17 @@ export function Chat() {
           await sleep(30)
         }
       }
-      setCurrentChat([...input, { role: 'assistant', content: response }])
-      // -------------------------- 以上为对话显示逻辑 --------------------------
+      // setCurrentChat([...input, { role: 'assistant', content: response }])
+      await setShortTermMemory([...input, { role: 'assistant', content: response, timestamp: time }])
 
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
+      await setShortTermMemory(prev)
     }
+  }
+  const onUpdate = async () => {
+    messageApi?.info('本功能暂未实现, 目前仅为清除短时记忆')
+    await setShortTermMemory([])
   }
 
   return (
@@ -113,10 +122,22 @@ export function Chat() {
         </Form.Item>
         <Form.Item>
           <div className='w-full flex justify-between items-center'>
-            <Button htmlType='submit' className='w-[48%]' icon={<MessageOutlined />}>
+            <Button 
+              htmlType='submit' 
+              className='w-[48%]' 
+              icon={<MessageOutlined />}
+            >
               发送
             </Button>
-            <Button className='w-[48%]' icon={<ClearOutlined />} onClick={() => { setCurrentChat([]); form.resetFields() }}>
+            <Button 
+              className='w-[48%]' 
+              icon={<ClearOutlined />} 
+              onClick={async () => { 
+                flushSync(() => setDisabled('更新记忆中...'))
+                await onUpdate()
+                form.resetFields()
+                flushSync(() => setDisabled(false))
+              }}>
               更新长时记忆
             </Button>
           </div>
@@ -124,7 +145,7 @@ export function Chat() {
         <Form.Item label='短时记忆'>
           <div className='w-full max-h-40 overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
             <div className='w-full flex flex-col gap-3'>
-              {currentChat.map(({ role, content }, index) => (
+              {shortTermMemory.map(({ role, content }, index) => (
                 <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
                   <div className='w-full text-sm font-bold'>
                     {role === 'user' ? '我' : currentLive2d}
