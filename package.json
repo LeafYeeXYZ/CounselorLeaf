@@ -8,12 +8,14 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "tauri": "tauri",
     "d": "bunx tauri dev",
     "b": "bunx tauri build",
     "b:win": "bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
+    "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-store": "~2.2.0",
     "antd": "^5.22.5",
     "oh-my-live2d": "^0.19.3",

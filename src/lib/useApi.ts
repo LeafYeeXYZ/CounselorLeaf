@@ -1,8 +1,11 @@
 import { create } from 'zustand'
+import { uuid } from './utils.ts'
 import { chat_ollama, test_ollama, type ChatApi, type ChatApiTest } from './api.chat.ts'
 import { speak_browser, type SpeakApi } from './api.speak.ts'
 import { catBoy, foxBoy, rabbitBoy, evilBoy, type LoadLive2d } from './api.live2d.ts'
 import { set, get, type LongTermMemory, type ShortTermMemory } from './api.store.ts'
+import { save } from '@tauri-apps/plugin-dialog'
+import { invoke } from '@tauri-apps/api/core'
 
 type API = {
 
@@ -33,6 +36,14 @@ type API = {
   updateLongTermMemory: (updater: (prev: LongTermMemory[]) => LongTermMemory[] | Promise<LongTermMemory[]>) => Promise<void>
   updateShortTermMemory: (updater: (prev: ShortTermMemory[]) => ShortTermMemory[] | Promise<ShortTermMemory[]>) => Promise<void>
 
+  resetAllMemory: () => Promise<void>
+  saveAllMemory: () => Promise<string>
+  shortMemoToLong: () => Promise<void>
+  // longMemoToLong: (uuid: string[]) => Promise<void>
+
+  formatPrompt: string
+  getPrompt: () => string
+
 }
 
 const speakApiList: { name: string, api: SpeakApi | null }[] = [
@@ -40,11 +51,11 @@ const speakApiList: { name: string, api: SpeakApi | null }[] = [
   { name: 'Web Speech API', api: speak_browser },
 ]
 const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
-  { name: 'Ollama', api: chat_ollama, test: test_ollama },
+  { name: 'Ollama - qwen2.5:7b', api: chat_ollama, test: test_ollama },
 ]
 const live2dList: { name: string, api: LoadLive2d }[] = [
-  { name: '兔兔小叶子', api: rabbitBoy },
   { name: '恶魔小叶子', api: evilBoy },
+  { name: '兔兔小叶子', api: rabbitBoy },
   { name: '狐狸小叶子', api: foxBoy },
   { name: '猫猫小叶子', api: catBoy },
 ]
@@ -59,23 +70,74 @@ const localShortTermMemory = await get('short_term_memory')
 const defaultSpeakApi = speakApiList.find(({ name }) => name === localSpeakApi) ?? speakApiList[0]
 const defaultChatApi = chatApiList.find(({ name }) => name === localChatApi) ?? chatApiList[0]
 const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? live2dList[0]
-const defaultMemoryAboutSelf = localMemoryAboutSelf ?? ''
-const defaultMemoryAboutUser = localMemoryAboutUser ?? ''
-const defaultLongTermMemory = localLongTermMemory ?? []
-const defaultShortTermMemory = localShortTermMemory ?? []
 
-export const useApi = create<API>()((setState) => ({
-  speak: defaultSpeakApi.api,
+const DEFAULT_MEMORY_ABOUT_SELF = '我是一个心理学专业的本科生, 男性, 名叫小叶子.'
+const DEFAULT_MEMORY_ABOUT_USER = ''
+const DEFAULT_LONG_TERM_MEMORY: LongTermMemory[] = []
+const DEFAULT_SHORT_TERM_MEMORY: ShortTermMemory[] = []
+
+export const useApi = create<API>()((setState, getState) => ({
+  shortMemoToLong: async () => {
+    const { 
+      shortTermMemory, 
+      updateLongTermMemory,
+      memoryAboutSelf, 
+      memoryAboutUser, 
+      chat 
+    } = getState()
+    const timestamps = shortTermMemory.map((item) => item.timestamp)
+    const memory = {
+      uuid: uuid(),
+      start: Math.min(...timestamps),
+      end: Math.max(...timestamps),
+      summary: 'TODO',
+    }
+    console.log({ memoryAboutSelf, memoryAboutUser, chat })
+    return updateLongTermMemory((prev) => [memory, ...prev])
+  },
+  getPrompt: () => {
+    const { formatPrompt, memoryAboutSelf, memoryAboutUser } = getState()
+    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n${memoryAboutUser || '(无)'}\n\n# 对你的要求\n${formatPrompt}`
+  },
+  formatPrompt: '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.',
+  saveAllMemory: async () => {
+    const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory } = getState()
+    const path = await save({
+      title: '保存记忆',
+      defaultPath: 'memory.json',
+      filters: [
+        { name: 'JSON', extensions: ['json'] },
+        { name: 'TXT', extensions: ['txt'] },
+      ],
+    })
+    if (!path) throw new Error('取消保存')
+    const data = JSON.stringify({
+      memoryAboutSelf,
+      memoryAboutUser,
+      longTermMemory,
+      shortTermMemory,
+    }, null, 2)
+    return invoke('save_memory', { path, data })
+  },
+  resetAllMemory: async () => {
+    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory } = getState()
+    await setMemoryAboutSelf('')
+    await setMemoryAboutUser('')
+    await setLongTermMemory([])
+    await setShortTermMemory([])
+    return
+  },
   chat: defaultChatApi.api,
+  speak: defaultSpeakApi.api,
   testChat: defaultChatApi.test,
   loadLive2d: defaultLive2d.api,
   speakApiList: speakApiList.map(({ name }) => name),
   chatApiList: chatApiList.map(({ name }) => name),
   live2dList: live2dList.map(({ name }) => name),
-  memoryAboutSelf: defaultMemoryAboutSelf,
-  memoryAboutUser: defaultMemoryAboutUser,
-  longTermMemory: defaultLongTermMemory,
-  shortTermMemory: defaultShortTermMemory,
+  memoryAboutSelf: localMemoryAboutSelf || DEFAULT_MEMORY_ABOUT_SELF,
+  memoryAboutUser: localMemoryAboutUser || DEFAULT_MEMORY_ABOUT_USER,
+  longTermMemory: localLongTermMemory || DEFAULT_LONG_TERM_MEMORY,
+  shortTermMemory: localShortTermMemory || DEFAULT_SHORT_TERM_MEMORY,
   currentSpeakApi: defaultSpeakApi.name,
   currentChatApi: defaultChatApi.name,
   currentLive2d: defaultLive2d.name,

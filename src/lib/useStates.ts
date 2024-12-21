@@ -1,10 +1,11 @@
 import { create } from 'zustand'
 import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
 import type { MessageInstance } from 'antd/es/message/interface'
+import type { ReactNode } from 'react'
 
 type GlobalState = {
-  disabled: false | string
-  setDisabled: (disabled: false | string) => void
+  disabled: false | string | ReactNode
+  setDisabled: (disabled: false | string | ReactNode) => void
 
   live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null
   setLive2d: (live2d: Oml2dEvents & Oml2dMethods & Oml2dProperties | null) => void

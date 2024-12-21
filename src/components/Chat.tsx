@@ -13,31 +13,30 @@ interface FormValues {
 export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
-  const { disabled, setDisabled, live2d, messageApi } = useStates()
+  const memoContainerRef = useRef<HTMLDivElement>(null)
   const [currentChat, setCurrentChat] = useState<{ role: string, content: string }[]>([])
-  const { chat, currentLive2d } = useApi()
-  const chatRef = useRef<HTMLDivElement>(null)
+  const { disabled, setDisabled, live2d, messageApi } = useStates()
+  const { chat, currentLive2d, getPrompt } = useApi()
   useEffect(() => {
-    if (chatRef.current) {
-      chatRef.current.scrollTop = chatRef.current.scrollHeight
+    if (memoContainerRef.current) {
+      memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
     }
   }, [currentChat])
 
-  const prompt = '你是一个心理学专业的学生, 男性, 名叫小叶子. 请你以支持的, 非指导性的方式陪伴对方. 请不要回复长的和正式的内容, 避免说教, 表现得像一个真实、专业、共情、可爱的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.'
   const onFinish = async (values: FormValues) => {
     try {
-      // TODO: 语音
-      const { text } = values
       const input = [
         ...clone(currentChat), 
-        { role: 'user', content: text },
+        { role: 'user', content: values.text },
       ]
-      flushSync(() => setCurrentChat(input))
       const answer = await chat([
-        { role: 'system', content: prompt },
+        { role: 'system', content: getPrompt() },
         ...input,
       ])
       let response = ''
+      
+      // -------------------------- 以下为对话显示逻辑 --------------------------
+      flushSync(() => setCurrentChat(input))
       let current = ''
       let buffer = ''
       live2d?.clearTips()
@@ -80,6 +79,8 @@ export function Chat() {
         }
       }
       setCurrentChat([...input, { role: 'assistant', content: response }])
+      // -------------------------- 以上为对话显示逻辑 --------------------------
+
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
     }
@@ -88,7 +89,7 @@ export function Chat() {
   return (
     <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
-        className='w-full overflow-auto p-6 pb-2 rounded-md border border-yellow-950'
+        className='w-full overflow-auto p-6 pb-2 rounded-md border border-blue-900'
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
@@ -109,18 +110,18 @@ export function Chat() {
         >
           <Input.TextArea />
         </Form.Item>
-        <Form.Item >
+        <Form.Item>
           <div className='w-full flex justify-between items-center'>
             <Button htmlType='submit' className='w-[48%]' icon={<MessageOutlined />}>
               发送
             </Button>
             <Button className='w-[48%]' icon={<ClearOutlined />} onClick={() => { setCurrentChat([]); form.resetFields() }}>
-              重置
+              更新长时记忆
             </Button>
           </div>
         </Form.Item>
-        <Form.Item>
-          <div className='w-full max-h-40 overflow-auto border rounded-md p-3 border-yellow-950' ref={chatRef}>
+        <Form.Item label='短时记忆'>
+          <div className='w-full max-h-40 overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
             <div className='w-full flex flex-col gap-3'>
               {currentChat.map(({ role, content }, index) => (
                 <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
