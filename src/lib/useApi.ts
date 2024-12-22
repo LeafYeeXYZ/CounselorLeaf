@@ -1,9 +1,5 @@
 import { create } from 'zustand'
-import { uuid } from './utils.ts'
-import { speakApiList, type SpeakApi } from './tauri/api.speak.ts'
-import { chatApiList, type ChatApi, type ChatApiTest } from './tauri/api.chat.ts'
-import { live2dList, type LoadLive2d } from './tauri/api.live2d.ts'
-import { set, get, save, type LongTermMemory, type ShortTermMemory } from './tauri/api.store.ts'
+import { set, get, speakApiList, chatApiList, live2dList, type LoadLive2d } from './utils.ts'
 
 type API = {
 
@@ -15,104 +11,32 @@ type API = {
   testChat: ChatApiTest
   currentChatApi: string
   speak: SpeakApi | null
+  testSpeak: SpeakApiTest | null
   currentSpeakApi: string
   loadLive2d: LoadLive2d
   currentLive2d: string
 
-  memoryAboutSelf: string
-  memoryAboutUser: string
-  longTermMemory: LongTermMemory[]
-  shortTermMemory: ShortTermMemory[]
-
   setSpeakApi: (name: string) => Promise<void>
   setChatApi: (name: string) => Promise<void>
   setLive2d: (name: string) => Promise<void>
-  setMemoryAboutSelf: (content: string) => Promise<void>
-  setMemoryAboutUser: (content: string) => Promise<void>
-  setLongTermMemory: (memory: LongTermMemory[]) => Promise<void>
-  setShortTermMemory: (memory: ShortTermMemory[]) => Promise<void>
-  updateLongTermMemory: (updater: (prev: LongTermMemory[]) => LongTermMemory[] | Promise<LongTermMemory[]>) => Promise<void>
-  updateShortTermMemory: (updater: (prev: ShortTermMemory[]) => ShortTermMemory[] | Promise<ShortTermMemory[]>) => Promise<void>
-
-  resetAllMemory: () => Promise<void>
-  saveAllMemory: () => Promise<string>
-  shortMemoToLong: () => Promise<void>
-  // longMemoToLong: (uuid: string[]) => Promise<void>
-
-  formatPrompt: string
-  getPrompt: () => string
-
 }
 
 const localSpeakApi = await get('default_speak_api')
 const localChatApi = await get('default_chat_api')
 const localLive2d = await get('default_live2d')
-const localMemoryAboutSelf = await get('memory_about_self')
-const localMemoryAboutUser = await get('memory_about_user')
-const localLongTermMemory = await get('long_term_memory')
-const localShortTermMemory = await get('short_term_memory')
 const defaultSpeakApi = speakApiList.find(({ name }) => name === localSpeakApi) ?? speakApiList[0]
 const defaultChatApi = chatApiList.find(({ name }) => name === localChatApi) ?? chatApiList[0]
 const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? live2dList[0]
 
-const DEFAULT_MEMORY_ABOUT_SELF = '我是一个心理学专业的本科生, 男性, 名叫小叶子.'
-const DEFAULT_MEMORY_ABOUT_USER = ''
-const DEFAULT_LONG_TERM_MEMORY: LongTermMemory[] = []
-const DEFAULT_SHORT_TERM_MEMORY: ShortTermMemory[] = []
-
-export const useApi = create<API>()((setState, getState) => ({
-  shortMemoToLong: async () => {
-    const { 
-      shortTermMemory, 
-      updateLongTermMemory,
-      memoryAboutSelf, 
-      memoryAboutUser, 
-      chat 
-    } = getState()
-    const timestamps = shortTermMemory.map((item) => item.timestamp)
-    const memory = {
-      uuid: uuid(),
-      start: Math.min(...timestamps),
-      end: Math.max(...timestamps),
-      summary: 'TODO',
-    }
-    console.log({ memoryAboutSelf, memoryAboutUser, chat })
-    return updateLongTermMemory((prev) => [memory, ...prev])
-  },
-  getPrompt: () => {
-    const { formatPrompt, memoryAboutSelf, memoryAboutUser } = getState()
-    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n${memoryAboutUser || '(无)'}\n\n# 对你的要求\n${formatPrompt}`
-  },
-  formatPrompt: '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导, 避免总是以提问结尾. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.',
-  saveAllMemory: () => {
-    const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory } = getState()
-    const data = JSON.stringify({
-      memoryAboutSelf,
-      memoryAboutUser,
-      longTermMemory,
-      shortTermMemory,
-    }, null, 2)
-    return save(data)
-  },
-  resetAllMemory: async () => {
-    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory } = getState()
-    await setMemoryAboutSelf('')
-    await setMemoryAboutUser('')
-    await setLongTermMemory([])
-    await setShortTermMemory([])
-    return
-  },
+export const useApi = create<API>()((setState) => ({
   chat: defaultChatApi.api,
-  speak: defaultSpeakApi.api,
   testChat: defaultChatApi.test,
+  speak: defaultSpeakApi.api,
+  testSpeak: defaultSpeakApi.test,
   loadLive2d: defaultLive2d.api,
   speakApiList: speakApiList.map(({ name }) => name),
   chatApiList: chatApiList.map(({ name }) => name),
   live2dList: live2dList.map(({ name }) => name),
-  memoryAboutSelf: localMemoryAboutSelf || DEFAULT_MEMORY_ABOUT_SELF,
-  memoryAboutUser: localMemoryAboutUser || DEFAULT_MEMORY_ABOUT_USER,
-  longTermMemory: localLongTermMemory || DEFAULT_LONG_TERM_MEMORY,
-  shortTermMemory: localShortTermMemory || DEFAULT_SHORT_TERM_MEMORY,
   currentSpeakApi: defaultSpeakApi.name,
   currentChatApi: defaultChatApi.name,
   currentLive2d: defaultLive2d.name,
@@ -138,40 +62,6 @@ export const useApi = create<API>()((setState, getState) => ({
       setState({ loadLive2d: item.api, currentLive2d: name })
       await set('default_live2d', name)
     }
-    return
-  },
-  setMemoryAboutSelf: async (content) => {
-    setState({ memoryAboutSelf: content })
-    await set('memory_about_self', content)
-    return
-  },
-  setMemoryAboutUser: async (content) => {
-    setState({ memoryAboutUser: content })
-    await set('memory_about_user', content)
-    return
-  },
-  setLongTermMemory: async (memory) => {
-    setState({ longTermMemory: memory })
-    await set('long_term_memory', memory)
-    return
-  },
-  setShortTermMemory: async (memory) => {
-    setState({ shortTermMemory: memory })
-    await set('short_term_memory', memory)
-    return
-  },
-  updateLongTermMemory: async (updater) => {
-    const prev = await get('long_term_memory')
-    const next = await updater(prev ?? [])
-    setState({ longTermMemory: next })
-    await set('long_term_memory', next)
-    return
-  },
-  updateShortTermMemory: async (updater) => {
-    const prev = await get('short_term_memory')
-    const next = await updater(prev ?? [])
-    setState({ shortTermMemory: next })
-    await set('short_term_memory', next)
     return
   },
 }))

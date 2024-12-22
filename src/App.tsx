@@ -16,10 +16,11 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 export default function App() {
 
   const { setLive2d, setMessageApi, disabled, setDisabled } = useStates()
-  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi } = useApi()
+  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi, testSpeak, setSpeakApi, speakApiList, currentSpeakApi } = useApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [ready, setReady] = useState<boolean | string>(false)
   const [messageApi, messageElement] = message.useMessage()
+
   // 加载模型
   useEffect(() => {
     if (ready !== true) return
@@ -30,11 +31,13 @@ export default function App() {
       setLive2d(null)
     }
   }, [setLive2d, loadLive2d, ready])
+
   // 通知消息组件
   useEffect(() => {
     if (ready !== true) return
     setMessageApi(messageApi)
   }, [messageApi, setMessageApi, ready])
+
   // 检查服务状态
   useEffect(() => {
     // 最小宽度, 主要是为了适配网页端, 桌面端已由 Tauri 设置最小宽度和高度
@@ -42,14 +45,18 @@ export default function App() {
       document.body.innerHTML = '<div class="w-dvw h-dvh flex justify-center items-center">窗口过小, 请调整后刷新</div>'
       return
     }
-    ready === false && testChat().then(() => {
-      setReady(true)
-      setDisabled(false)
-    }).catch((error) => {
-      setReady(error.message)
-      setDisabled('服务状态异常')
-    })
-  }, [testChat, setReady, ready, setDisabled])
+    if (ready === false) {
+      testChat().then(() => {
+        return typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true)
+      }).then(() => {
+        setReady(true)
+        setDisabled(false)
+      }).catch((e) => {
+        setReady(e.message)
+        setDisabled('服务状态异常')
+      })
+    }
+  }, [testChat, setReady, ready, setDisabled, testSpeak])
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
@@ -68,6 +75,16 @@ export default function App() {
                     defaultValue={currentChatApi}
                     onChange={async (value) => { 
                       await setChatApi(value)
+                    }}
+                  />
+                </p>
+                <p className='w-full flex items-center justify-center mt-3'>
+                  <p className='mr-2'>语音生成服务:</p>
+                  <Select 
+                    options={speakApiList.map((name) => ({ label: name, value: name }))}
+                    defaultValue={currentSpeakApi}
+                    onChange={async (value) => { 
+                      await setSpeakApi(value)
                     }}
                   />
                 </p>

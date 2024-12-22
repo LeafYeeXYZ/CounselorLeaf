@@ -4,12 +4,14 @@ import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
 export type LoadLive2d = (
   element: HTMLElement,
 ) => Oml2dMethods & Oml2dEvents & Oml2dProperties
+export type Live2dList = { 
+  name: string
+  api: LoadLive2d
+}[]
 
-// 1. 对话框的样式自定义异常, 只有 minWidth 能正常使用
-// 2. 要是上面那个不好修也可以加个 onMessage 事件, 来手动渲染对话框
-// 3. 要是实例原生有个 destroy 方法就好了, 现在需要手动移除元素
-// 4. 模型没能定位到 parentElement 上, 且只能也在左下或右下
-// 5. 说话时没有张嘴动画
+// 1. 要是实例原生有个 destroy 方法就好了, 现在需要手动移除元素
+// 2. 模型没能定位到 parentElement 上, 且只能也在左下或右下
+// 3. 说话时没有张嘴动画 (引申来说, 希望添加一个运行模型动画的实例方法)
 
 export const catBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
@@ -167,7 +169,7 @@ export const heroBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-export const live2dList: { name: string, api: LoadLive2d }[] = [
+export const live2dList: Live2dList = [
   { name: '恶魔小叶子', api: evilBoy },
   { name: '兔兔小叶子', api: rabbitBoy },
   { name: '紫色小叶子', api: darkBoy },

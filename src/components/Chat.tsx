@@ -4,6 +4,7 @@ import { Button, Form, Input } from 'antd'
 import { MessageOutlined, ClearOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
+import { useMemory } from '../lib/useMemory.ts'
 import { sleep, clone } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
@@ -16,7 +17,8 @@ export function Chat() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, getPrompt, shortTermMemory, setShortTermMemory, speak } = useApi()
+  const { chat, speak } = useApi()
+  const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -110,7 +112,7 @@ export function Chat() {
   return (
     <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
-        className='w-full overflow-auto p-6 pb-2 rounded-md border border-blue-900'
+        className='w-full max-h-[calc(100dvh-10.25rem)] overflow-auto p-6 pb-2 rounded-md border border-blue-900'
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
@@ -155,12 +157,12 @@ export function Chat() {
           </div>
         </Form.Item>
         <Form.Item label='短时记忆'>
-          <div className='w-full max-h-40 overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+          <div className='w-full max-h-60 overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
             <div className='w-full flex flex-col gap-3'>
               {shortTermMemory.map(({ role, content }, index) => (
                 <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
                   <div className='w-full text-sm font-bold'>
-                    {role === 'user' ? '我' : '他'}
+                    {role === 'user' ? userName : selfName}
                   </div>
                   <div className='w-full text-sm'>
                     {content}

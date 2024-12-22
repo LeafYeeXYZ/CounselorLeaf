@@ -1,8 +1,3 @@
-export type ChatApi = (
-  messages: { role: string, content: string }[],
-) => Promise<AsyncGenerator<{ response: string, done: boolean }, void, void>>
-export type ChatApiTest = () => Promise<boolean>
-
 const URL = import.meta.env.VITE_WEB_SERVER_URL ?? ''
 const chat_web = async function* (messages: { role: string, content: string }[]) {
   const response = await fetch(URL + '/being/chat', {
@@ -41,10 +36,6 @@ const test_web: ChatApiTest = async () => {
   return true
 }
 
-export const chatApiList: { name: string, api: ChatApi, test: ChatApiTest }[] = [
-  { 
-    name: 'Cloudflare AI - qwen1.5:14b',
-    api: (messages) => Promise.resolve(chat_web(messages)),
-    test: test_web,
-  },
+export const chatApiList: ChatApiList = [
+  { name: 'Cloudflare AI - qwen1.5:14b', api: chat_web, test: test_web },
 ]

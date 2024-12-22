@@ -1,7 +1,3 @@
-export type SpeakApi = (
-  text: string
-) => Promise<void>
-
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {
   await new Promise(resolve => setTimeout(resolve, 50))
@@ -22,8 +18,11 @@ const speak_browser: SpeakApi = (text: string) => {
     speechSynthesis.speak(utterance)
   })
 }
+const test_browser: SpeakApiTest = async () => {
+  return true
+}
 
-export const speakApiList: { name: string, api: SpeakApi | null }[] = [
-  { name: '关闭', api: null },
-  { name: 'Web Speech API', api: speak_browser },
+export const speakApiList: SpeakApiList = [
+  { name: '关闭', api: null, test: null },
+  { name: 'Web Speech API', api: speak_browser, test: test_browser },
 ]

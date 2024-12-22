@@ -1,18 +1,22 @@
-import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
-import { Form, Collapse, type CollapseProps, Button, Popover, Input } from 'antd'
+import { useMemory } from '../lib/useMemory.ts'
+import { Form, Collapse, type CollapseProps, Button, Popover, Input, Space } from 'antd'
 import { ExportOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useMemo, useState, useRef } from 'react'
 
 export function Memory() {
 
   const { 
+    userName,
+    selfName,
+    setUserName,
+    setSelfName,
     memoryAboutSelf,
     memoryAboutUser,
     longTermMemory,
     resetAllMemory,
     saveAllMemory,
-  } = useApi()
+  } = useMemory()
   const { messageApi } = useStates()
 
   const longTermMemoryItems = useMemo<CollapseProps['items']>(() => {
@@ -33,13 +37,43 @@ export function Memory() {
 
   const [openDeleteMemory, setOpenDeleteMemory] = useState<boolean>(false)
   const deleteMemoryText = useRef<string>('')
+  const [form] = Form.useForm()
 
   return (
     <section className='w-full h-full flex flex-col justify-center items-center'>
       <Form 
+        form={form}
         layout='vertical' 
         className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-10.25rem)]'
+        initialValues={{
+          userName,
+          selfName,
+        }}
       >
+        <Form.Item label='你和他的名字'>
+          <Space.Compact block>
+            <Form.Item noStyle name='userName'>
+              <Input 
+                placeholder='你的名字'
+              />
+            </Form.Item>
+            <Form.Item noStyle name='selfName'>
+              <Input 
+                placeholder='他的名字'
+              />
+            </Form.Item>
+            <Button
+              onClick={async () => {
+                await setUserName(form.getFieldValue('userName'))
+                await setSelfName(form.getFieldValue('selfName'))
+                messageApi?.success('更新姓名成功')
+              }}
+              autoInsertSpace={false}
+            >
+              更新
+            </Button>
+          </Space.Compact>
+        </Form.Item>
         <Form.Item label='关于自己的记忆'>
           <div className='w-full max-h-32 overflow-auto border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
             {memoryAboutSelf || '没有记忆'}
