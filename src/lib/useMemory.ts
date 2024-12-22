@@ -1,6 +1,5 @@
 import { create } from 'zustand'
-import { uuid } from './utils.ts'
-import { set, get, save } from './tauri/api.store.ts'
+import { uuid, get, set, save } from './utils.ts'
 
 type Memory = {
 
