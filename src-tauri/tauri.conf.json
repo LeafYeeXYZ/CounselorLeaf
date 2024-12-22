@@ -1,8 +1,8 @@
 {
   "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
-  "productName": "cyber-leaf",
+  "productName": "digital-life",
   "version": "0.1.0",
-  "identifier": "cyber-leaf.leafyee.xyz",
+  "identifier": "digital-life.leafyee.xyz",
   "build": {
     "frontendDist": "../dist",
     "devUrl": "http://localhost:5173",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "赛博小叶子",
+        "title": "数字生命",
         "width": 800,
         "height": 700,
         "resizable": true,
