@@ -146,6 +146,7 @@ export function Chat() {
                     recognition!.stop()
                     const text = await recognition!.result
                     form.setFieldsValue({ text })
+                    messageApi?.success('语音识别成功')
                   } catch (e) {
                     messageApi?.warning(e instanceof Error ? e.message : typeof e === 'string' ? e : '未知错误')
                   } finally {
@@ -161,6 +162,7 @@ export function Chat() {
                 icon={<NotificationOutlined />}
                 disabled={disabled !== false || listen === null}
                 onClick={() => {
+                  messageApi?.info('再次点击按钮可以结束录音')
                   const recognition = listen!()
                   setRecognition(recognition)
                   recognition.start()
