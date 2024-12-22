@@ -38,7 +38,7 @@ export function Chat() {
       let response = ''
       
       await setShortTermMemory(input)
-      const reg = /。|？|！|,|，|;|；|~/g
+      const reg = /。|？|！|,|，|;|；|~|～/g
       const emoji = emojiReg()
       let current = ''
       let buffer = ''
@@ -51,7 +51,9 @@ export function Chat() {
         if (splited.length > 1) {
           const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
           for (const s of splited.slice(0, -1)) {
-            speak && speak(splited.slice(0, -1).join('').replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+            if (typeof speak === 'function') {
+              speak(splited.slice(0, -1).join('').replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+            }
             let words = ''
             for (const w of s) {
               current += w
@@ -69,12 +71,16 @@ export function Chat() {
             await sleep(1000) // 每个句子之间的间隔
           }
           buffer = splited[splited.length - 1]
-          speak && await promise // 等待这句话说完
+          if (typeof speak === 'function') {
+            await promise // 等待这句话说完
+          }
         }
       }
       if (buffer.length !== 0) {
         const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
-        speak && speak(buffer.replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+        if (typeof speak === 'function') {
+          speak(buffer.replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+        }
         let words = ''
         for (const w of buffer) {
           current += w
@@ -85,7 +91,9 @@ export function Chat() {
           live2d?.tipsMessage(words, 2000, Date.now())
           await sleep(30)
         }
-        await promise // 等待这句话说完
+        if (typeof speak === 'function') {
+          await promise // 等待这句话说完
+        }
       }
       await setShortTermMemory([...input, { role: 'assistant', content: response, timestamp: time }])
 
