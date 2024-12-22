@@ -16,7 +16,7 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 export default function App() {
 
   const { setLive2d, setMessageApi, disabled, setDisabled } = useStates()
-  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi, testSpeak, setSpeakApi, speakApiList, currentSpeakApi } = useApi()
+  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi, testSpeak, setSpeakApi, speakApiList, currentSpeakApi, listenApiList, setListenApi, currentListenApi, testListen } = useApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [ready, setReady] = useState<boolean | string>(false)
   const [messageApi, messageElement] = message.useMessage()
@@ -49,6 +49,15 @@ export default function App() {
       testChat().then(() => {
         return typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true)
       }).then(() => {
+        return typeof testListen === 'function' ? testListen() : Promise.resolve(true)
+      }).then(() => {
+        // 如果语音转文字功能开启, 请求权限
+        return typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }) : Promise.resolve(null)
+      }).then((stream) => {
+        // 关闭音频流
+        if (stream !== null) {
+          stream.getTracks().forEach((track) => track.stop())
+        }
         setReady(true)
         setDisabled(false)
       }).catch((e) => {
@@ -56,7 +65,7 @@ export default function App() {
         setDisabled('服务状态异常')
       })
     }
-  }, [testChat, setReady, ready, setDisabled, testSpeak])
+  }, [testChat, setReady, ready, setDisabled, testSpeak, testListen])
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
@@ -67,9 +76,9 @@ export default function App() {
                 {page}
               </div>
             ) : (
-              <p className='w-full flex flex-col items-center justify-center'>
-                <p className='w-full flex items-center justify-center'>
-                  <p className='mr-2'>对话生成服务:</p>
+              <div className='w-full flex flex-col items-center justify-center'>
+                <div className='w-full flex items-center justify-center'>
+                  <div className='mr-2'>对话生成服务:</div>
                   <Select 
                     options={chatApiList.map((name) => ({ label: name, value: name }))}
                     defaultValue={currentChatApi}
@@ -77,9 +86,9 @@ export default function App() {
                       await setChatApi(value)
                     }}
                   />
-                </p>
-                <p className='w-full flex items-center justify-center mt-3'>
-                  <p className='mr-2'>语音生成服务:</p>
+                </div>
+                <div className='w-full flex items-center justify-center mt-3'>
+                  <div className='mr-2'>语音生成服务:</div>
                   <Select 
                     options={speakApiList.map((name) => ({ label: name, value: name }))}
                     defaultValue={currentSpeakApi}
@@ -87,24 +96,34 @@ export default function App() {
                       await setSpeakApi(value)
                     }}
                   />
-                </p>
-                <p className='w-3/4 border-b border-blue-900 my-4' />
+                </div>
+                <div className='w-full flex items-center justify-center mt-3'>
+                  <div className='mr-2'>语音识别服务:</div>
+                  <Select 
+                    options={listenApiList.map((name) => ({ label: name, value: name }))}
+                    defaultValue={currentListenApi}
+                    onChange={async (value) => { 
+                      await setListenApi(value)
+                    }}
+                  />
+                </div>
+                <div className='w-3/4 border-b border-blue-900 my-4' />
                 {ready === false ? (
-                  <p className='flex items-center justify-center'>
+                  <div className='flex items-center justify-center'>
                     <span>加载中</span>
                     <LoadingOutlined className='ml-[0.3rem] mr-0' />
-                  </p>
+                  </div>
                 ) : (
                   <>
-                    <p>服务状态异常</p>
-                    <p className='text-sm my-2'>错误信息: {ready}</p>
+                    <div>服务状态异常</div>
+                    <div className='text-sm my-2'>错误信息: {ready}</div>
                     <Button onClick={() => setReady(false)} autoInsertSpace={false}>
                       点击重试
                     </Button>
                   </>
                 )}
 
-              </p>
+              </div>
             )}
           <nav className='absolute bottom-6'>
             <Segmented
@@ -120,12 +139,12 @@ export default function App() {
               className='border border-blue-900 rounded-md py-[0.3rem] px-[0.6rem] bg-white text-sm flex justify-center items-center'
               style={ready !== true ? { filter: 'grayscale(100%)', backgroundColor: '#f5f5f5', color: '#b8b8b8' } : undefined}
             >
-              <p className='mr-1'>
+              <div className='mr-1'>
                 当前状态:
-              </p>
-              <p className='flex justify-center items-center'>
+              </div>
+              <div className='flex justify-center items-center'>
                 {disabled === false ? '空闲' : disabled}
-              </p>
+              </div>
             </div>
           </div>
         </div>

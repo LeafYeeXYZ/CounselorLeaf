@@ -12,8 +12,8 @@ if (speechSynthesis) {
 } else {
   document.body.innerHTML = `
     <main style="width: 100dvw; height: 100dvh; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 0.5rem;">
-      <p>当前浏览器不支持语音合成 API</p>
-      <p>请使用最新版的 Chrome / Safari 浏览器</p>
+      <div>当前浏览器不支持语音合成 API</div>
+      <div>请使用最新版的 Chrome / Safari 浏览器</div>
     </main>
   `
 }

@@ -7,8 +7,8 @@
 - **关于基础模型**: 目前用的是 `qwen2.5:7b` (本地) 或 `qwen1.5:13b-awq` (Web), 后期可能会使用 <https://github.com/SmartFlowAI/EmoLLM> 或心理学部老师的相关技术/模型
 - **关于 `live2d`**: ~~后期可能会从 <https://github.com/oh-my-live2d/oh-my-live2d> 迁移到 <https://github.com/guansss/pixi-live2d-display>, 以支持更多的动作、表情和更大的自定义空间.~~ 但是后者显示得很模糊, 而且需要自己引入 `Cubism` 依赖, 还是倾向于使用前者; 可能会 `fork` 一个来按需修改
 - **关于语音生成**: 目前用的是 `Web Speech API`, 但效果感觉一般, 默认关闭. 后期会探索使用其他 `TTS` 技术
-- **关于语音输入**: 暂未实现, 近期也会通过 `Web Speech API` 先实现一个原型; 目前可以使用设备自带的语音转文本功能
-- **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"
+- **关于语音输入**: 目前用的也是 `Web Speech API`, 默认关闭. 后期会探索使用其他 `STT` 技术
+- **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"; 交互效果类似于: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
 
 | 记忆模型 | 示意图 |
 | :---: | :---: |
@@ -42,7 +42,7 @@ bun preview:web # 预览 Web 版本
 
 - [ ] 软件图标
 - [ ] 黑暗模式, 包括 `index.html`
-- [ ] 添加语音识别
+- [x] 添加语音识别 (Web Speech API)
 - 记忆功能
   - [ ] 对话和记忆内容包含时间信息 🚧
   - [ ] 短时记忆 -> 长时记忆和自我与对方记忆 🚧

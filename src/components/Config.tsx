@@ -7,12 +7,15 @@ export function Config() {
     setSpeakApi, 
     setChatApi, 
     setLive2d,
+    setListenApi,
     speakApiList,
     chatApiList,
     live2dList,
+    listenApiList,
     currentSpeakApi,
     currentChatApi,
     currentLive2d,
+    currentListenApi,
   } = useApi()
 
   return (
@@ -36,6 +39,15 @@ export function Config() {
             defaultValue={currentChatApi}
             onChange={async (value) => { 
               await setChatApi(value)
+            }}
+          />
+        </Form.Item>
+        <Form.Item label='语音识别服务'>
+          <Select 
+            options={listenApiList.map((name) => ({ label: name, value: name }))}
+            defaultValue={currentListenApi}
+            onChange={async (value) => { 
+              await setListenApi(value)
             }}
           />
         </Form.Item>

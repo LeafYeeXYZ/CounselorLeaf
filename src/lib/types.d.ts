@@ -15,6 +15,7 @@ declare type StoreKeys =
   'default_live2d' |
   'default_chat_api' |
   'default_speak_api' |
+  'default_listen_api' |
   'self_name' |
   'user_name' |
   'memory_about_self' | // 模型对用户的持久化记忆
@@ -28,3 +29,6 @@ declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest }[]
 declare type SpeakApi = (text: string) => Promise<void>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type SpeakApiList = ({ name: string, api: SpeakApi, test: SpeakApiTest } | { name: string, api: null, test: null })[]
+declare type ListenApi = () => { result: Promise<string>, start: () => void, stop: () => void }
+declare type ListenApiTest = () => Promise<boolean>
+declare type ListenApiList = ({ name: string, api: ListenApi, test: ListenApiTest } | { name: string, api: null, test: null })[]

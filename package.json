@@ -13,7 +13,8 @@
     "b": "bunx tauri build",
     "b:win": "bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
     "b:web": "bun run ./scripts/before-web-build.ts && vite build --config vite.config.web.ts && bun run ./scripts/after-web-build.ts",
-    "preview:web": "vite preview --outDir ./dist-web"
+    "preview:web": "vite preview --outDir ./dist-web",
+    "dev:web": "bun run ./scripts/before-web-build.ts && vite --config vite.config.web.ts"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",

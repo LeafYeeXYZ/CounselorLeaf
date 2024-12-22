@@ -1,7 +1,7 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import { Button, Form, Input } from 'antd'
-import { MessageOutlined, ClearOutlined } from '@ant-design/icons'
+import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
 import { useMemory } from '../lib/useMemory.ts'
@@ -17,7 +17,7 @@ export function Chat() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, speak } = useApi()
+  const { chat, speak, listen } = useApi()
   const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
@@ -109,10 +109,12 @@ export function Chat() {
     await setShortTermMemory([])
   }
 
+  const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
+
   return (
     <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
-        className='w-full max-h-[calc(100dvh-10.25rem)] overflow-auto p-6 pb-2 rounded-md border border-blue-900'
+        className='w-full max-h-[calc(100dvh-10.25rem)] relative overflow-auto p-6 pb-2 rounded-md border border-blue-900'
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
@@ -134,16 +136,48 @@ export function Chat() {
           <Input.TextArea />
         </Form.Item>
         <Form.Item>
-          <div className='w-full flex justify-between items-center'>
+          <div className='w-full flex justify-between items-center gap-3'>
+            {recognition !== null ? (
+              <Button
+                className='w-full'
+                icon={<LoadingOutlined />}
+                onClick={async () => {
+                  try {
+                    recognition!.stop()
+                    const text = await recognition!.result
+                    form.setFieldsValue({ text })
+                  } catch (e) {
+                    messageApi?.warning(e instanceof Error ? e.message : typeof e === 'string' ? e : '未知错误')
+                  } finally {
+                    setRecognition(null)
+                  }
+                }}
+              >
+                结束录音
+              </Button>
+            ) : (
+              <Button
+                className='w-full'
+                icon={<NotificationOutlined />}
+                disabled={disabled !== false || listen === null}
+                onClick={() => {
+                  const recognition = listen!()
+                  setRecognition(recognition)
+                  recognition.start()
+                }}
+              >
+                开始录音
+              </Button>
+            )}
             <Button 
               htmlType='submit' 
-              className='w-[48%]' 
+              className='w-full'
               icon={<MessageOutlined />}
             >
               发送
             </Button>
             <Button 
-              className='w-[48%]' 
+              className='w-full' 
               icon={<ClearOutlined />} 
               disabled={disabled !== false || shortTermMemory.length === 0}
               onClick={async () => { 
@@ -152,7 +186,7 @@ export function Chat() {
                 form.resetFields()
                 flushSync(() => setDisabled(false))
               }}>
-              更新长时记忆
+              更新记忆
             </Button>
           </div>
         </Form.Item>
