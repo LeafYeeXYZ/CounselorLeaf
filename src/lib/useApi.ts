@@ -83,7 +83,7 @@ export const useApi = create<API>()((setState, getState) => ({
     const { formatPrompt, memoryAboutSelf, memoryAboutUser } = getState()
     return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n${memoryAboutUser || '(无)'}\n\n# 对你的要求\n${formatPrompt}`
   },
-  formatPrompt: '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.',
+  formatPrompt: '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导, 避免总是以提问结尾. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动.',
   saveAllMemory: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory } = getState()
     const data = JSON.stringify({

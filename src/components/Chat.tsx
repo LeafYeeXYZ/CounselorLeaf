@@ -5,6 +5,7 @@ import { MessageOutlined, ClearOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
 import { sleep, clone } from '../lib/utils.ts'
+import emojiReg from 'emoji-regex'
 
 interface FormValues {
   text: string
@@ -15,7 +16,7 @@ export function Chat() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, getPrompt, shortTermMemory, setShortTermMemory } = useApi()
+  const { chat, getPrompt, shortTermMemory, setShortTermMemory, speak } = useApi()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -37,7 +38,8 @@ export function Chat() {
       let response = ''
       
       await setShortTermMemory(input)
-      const reg = /。|？|！|,|，|;|；|~/
+      const reg = /。|？|！|,|，|;|；|~/g
+      const emoji = emojiReg()
       let current = ''
       let buffer = ''
       live2d?.clearTips()
@@ -47,7 +49,9 @@ export function Chat() {
         response += text
         const splited = buffer.split(reg).filter((s) => s.length !== 0)
         if (splited.length > 1) {
+          const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
           for (const s of splited.slice(0, -1)) {
+            speak && speak(splited.slice(0, -1).join('').replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
             let words = ''
             for (const w of s) {
               current += w
@@ -65,9 +69,12 @@ export function Chat() {
             await sleep(1000) // 每个句子之间的间隔
           }
           buffer = splited[splited.length - 1]
+          speak && await promise // 等待这句话说完
         }
       }
       if (buffer.length !== 0) {
+        const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
+        speak && speak(buffer.replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
         let words = ''
         for (const w of buffer) {
           current += w
@@ -78,6 +85,7 @@ export function Chat() {
           live2d?.tipsMessage(words, 2000, Date.now())
           await sleep(30)
         }
+        await promise // 等待这句话说完
       }
       await setShortTermMemory([...input, { role: 'assistant', content: response, timestamp: time }])
 

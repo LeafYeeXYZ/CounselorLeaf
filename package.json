@@ -20,6 +20,7 @@
     "@tauri-apps/plugin-dialog": "~2.2.0",
     "@tauri-apps/plugin-store": "~2.2.0",
     "antd": "^5.22.5",
+    "emoji-regex": "^10.4.0",
     "idb-keyval": "^6.2.1",
     "oh-my-live2d": "^0.19.3",
     "ollama": "^0.5.11",

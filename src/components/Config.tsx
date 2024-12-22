@@ -23,7 +23,6 @@ export function Config() {
       >
         <Form.Item label='语音合成服务'>
           <Select 
-            disabled
             options={speakApiList.map((name) => ({ label: name, value: name }))}
             value={currentSpeakApi}
             onChange={async (value) => { 
