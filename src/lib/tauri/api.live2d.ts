@@ -11,7 +11,7 @@ export type LoadLive2d = (
 // 4. 模型没能定位到 parentElement 上
 // 5. 说话时没能张嘴
 
-const catBoy: LoadLive2d = (element) => {
+export const catBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -30,7 +30,7 @@ const catBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const foxBoy: LoadLive2d = (element) => {
+export const foxBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -49,7 +49,7 @@ const foxBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const rabbitBoy: LoadLive2d = (element) => {
+export const rabbitBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -70,7 +70,7 @@ const rabbitBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const evilBoy: LoadLive2d = (element) => {
+export const evilBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -89,7 +89,7 @@ const evilBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const goldBoy: LoadLive2d = (element) => {
+export const goldBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -108,7 +108,7 @@ const goldBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const darkBoy: LoadLive2d = (element) => {
+export const darkBoy: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -128,7 +128,7 @@ const darkBoy: LoadLive2d = (element) => {
   return live2d
 }
 
-const jiniqi: LoadLive2d = (element) => {
+export const jiniqi: LoadLive2d = (element) => {
   const live2d = loadOml2d({
     parentElement: element,
     dockedPosition: 'right',
@@ -147,11 +147,32 @@ const jiniqi: LoadLive2d = (element) => {
   return live2d
 }
 
+export const heroBoy: LoadLive2d = (element) => {
+  const live2d = loadOml2d({
+    parentElement: element,
+    dockedPosition: 'right',
+    mobileDisplay: true,
+    menus: { disable: true },
+    sayHello: false,
+    tips: {
+      copyTips: { message: [] },
+      style: { minWidth: '200px' },
+    },
+    models: [{
+      path: '/live2d/hero-boy/live1.model3.json',
+      scale: 0.09,
+      position: [0, 70],
+    }],
+  })
+  return live2d
+}
+
 export const live2dList: { name: string, api: LoadLive2d }[] = [
   { name: '恶魔小叶子', api: evilBoy },
   { name: '兔兔小叶子', api: rabbitBoy },
   { name: '紫色小叶子', api: darkBoy },
   { name: '金毛小叶子', api: goldBoy },
+  { name: '勇者小叶子', api: heroBoy },
   { name: '狐狸小叶子', api: foxBoy }, // 太大了, 不放进 Web 版
   { name: '猫猫小叶子', api: catBoy }, // 太大了, 不放进 Web 版
   { name: '基尼奇', api: jiniqi },

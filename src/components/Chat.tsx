@@ -36,7 +36,6 @@ export function Chat() {
       ])
       let response = ''
       
-      // flushSync(() => setCurrentChat(input))
       await setShortTermMemory(input)
       const reg = /。|？|！|,|，|;|；|~/
       let current = ''
@@ -52,7 +51,6 @@ export function Chat() {
             let words = ''
             for (const w of s) {
               current += w
-              // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
               await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
               words += w
               live2d?.tipsMessage(words, 10000, Date.now())
@@ -61,7 +59,6 @@ export function Chat() {
             const comma = response[current.length]
             if (comma.match(reg)) {
               current += comma
-              // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
               await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
               await sleep(30)
             }
@@ -74,7 +71,6 @@ export function Chat() {
         let words = ''
         for (const w of buffer) {
           current += w
-          // flushSync(() => setCurrentChat([...input, { role: 'assistant', content: current }]))
           await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
           if (!w.match(reg)) {
             words += w
@@ -83,7 +79,6 @@ export function Chat() {
           await sleep(30)
         }
       }
-      // setCurrentChat([...input, { role: 'assistant', content: response }])
       await setShortTermMemory([...input, { role: 'assistant', content: response, timestamp: time }])
 
     } catch (error) {
