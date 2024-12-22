@@ -8,7 +8,7 @@
 - **关于 `live2d`**: 后期可能会从 <https://github.com/oh-my-live2d/oh-my-live2d> 迁移到 <https://github.com/guansss/pixi-live2d-display>, 以支持更多的动作、表情和更大的自定义空间.
 - **关于语音生成**: 目前用的是 `Web Speech API`, 但效果感觉一般, 默认关闭. 后期会探索使用其他 `TTS` 技术
 - **关于语音输入**: 暂未实现, 近期也会通过 `Web Speech API` 先实现一个原型; 目前可以使用设备自带的语音转文本功能
-- **愿景**: 如流浪地球2 (<ttps://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"
+- **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"
 
 | 记忆模型 | 示意图 |
 | :---: | :---: |
