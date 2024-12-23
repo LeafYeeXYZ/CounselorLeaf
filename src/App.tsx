@@ -15,40 +15,26 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 
 export default function App() {
 
-  const { setLive2d, setMessageApi, disabled, setDisabled } = useStates()
-  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi, testSpeak, setSpeakApi, speakApiList, currentSpeakApi, listenApiList, setListenApi, currentListenApi, testListen } = useApi()
+  const { setMessageApi, disabled, setDisabled } = useStates()
+  const { loadLive2d, testChat, setChatApi, chatApiList, currentChatApi, testSpeak, setSpeakApi, speakApiList, currentSpeakApi, listenApiList, setListenApi, currentListenApi, testListen, setLive2dApi } = useApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [ready, setReady] = useState<boolean | string>(false)
   const [messageApi, messageElement] = message.useMessage()
 
-  // 加载模型
-  useEffect(() => {
-    if (ready !== true) return
-    const live2d = loadLive2d(document.getElementById('live2d')!)
-    setLive2d(live2d)
-    return () => {
-      document.getElementById('live2d')!.innerHTML = ''
-      setLive2d(null)
-    }
-  }, [setLive2d, loadLive2d, ready])
-
-  // 通知消息组件
-  useEffect(() => {
-    if (ready !== true) return
-    setMessageApi(messageApi)
-  }, [messageApi, setMessageApi, ready])
-
-  // 检查服务状态
+  // 初始化
   useEffect(() => {
     // 最小宽度, 主要是为了适配网页端, 桌面端已由 Tauri 设置最小宽度和高度
     if (window.innerWidth < 780 || window.innerHeight < 600) {
       document.body.innerHTML = '<div class="w-dvw h-dvh flex justify-center items-center">窗口过小, 请调整后刷新</div>'
       return
     }
+    // 加载服务
     if (ready === false) {
       testChat().then(() => {
+        // 测试语音合成功能
         return typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true)
       }).then(() => {
+        // 测试语音转文字功能
         return typeof testListen === 'function' ? testListen() : Promise.resolve(true)
       }).then(() => {
         // 如果语音转文字功能开启, 请求权限
@@ -58,14 +44,32 @@ export default function App() {
         if (stream !== null) {
           stream.getTracks().forEach((track) => track.stop())
         }
+        // 设置通知 API
+        return Promise.resolve()
+      }).then(() => {
+        // 完成加载
         setReady(true)
         setDisabled(false)
       }).catch((e) => {
         setReady(e.message)
         setDisabled('服务状态异常')
+      }).finally(() => {
+        // 设置消息 API
+        setMessageApi(message)
       })
     }
-  }, [testChat, setReady, ready, setDisabled, testSpeak, testListen])
+  }, [ready, messageApi, setDisabled, setMessageApi, testChat, testSpeak, testListen])
+
+  // 加载看板娘
+  useEffect(() => {
+    if (ready !== true) return
+    const live2d = loadLive2d(document.getElementById('live2d')!)
+    setLive2dApi(live2d)
+    return () => {
+      document.getElementById('live2d')!.innerHTML = ''
+      setLive2dApi(null)
+    }
+  }, [ready, loadLive2d, setLive2dApi])
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>

@@ -16,8 +16,8 @@ export function Chat() {
 
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
-  const { disabled, setDisabled, live2d, messageApi } = useStates()
-  const { chat, speak, listen } = useApi()
+  const { disabled, setDisabled, messageApi } = useStates()
+  const { chat, speak, listen, live2d } = useApi()
   const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {

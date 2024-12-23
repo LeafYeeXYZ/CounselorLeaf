@@ -6,7 +6,7 @@ export function Config() {
   const { 
     setSpeakApi, 
     setChatApi, 
-    setLive2d,
+    setLoadLive2d,
     setListenApi,
     speakApiList,
     chatApiList,
@@ -56,7 +56,7 @@ export function Config() {
             options={live2dList.map((name) => ({ label: name, value: name }))}
             defaultValue={currentLive2d}
             onChange={async (value) => { 
-              await setLive2d(value)
+              await setLoadLive2d(value)
             }}
           />
         </Form.Item>

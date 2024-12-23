@@ -1,9 +1,10 @@
 import { loadOml2d } from 'oh-my-live2d'
 import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
 
+export type Live2dApi = Oml2dMethods & Oml2dEvents & Oml2dProperties
 export type LoadLive2d = (
   element: HTMLElement,
-) => Oml2dMethods & Oml2dEvents & Oml2dProperties
+) => Live2dApi
 export type Live2dList = { 
   name: string
   api: LoadLive2d
