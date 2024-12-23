@@ -41,7 +41,7 @@ export function Chat() {
         ...input.map(({ role, content }) => ({ role, content })),
       ])
       let response = ''
-      
+      let tokenSet = false
       await setShortTermMemory(input)
       const reg = /。|？|！|,|，|;|；|~|～/g
       const emoji = emojiReg()
@@ -80,8 +80,9 @@ export function Chat() {
             await promise // 等待这句话说完
           }
         }
-        if (chunk.done) {
-          setTokenUsage(chunk.token ?? (input.map(({ content }) => content).join('').length + response.length))
+        if (chunk.done && chunk.token !== undefined) {
+          tokenSet = true
+          setTokenUsage(chunk.token)
         }
       }
       if (buffer.length !== 0) {
@@ -103,8 +104,11 @@ export function Chat() {
           await promise // 等待这句话说完
         }
       }
-      await setShortTermMemory([...input, { role: 'assistant', content: response, timestamp: time }])
-
+      const output = [...input, { role: 'assistant', content: response, timestamp: time }]
+      if (!tokenSet) {
+        setTokenUsage(output.map(({ content }) => content).join('').length)
+      }
+      await setShortTermMemory(output)
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
       await setShortTermMemory(prev)
