@@ -18,7 +18,12 @@ const chat_web = async function* (messages: { role: string, content: string }[])
     if (i === data.length - 1) {
       done = true
     }
-    yield { response, done }
+    if (done) {
+      console.log(json)
+      yield { response, done, token: NaN }
+    } else {
+      yield { response, done }
+    }
   }
 }
 const test_web: ChatApiTest = async () => {

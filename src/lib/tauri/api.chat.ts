@@ -10,7 +10,7 @@ const chat_ollama: ChatApi = async function* (messages: { role: string, content:
   })
   for await (const chunk of response) {
     if (chunk.done) {
-      yield { response: chunk.message.content ?? '', done: true }
+      yield { response: chunk.message.content ?? '', done: true, token: chunk.prompt_eval_count + chunk.eval_count }
     } else {
       yield { response: chunk.message.content ?? '', done: false }
     }

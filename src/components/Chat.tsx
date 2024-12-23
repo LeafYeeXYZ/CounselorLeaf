@@ -1,6 +1,6 @@
 import { flushSync } from 'react-dom'
 import { useRef, useEffect, useState } from 'react'
-import { Button, Form, Input } from 'antd'
+import { Button, Form, Input, Tag } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
@@ -24,6 +24,8 @@ export function Chat() {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
     }
   }, [shortTermMemory])
+  const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
+  const [tokenUsage, setTokenUsage] = useState<number | null>(null)
 
   const onFinish = async (values: FormValues) => {
     const prev = clone(shortTermMemory)
@@ -77,6 +79,9 @@ export function Chat() {
             await promise // 等待这句话说完
           }
         }
+        if (chunk.done) {
+          setTokenUsage(chunk.token ?? null)
+        }
       }
       if (buffer.length !== 0) {
         const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
@@ -109,8 +114,6 @@ export function Chat() {
     await setShortTermMemory([])
   }
 
-  const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
-
   return (
     <section className='w-full max-w-md overflow-hidden flex flex-col justify-center items-center'>
       <Form
@@ -129,7 +132,7 @@ export function Chat() {
         disabled={disabled !== false}
       >
         <Form.Item
-          label='消息'
+          label={<span>消息{tokenUsage !== null && <Tag className='ml-[0.35rem]'>记忆负荷: {tokenUsage}</Tag>}</span>}
           name='text'
           rules={[{ required: true, message: '请输入消息' }]}
         >

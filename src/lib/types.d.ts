@@ -23,7 +23,7 @@ declare type StoreKeys =
   'long_term_memory' | // 长期记忆, 包含数次对话的总结
   'short_term_memory' // 短期记忆, 包含当前对话的内容
 
-declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean }, void, void>
+declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean, token?: number }, void, void>
 declare type ChatApiTest = () => Promise<boolean>
 declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest }[]
 declare type SpeakApi = (text: string) => Promise<void>
