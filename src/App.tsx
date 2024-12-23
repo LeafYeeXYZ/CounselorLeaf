@@ -53,12 +53,15 @@ export default function App() {
       }).catch((e) => {
         setReady(e.message)
         setDisabled('服务状态异常')
-      }).finally(() => {
-        // 设置消息 API
-        setMessageApi(message)
       })
     }
-  }, [ready, messageApi, setDisabled, setMessageApi, testChat, testSpeak, testListen])
+  }, [ready, setDisabled, testChat, testSpeak, testListen])
+
+  // 加载消息通知
+  useEffect(() => {
+    if (ready !== true) return
+    setMessageApi(messageApi)
+  }, [ready, messageApi, setMessageApi])
 
   // 加载看板娘
   useEffect(() => {
