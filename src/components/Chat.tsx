@@ -33,7 +33,7 @@ export function Chat() {
         ...prev,
         { role: 'user', content: values.text, timestamp: time },
       ]
-      const answer = await chat([
+      const answer = chat([
         { role: 'system', content: getPrompt() },
         ...input.map(({ role, content }) => ({ role, content })),
       ])

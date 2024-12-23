@@ -8,6 +8,8 @@
 - **关于 `live2d`**: ~~后期可能会从 <https://github.com/oh-my-live2d/oh-my-live2d> 迁移到 <https://github.com/guansss/pixi-live2d-display>, 以支持更多的动作、表情和更大的自定义空间.~~ 但是后者显示得很模糊, 而且需要自己引入 `Cubism` 依赖, 还是倾向于使用前者; 可能会 `fork` 一个来按需修改
 - **关于语音生成**: 目前用的是 `Web Speech API`, 但效果感觉一般, 默认关闭. 后期会探索使用其他 `TTS` 技术
 - **关于语音输入**: 目前用的也是 `Web Speech API`, 默认关闭. 后期会探索使用其他 `STT` 技术
+- **文件输入**: 未来可能会通过 <https://github.com/microsoft/markitdown> 支持文件输入 (把 `Python` 作为 `Tauri` 的 `sidecar` 运行)
+- **外部世界信息**: 未来会加入可选的天气、新闻、股票等信息给 AI (通过相关平台的 API 在线获取)
 - **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"; 交互效果类似于: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
 
 | 记忆模型 | 示意图 |
