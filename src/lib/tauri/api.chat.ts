@@ -29,5 +29,5 @@ const test_ollama: ChatApiTest = async () => {
 }
 
 export const chatApiList: ChatApiList = [
-  { name: 'Ollama - qwen2.5:7b', api: chat_ollama, test: test_ollama },
+  { name: 'Ollama - qwen2.5:7b', api: chat_ollama, test: test_ollama, maxToken: 100_000 },
 ]

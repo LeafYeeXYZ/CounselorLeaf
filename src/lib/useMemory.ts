@@ -20,19 +20,10 @@ type Memory = {
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
   shortMemoToLong: (chat: ChatApi) => Promise<void>
-  // longMemoToLong: (uuid: string[]) => Promise<void>
+  longMemoToLong: (uuids?: string[]) => Promise<void>
 
   getPrompt: () => string
 }
-
-const formatPrompt = '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导, 避免总是以提问结尾. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动. 多呼唤对方的名字, 以增加亲密感.'
-
-const localSelfName = await get('self_name')
-const localUserName = await get('user_name')
-const localMemoryAboutSelf = await get('memory_about_self')
-const localMemoryAboutUser = await get('memory_about_user')
-const localLongTermMemory = await get('long_term_memory')
-const localShortTermMemory = await get('short_term_memory')
 
 const DEFAULT_SELF_NAME = '小叶子'
 const DEFAULT_USER_NAME = '旅行者'
@@ -40,6 +31,14 @@ const DEFAULT_MEMORY_ABOUT_SELF = '我是一个心理学专业的本科生, 男�
 const DEFAULT_MEMORY_ABOUT_USER = ''
 const DEFAULT_LONG_TERM_MEMORY: LongTermMemory[] = []
 const DEFAULT_SHORT_TERM_MEMORY: ShortTermMemory[] = []
+const FORMAT_PROMPT = '以支持、温柔、可爱的方式陪伴对方. 不要回复长的和正式的内容, 避免说教和指导, 避免总是以提问结尾. 表现得像一个真实和共情的朋友. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动. 多呼唤对方的名字, 以增加亲密感.'
+
+const localSelfName = await get('self_name')
+const localUserName = await get('user_name')
+const localMemoryAboutSelf = await get('memory_about_self')
+const localMemoryAboutUser = await get('memory_about_user')
+const localLongTermMemory = await get('long_term_memory')
+const localShortTermMemory = await get('short_term_memory')
 
 export const useMemory = create<Memory>()((setState, getState) => ({
   shortMemoToLong: async (chat) => {
@@ -60,9 +59,13 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     console.log({ memoryAboutSelf, memoryAboutUser, chat })
     return setLongTermMemory([memory, ...longTermMemory])
   },
+  longMemoToLong: async (uuids) => {
+    console.log(uuids)
+    return
+  },
   getPrompt: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, selfName, userName } = getState()
-    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${formatPrompt}\n\n# 你的长期记忆\n\n${longTermMemory.map(({ summary, start, end }) => `(时间: ${new Date(start).toLocaleString()} - ${new Date(end).toLocaleString()}) ${summary}`).join('\n\n') || '(无)'}\n\n> 当前时间: ${new Date().toLocaleString()}`
+    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你的长期记忆\n\n${longTermMemory.map(({ summary, start, end }) => `(时间: ${new Date(start).toLocaleString()} - ${new Date(end).toLocaleString()}) ${summary}`).join('\n\n') || '(无)'}\n\n> 当前时间: ${new Date().toLocaleString()}`
   },
   saveAllMemory: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory, selfName, userName } = getState()

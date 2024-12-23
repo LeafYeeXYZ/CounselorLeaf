@@ -25,7 +25,7 @@ declare type StoreKeys =
 
 declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean, token?: number }, void, void>
 declare type ChatApiTest = () => Promise<boolean>
-declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest }[]
+declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest, maxToken: number }[]
 declare type SpeakApi = (text: string) => Promise<void>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type SpeakApiList = ({ name: string, api: SpeakApi, test: SpeakApiTest } | { name: string, api: null, test: null })[]

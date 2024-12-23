@@ -4,6 +4,7 @@ import { set, get, speakApiList, chatApiList, live2dList, listenApiList, type Li
 type API = {
 
   chat: ChatApi
+  maxToken: number
   testChat: ChatApiTest
   chatApiList: string[]
   currentChatApi: string
@@ -40,6 +41,7 @@ const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? liv
 
 export const useApi = create<API>()((setState) => ({
   chat: defaultChatApi.api,
+  maxToken: defaultChatApi.maxToken,
   testChat: defaultChatApi.test,
   speak: defaultSpeakApi.api,
   testSpeak: defaultSpeakApi.test,
@@ -66,7 +68,7 @@ export const useApi = create<API>()((setState) => ({
   setChatApi: async (name) => {
     const item = chatApiList.find(api => api.name === name)
     if (item) {
-      setState({ chat: item.api, currentChatApi: name, testChat: item.test })
+      setState({ chat: item.api, currentChatApi: name, testChat: item.test, maxToken: item.maxToken })
       await set('default_chat_api', name)
     }
     return

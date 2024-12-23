@@ -1,6 +1,6 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect, useState } from 'react'
-import { Button, Form, Input, Tag } from 'antd'
+import { useRef, useEffect, useState, useMemo } from 'react'
+import { Button, Form, Input, Tag, Popover } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
@@ -17,7 +17,7 @@ export function Chat() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi } = useStates()
-  const { chat, speak, listen, live2d } = useApi()
+  const { chat, speak, listen, live2d, maxToken } = useApi()
   const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
@@ -26,6 +26,7 @@ export function Chat() {
   }, [shortTermMemory])
   const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
   const [tokenUsage, setTokenUsage] = useState<number | null>(null)
+  const memoryPressure = useMemo<number | null>(() => tokenUsage !== null ? tokenUsage / maxToken : null, [tokenUsage, maxToken])
 
   const onFinish = async (values: FormValues) => {
     const prev = clone(shortTermMemory)
@@ -80,7 +81,7 @@ export function Chat() {
           }
         }
         if (chunk.done) {
-          setTokenUsage(chunk.token ?? null)
+          setTokenUsage(chunk.token ?? (input.map(({ content }) => content).join('').length + response.length))
         }
       }
       if (buffer.length !== 0) {
@@ -122,6 +123,10 @@ export function Chat() {
         layout='vertical'
         form={form}
         onFinish={async (values: FormValues) => {
+          if (tokenUsage !== null && tokenUsage >= maxToken) {
+            messageApi?.error('记忆负荷过大, 请先更新记忆')
+            return
+          }
           flushSync(() => setDisabled('对话中...'))
           form.setFieldValue('text', '')
           await onFinish(values)
@@ -133,7 +138,18 @@ export function Chat() {
         disabled={disabled !== false}
       >
         <Form.Item
-          label={<span>消息{tokenUsage !== null && <Tag className='ml-[0.35rem]'>记忆负荷: {tokenUsage}</Tag>}</span>}
+          label={<span>
+            消息{tokenUsage !== null ? (
+              <Popover 
+                content={`${tokenUsage} / ${maxToken}`}
+              >
+                <Tag 
+                  color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
+                  className='ml-[0.35rem]'
+                >记忆负荷: {(memoryPressure! * 100).toFixed(0)}%</Tag>
+              </Popover>
+            ) : ''}
+          </span>}
           name='text'
           rules={[{ required: true, message: '请输入消息' }]}
         >
