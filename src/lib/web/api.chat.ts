@@ -19,8 +19,7 @@ const chat_web = async function* (messages: { role: string, content: string }[])
       done = true
     }
     if (done) {
-      console.log(json)
-      yield { response, done, token: NaN }
+      yield { response, done }
     } else {
       yield { response, done }
     }
