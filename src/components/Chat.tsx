@@ -36,8 +36,9 @@ export function Chat() {
         ...prev,
         { role: 'user', content: values.text, timestamp: time },
       ]
+      const prompt = getPrompt()
       const answer = chat([
-        { role: 'system', content: getPrompt() },
+        { role: 'system', content: prompt },
         ...input.map(({ role, content }) => ({ role, content })),
       ])
       let response = ''
@@ -106,7 +107,8 @@ export function Chat() {
       }
       const output = [...input, { role: 'assistant', content: response, timestamp: time }]
       if (!tokenSet) {
-        setTokenUsage(output.map(({ content }) => content).join('').length)
+        tokenSet = true
+        setTokenUsage(output.map(({ content }) => content).join('').length + prompt.length)
       }
       await setShortTermMemory(output)
     } catch (error) {
