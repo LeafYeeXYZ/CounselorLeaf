@@ -26,9 +26,7 @@ const test_browser: SpeakApiTest = async () => {
   return true
 }
 
-function _speak_f5tts(text: string, isTest: true): Promise<boolean>
-function _speak_f5tts(text: string, isTest: false): Promise<void>
-async function _speak_f5tts(text: string, isTest: boolean): Promise<boolean | void> {
+async function speak_f5tts(text: string): Promise<void> {
   try {
     const url = 'http://127.0.0.1:5010/api'
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
@@ -45,9 +43,6 @@ async function _speak_f5tts(text: string, isTest: boolean): Promise<boolean | vo
     if (!res.ok) {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
     }
-    if (isTest) {
-      return
-    }
     const audio = new Uint8Array(await res.arrayBuffer())
     const blob = new Blob([audio], { type: 'audio/wav' })
     const audioUrl = URL.createObjectURL(blob)
@@ -63,11 +58,18 @@ async function _speak_f5tts(text: string, isTest: boolean): Promise<boolean | vo
     throw new Error(`F5 TTS API 错误: ${e instanceof Error ? e.message : e}`)
   }
 }
-const speak_f5tts: SpeakApi = async (text: string) => {
-  return _speak_f5tts(text, false)
-}
 const test_f5tts: SpeakApiTest = async () => {
-  return _speak_f5tts('你好', true)
+  try {
+    const url = 'http://127.0.0.1:5010/test'
+    const res = await fetch(url)
+    if (res.status === 404) {
+      return true
+    } else {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    } 
+  } catch (e) {
+    throw new Error(`F5 TTS API 测试失败: ${e instanceof Error ? e.message : e}`)
+  }
 }
 
 export const speakApiList: SpeakApiList = [
