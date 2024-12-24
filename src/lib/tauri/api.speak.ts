@@ -3,16 +3,20 @@ while (voices.length === 0) {
   await new Promise(resolve => setTimeout(resolve, 50))
   voices = speechSynthesis.getVoices()
 }
+
+const WEB_SPEECH_API_VOICE = voices.find(v => v.lang === 'zh-CN' && v.name === 'Tingting') ?? voices.find(v => v.lang === 'zh-CN')
+const WEB_SPEECH_API_PITCH = 0.85 // 音高
+const WEB_SPEECH_API_RATE = 1.15 // 语速
+
 const speak_browser: SpeakApi = (text: string) => {
   const utterance = new SpeechSynthesisUtterance(text)
-  const voice = voices.find(v => v.lang === 'zh-CN')
-  if (voice) {
-    utterance.voice = voice
+  if (WEB_SPEECH_API_VOICE) {
+    utterance.voice = WEB_SPEECH_API_VOICE
   } else {
     throw new Error('No Chinese voice found')
   }
-  utterance.pitch = 0.7 // 音高
-  utterance.rate = 1.2 // 语速
+  utterance.pitch = WEB_SPEECH_API_PITCH
+  utterance.rate = WEB_SPEECH_API_RATE
   return new Promise<void>(resolve => {
     utterance.onend = () => resolve()
     speechSynthesis.speak(utterance)
