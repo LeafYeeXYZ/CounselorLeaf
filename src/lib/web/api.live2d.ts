@@ -11,9 +11,6 @@ export type Live2dList = {
 
 import { evilBoy, rabbitBoy, darkBoy, goldBoy, jiniqi, heroBoy } from '../tauri/api.live2d.ts'
 
-// 一定要在 /scripts/before-web-build.ts 中
-// 添加需要在构建时复制的模型名称
-// 否则构建后的 Web 没有对应的模型文件
 export const live2dList: Live2dList = [
   { name: '恶魔小叶子', api: evilBoy },
   { name: '兔兔小叶子', api: rabbitBoy },
