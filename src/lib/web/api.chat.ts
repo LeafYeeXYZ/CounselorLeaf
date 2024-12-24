@@ -41,5 +41,5 @@ const test_web: ChatApiTest = async () => {
 }
 
 export const chatApiList: ChatApiList = [
-  { name: 'Cloudflare AI - qwen1.5:14b', api: chat_web, test: test_web, maxToken: 3_000 },
+  { name: 'Cloudflare AI - qwen1.5:14b', api: chat_web, test: test_web, maxToken: 2_000 },
 ]
