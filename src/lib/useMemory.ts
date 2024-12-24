@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { uuid, get, set, save } from './utils.ts'
+import { get, set, save } from './utils.ts'
 
 type Memory = {
 
@@ -19,8 +19,6 @@ type Memory = {
 
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
-  shortMemoToLong: (chat: ChatApi) => Promise<void>
-  longMemoToLong: (uuids?: string[]) => Promise<void>
 
   getPrompt: () => string
 }
@@ -41,28 +39,6 @@ const localLongTermMemory = await get('long_term_memory')
 const localShortTermMemory = await get('short_term_memory')
 
 export const useMemory = create<Memory>()((setState, getState) => ({
-  shortMemoToLong: async (chat) => {
-    const { 
-      setLongTermMemory,
-      longTermMemory,
-      shortTermMemory, 
-      memoryAboutSelf, 
-      memoryAboutUser, 
-    } = getState()
-    const timestamps = shortTermMemory.map((item) => item.timestamp)
-    const memory = {
-      uuid: uuid(),
-      start: Math.min(...timestamps),
-      end: Math.max(...timestamps),
-      summary: 'TODO',
-    }
-    console.log({ memoryAboutSelf, memoryAboutUser, chat })
-    return setLongTermMemory([memory, ...longTermMemory])
-  },
-  longMemoToLong: async (uuids) => {
-    console.log(uuids)
-    return
-  },
   getPrompt: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, selfName, userName } = getState()
     return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你的长期记忆\n\n${longTermMemory.map(({ summary, start, end }) => `(时间: ${new Date(start).toLocaleString()} - ${new Date(end).toLocaleString()}) ${summary}`).join('\n\n') || '(无)'}\n\n> 当前时间: ${new Date().toLocaleString()}`

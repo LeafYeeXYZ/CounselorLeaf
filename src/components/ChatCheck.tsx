@@ -6,7 +6,7 @@ import { Button } from 'antd'
 
 export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) {
 
-  const { setDisabled } = useStates()
+  const { setDisabled, disabled } = useStates()
   const { testChat, testListen, testSpeak } = useApi()
   const [status, setStatus] = useState<string>('')
 
@@ -40,15 +40,16 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     }).then(() => {
       // 完成加载
       setReady(true)
-      setDisabled(false)
+      setDisabled((disabled === true || disabled === '服务状态异常') ? false : disabled)
     }).catch((e) => {
       setStatus(e.message)
       setDisabled('服务状态异常')
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, status])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, status, disabled])
   
   return (
     <div 
+      style={(disabled === true || disabled === '服务状态异常') ? {} : { animation: 'hideStart 1s forwards' }}
       className='flex gap-[0.3rem] justify-center items-center flex-col w-full max-h-[calc(100dvh-10.25rem)] p-4 rounded-md border border-blue-900'>
       {status ? (<>
         <div>加载出错:</div>

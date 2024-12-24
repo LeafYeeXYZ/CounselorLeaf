@@ -18,6 +18,7 @@ declare type StoreKeys =
   'default_listen_api' |
   'self_name' |
   'user_name' |
+  'last_used_token' |
   'memory_about_self' | // 模型对用户的持久化记忆
   'memory_about_user' | // 模型对自己的持久化记忆
   'long_term_memory' | // 长期记忆, 包含数次对话的总结

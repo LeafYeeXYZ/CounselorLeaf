@@ -4,11 +4,13 @@ import { set, get, speakApiList, chatApiList, live2dList, listenApiList, type Li
 type API = {
 
   chat: ChatApi
-  maxToken: number
   testChat: ChatApiTest
   chatApiList: string[]
   currentChatApi: string
   setChatApi: (name: string) => Promise<void>
+  usedToken: number | undefined
+  maxToken: number
+  setUsedToken: (token: number | undefined) => Promise<void>
   
   speak: SpeakApi | null
   testSpeak: SpeakApiTest | null
@@ -30,6 +32,7 @@ type API = {
   setLive2dApi: (api: Live2dApi | null) => Promise<void>
 }
 
+const localUsedToken = await get('last_used_token')
 const localSpeakApi = await get('default_speak_api')
 const localChatApi = await get('default_chat_api')
 const localListenApi = await get('default_listen_api')
@@ -41,6 +44,12 @@ const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? liv
 
 export const useApi = create<API>()((setState) => ({
   chat: defaultChatApi.api,
+  usedToken: localUsedToken,
+  setUsedToken: async (token) => {
+    setState({ usedToken: token })
+    await set('last_used_token', token)
+    return
+  },
   maxToken: defaultChatApi.maxToken,
   testChat: defaultChatApi.test,
   speak: defaultSpeakApi.api,

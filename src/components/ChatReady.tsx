@@ -17,7 +17,7 @@ export function ChatReady() {
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi } = useStates()
-  const { chat, speak, listen, live2d, maxToken } = useApi()
+  const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
   const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
@@ -25,8 +25,7 @@ export function ChatReady() {
     }
   }, [shortTermMemory])
   const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
-  const [tokenUsage, setTokenUsage] = useState<number | null>(null)
-  const memoryPressure = useMemo<number | null>(() => tokenUsage !== null ? tokenUsage / maxToken : null, [tokenUsage, maxToken])
+  const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
 
   const onFinish = async (values: FormValues) => {
     const prev = clone(shortTermMemory)
@@ -83,7 +82,7 @@ export function ChatReady() {
         }
         if (chunk.done && chunk.token !== undefined) {
           tokenSet = true
-          setTokenUsage(chunk.token)
+          await setUsedToken(chunk.token)
         }
       }
       if (buffer.length !== 0) {
@@ -108,7 +107,7 @@ export function ChatReady() {
       const output = [...input, { role: 'assistant', content: response, timestamp: time }]
       if (!tokenSet) {
         tokenSet = true
-        setTokenUsage(output.map(({ content }) => content).join('').length + prompt.length)
+        await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
       }
       await setShortTermMemory(output)
     } catch (error) {
@@ -118,7 +117,7 @@ export function ChatReady() {
   }
   const onUpdate = async () => {
     messageApi?.info('本功能暂未实现, 目前仅为清除短时记忆')
-    setTokenUsage(null)
+    setUsedToken(undefined)
     await setShortTermMemory([])
   }
 
@@ -128,7 +127,7 @@ export function ChatReady() {
       layout='vertical'
       form={form}
       onFinish={async (values: FormValues) => {
-        if (tokenUsage !== null && tokenUsage >= maxToken) {
+        if (usedToken && usedToken >= maxToken) {
           messageApi?.error('记忆负荷过大, 请先更新记忆')
           return
         }
@@ -144,16 +143,16 @@ export function ChatReady() {
     >
       <Form.Item
         label={<span>
-          消息{tokenUsage !== null ? (
+          消息{usedToken && (
             <Popover 
-              content={`${tokenUsage} / ${maxToken}`}
+              content={`${usedToken} / ${maxToken}`}
             >
               <Tag 
                 color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
                 className='ml-[0.35rem]'
               >记忆负荷: {(memoryPressure! * 100).toFixed(0)}%</Tag>
             </Popover>
-          ) : ''}
+          )}
         </span>}
         name='text'
         rules={[{ required: true, message: '请输入消息' }]}
