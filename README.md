@@ -21,7 +21,12 @@
 
 ## 桌面端开发和部署
 
-桌面端的语言模型使用 `ollama` 以及 `qwen2.5:7b` 模型, 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 并启动 `ollama` 服务
+桌面端的语言模型使用 `ollama`. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
+
+| 环境变量名 | 默认值 | 说明 | 必须填写 |
+| :---: | :---: | :---: | :---: |
+| `VITE_OLLAMA_MODEL_NAME` | `qwen2.5:7b` | `ollama` 使用的模型 |  |
+| `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |  |
 
 ```bash
 # 克隆项目
@@ -38,6 +43,11 @@ bun b:tauri
 ## Web 端开发和部署
 
 Web 端构建后的输出目录为 `/dist-web`. 部署时请设置 `VITE_WEB_SERVER_URL` 环境变量为你的服务器地址, 如 `https://api.xxx.workers.dev` (不带末尾斜杠), 见 <https://github.com/LeafYeeXYZ/MyAPIs>
+
+| 环境变量名 | 默认值 | 说明 | 必须填写 |
+| :---: | :---: | :---: | :---: |
+| `VITE_WEB_SERVER_URL` |  | Web 端的后端地址 | ✅ |
+| `VITE_WEB_MAX_TOKENS` | `1000` | Web 端的最大 `token` 数 |  |
 
 ```bash
 # 克隆项目

@@ -1,7 +1,8 @@
 import type { ListResponse } from 'ollama'
 import ollama from 'ollama/browser'
 
-const model = 'qwen2.5:7b'
+const model: string = import.meta.env.VITE_OLLAMA_MODEL_NAME ?? 'qwen2.5:7b'
+const token: string = import.meta.env.VITE_OLLAMA_MAX_TOKENS ?? '100000'
 const chat_ollama: ChatApi = async function* (messages: { role: string, content: string }[]) {
   const response = await ollama.chat({
     model,
@@ -27,7 +28,11 @@ const test_ollama: ChatApiTest = async () => {
   }
   return true
 }
-
 export const chatApiList: ChatApiList = [
-  { name: 'Ollama - qwen2.5:7b', api: chat_ollama, test: test_ollama, maxToken: 100_000 },
+  { 
+    name: `Ollama - ${model}`, 
+    api: chat_ollama, 
+    test: test_ollama,
+    maxToken: parseInt(token),
+  },
 ]

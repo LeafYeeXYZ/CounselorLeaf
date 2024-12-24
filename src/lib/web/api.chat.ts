@@ -1,6 +1,7 @@
-const URL = import.meta.env.VITE_WEB_SERVER_URL ?? ''
+const url: string = import.meta.env.VITE_WEB_SERVER_URL ?? ''
+const token: string = import.meta.env.VITE_WEB_MAX_TOKENS ?? '1000'
 const chat_web = async function* (messages: { role: string, content: string }[]) {
-  const response = await fetch(URL + '/being/chat', {
+  const response = await fetch(url + '/being/chat', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,7 +27,7 @@ const chat_web = async function* (messages: { role: string, content: string }[])
   }
 }
 const test_web: ChatApiTest = async () => {
-  const response = await fetch(URL + '/being/test', {
+  const response = await fetch(url + '/being/test', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -41,5 +42,10 @@ const test_web: ChatApiTest = async () => {
 }
 
 export const chatApiList: ChatApiList = [
-  { name: 'Cloudflare AI - qwen1.5:14b', api: chat_web, test: test_web, maxToken: 2_000 },
+  { 
+    name: 'Cloudflare AI - qwen1.5:14b', 
+    api: chat_web, 
+    test: test_web, 
+    maxToken: parseInt(token),
+  },
 ]
