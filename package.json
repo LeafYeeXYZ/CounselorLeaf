@@ -9,12 +9,16 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "tauri": "tauri",
-    "d": "bunx tauri dev",
-    "b": "bunx tauri build",
-    "b:win": "bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
-    "b:web": "bun run ./scripts/before-web-build.ts && vite build --config vite.config.web.ts && bun run ./scripts/after-web-build.ts",
-    "preview:web": "vite preview --outDir ./dist-web",
-    "dev:web": "bun run ./scripts/before-web-build.ts && vite --config vite.config.web.ts"
+    "d:tauri": "bun run dev:tauri",
+    "d:web": "bun run dev:web",
+    "b:tauri": "bun run build:tauri",
+    "b:web": "bun run build:web",
+    "dev:tauri": "bunx tauri dev",
+    "build:tauri": "bunx tauri build",
+    "build:win": "bunx tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
+    "dev:web": "bun run ./scripts/before-web-build.ts && vite --config vite.config.web.ts",
+    "build:web": "bun run ./scripts/before-web-build.ts && vite build --config vite.config.web.ts && bun run ./scripts/after-web-build.ts",
+    "preview:web": "vite preview --outDir ./dist-web"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
