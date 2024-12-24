@@ -60,7 +60,7 @@ export const useApi = create<API>()((setState) => ({
   setSpeakApi: async (name) => {
     const item = speakApiList.find(api => api.name === name)
     if (item) {
-      setState({ speak: item.api, currentSpeakApi: name })
+      setState({ speak: item.api, currentSpeakApi: name, testSpeak: item.test })
       await set('default_speak_api', name)
     }
     return
