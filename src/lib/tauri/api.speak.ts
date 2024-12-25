@@ -1,3 +1,5 @@
+import { env } from '../env.ts'
+
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {
   await new Promise(resolve => setTimeout(resolve, 50))
@@ -28,7 +30,7 @@ const test_browser: SpeakApiTest = async () => {
 
 async function speak_f5tts(text: string): Promise<void> {
   try {
-    const url = 'http://127.0.0.1:5010/api'
+    const url = env.VITE_F5_TTS_SERVER_URL
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
     const refAudio: Uint8Array = new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
     const formData = new FormData()
@@ -60,7 +62,7 @@ async function speak_f5tts(text: string): Promise<void> {
 }
 const test_f5tts: SpeakApiTest = async () => {
   try {
-    const url = 'http://127.0.0.1:5010/test'
+    const url = env.VITE_F5_TTS_SERVER_URL.replace('/api', '/test')
     const res = await fetch(url)
     if (res.status === 404) {
       return true

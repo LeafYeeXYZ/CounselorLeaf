@@ -25,8 +25,10 @@
 
 | 环境变量名 | 默认值 | 说明 | 必须填写 |
 | :---: | :---: | :---: | :---: |
-| `VITE_OLLAMA_MODEL_NAME` | `qwen2.5:7b` | `ollama` 使用的模型 |  |
+| `VITE_OLLAMA_SERVER_URL` | `'http://127.0.0.1:11434'` | `ollama` 服务地址 |  |
+| `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |  |
 | `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |  |
+| `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [`F5-TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |  |
 
 ```bash
 # 克隆项目
@@ -46,7 +48,7 @@ Web 端构建后的输出目录为 `/dist-web`. 部署时请设置 `VITE_WEB_SER
 
 | 环境变量名 | 默认值 | 说明 | 必须填写 |
 | :---: | :---: | :---: | :---: |
-| `VITE_WEB_SERVER_URL` |  | Web 端的后端地址 | ✅ |
+| `VITE_WEB_SERVER_URL` | `''` | Web 端的后端地址 | ✅ |
 | `VITE_WEB_MAX_TOKENS` | `1000` | Web 端的最大 `token` 数 |  |
 
 ```bash

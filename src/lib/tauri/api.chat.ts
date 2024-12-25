@@ -1,11 +1,12 @@
 import type { ListResponse } from 'ollama'
-import ollama from 'ollama/browser'
+import { Ollama } from 'ollama/browser'
+import { env } from '../env.ts'
 
-const model: string = import.meta.env.VITE_OLLAMA_MODEL_NAME ?? 'qwen2.5:7b'
-const token: string = import.meta.env.VITE_OLLAMA_MAX_TOKENS ?? '100000'
+const ollama = new Ollama({ host: env.VITE_OLLAMA_SERVER_URL })
+
 const chat_ollama: ChatApi = async function* (messages: { role: string, content: string }[]) {
   const response = await ollama.chat({
-    model,
+    model: env.VITE_OLLAMA_MODEL_NAME,
     messages,
     stream: true,
   })
@@ -23,16 +24,16 @@ const test_ollama: ChatApiTest = async () => {
       throw new Error('Ollama 服务未启动')
     }
   }) as ListResponse
-  if (models.every(({ name }) => name !== model)) {
-    throw new Error(`Ollama 缺少模型 ${model}`)
+  if (models.every(({ name }) => name !== env.VITE_OLLAMA_MODEL_NAME)) {
+    throw new Error(`Ollama 缺少模型 ${env.VITE_OLLAMA_MODEL_NAME}`)
   }
   return true
 }
 export const chatApiList: ChatApiList = [
   { 
-    name: `Ollama - ${model}`, 
+    name: `Ollama - ${env.VITE_OLLAMA_MODEL_NAME}`,
     api: chat_ollama, 
     test: test_ollama,
-    maxToken: parseInt(token),
+    maxToken: env.VITE_OLLAMA_MAX_TOKENS,
   },
 ]
