@@ -58,7 +58,7 @@ export default function App() {
               <div className='flex justify-center items-center'>
                 {disabled === false ? '空闲' : disabled === true ? <div className='flex justify-center items-center gap-[0.3rem]'>
                   <div>加载中</div>
-                  <div><LoadingOutlined /></div>
+                  <div className='flex items-center justify-center'><LoadingOutlined /></div>
                 </div> : disabled}
               </div>
             </div>

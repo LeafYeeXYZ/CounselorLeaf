@@ -1,8 +1,8 @@
-export { set, get, save } from './tauri/api.store.ts'
-export { chatApiList } from './tauri/api.chat.ts'
-export { speakApiList } from './tauri/api.speak.ts'
-export { listenApiList } from './tauri/api.listen.ts'
-export { live2dList, type LoadLive2d, type Live2dApi } from './tauri/api.live2d.ts'
+export { set, get, save } from './web/api.store.ts'
+export { chatApiList } from './web/api.chat.ts'
+export { speakApiList } from './web/api.speak.ts'
+export { listenApiList } from './web/api.listen.ts'
+export { live2dList, type LoadLive2d, type Live2dApi } from './web/api.live2d.ts'
 
 export async function shortMemoToLong({
   chatApi,

@@ -17,4 +17,10 @@ export const env: Env = {
   VITE_F5_TTS_SERVER_URL: import.meta.env.VITE_F5_TTS_SERVER_URL ?
     String(import.meta.env.VITE_F5_TTS_SERVER_URL) :
     'http://127.0.0.1:5010/api',
+  VITE_WASM_MAX_TOKENS: import.meta.env.VITE_WASM_MAX_TOKENS ?
+    Number(import.meta.env.VITE_WASM_MAX_TOKENS) :
+    5_000,
+  VITE_USE_WEB_GPU: import.meta.env.VITE_USE_WEB_GPU ?
+    Boolean(import.meta.env.VITE_USE_WEB_GPU === 'webgpu') :
+    false,
 }

@@ -15,11 +15,6 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     if (status !== '') {
       return
     }
-    // 最小宽度, 主要是为了适配网页端, 桌面端已由 Tauri 设置最小宽度和高度
-    if (window.innerWidth < 780 || window.innerHeight < 600) {
-      document.body.innerHTML = '<div class="w-dvw h-dvh flex justify-center items-center">窗口过小, 请调整后刷新</div>'
-      return
-    }
     // 加载服务
     testChat().then(() => {
       // 测试语音合成功能
@@ -40,16 +35,16 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     }).then(() => {
       // 完成加载
       setReady(true)
-      setDisabled((disabled === true || disabled === '服务状态异常') ? false : disabled)
+      setDisabled((disabled === true || disabled === '加载出错') ? false : disabled)
     }).catch((e) => {
       setStatus(e.message)
-      setDisabled('服务状态异常')
+      setDisabled('加载出错')
     })
   }, [setDisabled, testChat, testSpeak, testListen, setReady, status, disabled])
   
   return (
     <div 
-      style={(disabled === true || disabled === '服务状态异常') ? {} : { animation: 'hideStart 1s forwards' }}
+      style={(disabled === true || disabled === '加载出错') ? {} : { animation: 'hideStart 1s forwards' }}
       className='flex gap-[0.3rem] justify-center items-center flex-col w-full max-h-[calc(100dvh-10.25rem)] p-4 rounded-md border border-blue-900'>
       {status ? (<>
         <div>加载出错:</div>
@@ -58,7 +53,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
         <Button className='mt-[0.3rem]' onClick={() => setStatus('')}>点击重试</Button>
       </>) : (<>
         <div className='flex gap-[0.3rem] justify-center items-center'>
-          检查服务状态 <LoadingOutlined />
+          加载中 <LoadingOutlined />
         </div>
       </>)}
     </div>

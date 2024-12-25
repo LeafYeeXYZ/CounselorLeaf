@@ -13,7 +13,7 @@
 - **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"; 交互效果类似于: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
 - **关于长时记忆**: 长时记忆并不打算使用 <https://github.com/letta-ai/letta> 项目, 而是自己实现. 因为希望获得的记忆具有可解释性: 短时记忆 (当前对话上下文)、长时记忆 (各段对话总结)、自我记忆 (AI的自我认知)、对方记忆 (AI对用户的认知). 这些数据未来可以在伦理许可的条件下, 用作进一步的心理学研究, 例如基于这个AI助手进行危机干预时, 可以提供给转介的人类心理医生更多的信息、用这个助手来进行人格测验等
 - **本项目的优势和特点**: 与同类项目如 <https://github.com/t41372/Open-LLM-VTuber> 的区别在于, 本项目使用更为简单和灵活, 同时支持 Web 和桌面版本, 用户无需安装任何多余的软件; 同时, 本项目的 API 设计也比较灵活, 可以便捷地拓展多种后端实现; 最后如上所述, 可解释性的记忆能提供更多可能
-- **关于基础模型**: 目前用的是 `qwen2.5:7b` (本地) 或 `qwen1.5:13b-awq` (Web), 后期可能会使用 <https://github.com/SmartFlowAI/EmoLLM> 或其他模型
+- **关于基础模型**: 目前用的是 `qwen2.5:7b` (本地)、`qwen1.5:13b-awq` (Web - API)、`qwen2.5:0.5b` (Web Transformers.js), 后期可能会使用 <https://github.com/SmartFlowAI/EmoLLM> 或其他模型
 - **关于 `live2d`**: 目前使用 <https://github.com/oh-my-live2d/oh-my-live2d>, 也尝试过 <https://github.com/guansss/pixi-live2d-display>. 但是两者都无法完全满足需求, 后期可能会 `fork` 之后按需修改
 - **关于语音生成**: 目前用的是 `Web Speech API`, 但效果感觉一般, 默认关闭. 桌面端还实验性地支持 <https://github.com/SWivid/F5-TTS> (使用 <https://github.com/jianchang512/f5-tts-api>), 效果很不错, 但对配置要求较高, 且对 Mac 不友好. 后期可能会尝试其他 `TTS` 技术
 - **关于语音输入**: 目前用的也是 `Web Speech API`, 效果不错, 默认关闭. 后期也会探索使用其他 `STT` 技术、添加实时对话功能
@@ -44,12 +44,14 @@ bun b:tauri
 
 ## Web 端开发和部署
 
-Web 端构建后的输出目录为 `/dist-web`. 部署时请设置 `VITE_WEB_SERVER_URL` 环境变量为你的服务器地址, 如 `https://api.xxx.workers.dev` (不带末尾斜杠), 见 <https://github.com/LeafYeeXYZ/MyAPIs>
+Web 端构建后的输出目录为 `/dist-web`. LLM 推理通过[远程 API](https://github.com/LeafYeeXYZ/MyAPIs)或 `transformers.js` 实现. `VITE_WEB_SERVER_URL` 环境变量为[服务器地址](https://github.com/LeafYeeXYZ/MyAPIs), 如 `https://api.xxx.workers.dev` (不带末尾斜杠)
 
 | 环境变量名 | 默认值 | 说明 | 必须填写 |
 | :---: | :---: | :---: | :---: |
-| `VITE_WEB_SERVER_URL` | `''` | Web 端的后端地址 | ✅ |
-| `VITE_WEB_MAX_TOKENS` | `1000` | Web 端的最大 `token` 数 |  |
+| `VITE_WEB_SERVER_URL` | `''` | [Web 端远程 API](https://github.com/LeafYeeXYZ/MyAPIs) 的地址 |  |
+| `VITE_WEB_MAX_TOKENS` | `1000` | Web 端远程 API 的最大 `token` 数 |  |
+| `VITE_WASM_MAX_TOKENS` | `5000` | Web 端 `transformers.js` 的最大 `token` 数 |  |
+| `VITE_USE_WEB_GPU` |  | 设为 `'webgpu'` 时, `transformers.js` 将使用 `WebGPU` 进行推理 |  |
 
 ```bash
 # 克隆项目

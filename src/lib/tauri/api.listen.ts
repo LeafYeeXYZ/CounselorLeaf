@@ -29,7 +29,11 @@ const listen_browser: ListenApi = () => {
   }
 }
 const test_browser: ListenApiTest = async () => {
-  return true
+  if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+    return true
+  } else {
+    throw new Error('Web Speech API 不可用')
+  }
 }
 
 export const listenApiList: ListenApiList = [

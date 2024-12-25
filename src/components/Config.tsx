@@ -22,7 +22,7 @@ export function Config() {
     <section className='w-full h-full flex flex-col justify-center items-center'>
       <Form 
         layout='vertical' 
-        className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto'
+        className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-10.25rem)]'
       >
         <Form.Item label='语音合成服务'>
           <Select 

@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './tailwind.css'
 import App from './App.tsx'
 
-if (speechSynthesis) {
+if (window.innerWidth >=780 && window.innerHeight >=600) {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <App />
@@ -12,8 +12,7 @@ if (speechSynthesis) {
 } else {
   document.body.innerHTML = `
     <main style="width: 100dvw; height: 100dvh; display: flex; justify-content: center; align-items: center; flex-direction: column; gap: 0.5rem;">
-      <div>当前浏览器不支持语音合成 API</div>
-      <div>请使用最新版的 Chrome / Safari 浏览器</div>
+      <div>窗口过小, 请调整后刷新</div>
     </main>
   `
 }

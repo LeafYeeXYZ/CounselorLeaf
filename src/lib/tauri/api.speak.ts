@@ -25,7 +25,11 @@ const speak_browser: SpeakApi = (text: string) => {
   })
 }
 const test_browser: SpeakApiTest = async () => {
-  return true
+  if ('speechSynthesis' in window) {
+    return true
+  } else {
+    throw new Error('Web Speech API 不可用')
+  }
 }
 
 async function speak_f5tts(text: string): Promise<void> {
