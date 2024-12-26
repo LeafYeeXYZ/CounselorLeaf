@@ -2,6 +2,8 @@
 
 创造一个可以带走的"数字生命". 本项目同时支持 Web 和桌面端, 两端共享除特定 API 外的所有代码. 开发环境要求包括 `Rust` (仅桌面端需要)、`Node.js`、`Bun` (可通过 `npm install -g bun` 安装)
 
+如果您想快速体验本项目, 请访问 <https://being.leafyee.xyz>, 并在本地运行 `ollama` 服务 (见[2.1 环境变量](#21-环境变量))
+
 | 记忆模型 (暂定) | 示意图 |
 | :---: | :---: |
 | ![](./readme/model.png) | ![](./readme/intro.png) |
@@ -32,11 +34,13 @@
 
 ## 2 开发和部署
 
-### 2.1 环境变量
-
 本项目的 LLM 推理通过 `ollama` 实现. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
 
-下面的环境变量都不是必须的
+在 Web 端时, 您可能需要手动设置 `ollama`、`F5 TTS API` 的 `CORS` 策略以避免请求被浏览器拦截; 对于前者, 可以直接设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"` 或 `"being.leafyee.xyz"` 等
+
+### 2.1 环境变量
+
+以下环境变量都具有默认值, 正常情况下无需手动设置
 
 | 环境变量名 | 默认值 | 说明 |
 | :---: | :---: | :---: |
@@ -44,8 +48,6 @@
 | `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |
 | `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [`F5-TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
-
-> 在 Web 端时, 您可能需要手动设置 `ollama`、`F5 TTS API` 的 `CORS` 策略以避免请求被浏览器拦截; 对于前者, 可以直接设置 `OLLAMA_ORIGINS` 环境变量
 
 ### 2.2 桌面端
 
