@@ -78,8 +78,42 @@ const test_f5tts: SpeakApiTest = async () => {
   }
 }
 
+import { Client } from '@gradio/client'
+import emojiRegex from 'emoji-regex'
+const emoji = emojiRegex()
+const client = await Client.connect('mrfakename/E2-F5-TTS')
+async function speak_huggingface(text: string): Promise<void> {
+  text = text.replace(new RegExp(emoji, 'g'), '')
+  if (text.length === 0) {
+    return
+  }
+  const audio = new Blob([new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())], { type: 'audio/wav' })
+  const refer = await (await fetch('/tts/luoshaoye.txt')).text()
+  const result = await client.predict('/basic_tts', {
+    ref_audio_input: audio,
+    ref_text_input: refer,
+    gen_text_input: text,
+  })
+  const data = result.data as { url: string }[]
+  const url = data[0].url
+  const audioElement = new Audio(url)
+  audioElement.play()
+  return new Promise<void>(resolve => {
+    audioElement.onended = () => resolve()
+  })
+}
+const test_huggingface: SpeakApiTest = async () => {
+  try {
+    await client.predict('/switch_tts_model', { new_choice: 'F5-TTS' })
+    return true
+  } catch (e) {
+    throw new Error(`HuggingFace API 测试失败: ${e instanceof Error ? e.message : e}`)
+  }
+}
+
 export const speakApiList: SpeakApiList = [
   { name: '关闭', api: null, test: null },
   { name: 'Web Speech API', api: speak_browser, test: test_browser },
-  { name: 'F5 TTS API', api: speak_f5tts, test: test_f5tts },
+  { name: 'F5 TTS API [Local Server]', api: speak_f5tts, test: test_f5tts },
+  { name: 'F5 TTS API [Hugging Face]', api: speak_huggingface, test: test_huggingface },
 ]

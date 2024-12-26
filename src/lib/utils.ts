@@ -1,8 +1,8 @@
 export { chatApiList } from './shared/api.chat.ts'
 export { speakApiList } from './shared/api.speak.ts'
 export { listenApiList } from './shared/api.listen.ts'
-export { set, get, save } from './web/api.store.ts'
-export { live2dList, type LoadLive2d, type Live2dApi } from './web/api.live2d.ts'
+export { set, get, save } from './tauri/api.store.ts'
+export { live2dList, type LoadLive2d, type Live2dApi } from './tauri/api.live2d.ts'
 
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
