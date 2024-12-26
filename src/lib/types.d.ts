@@ -14,10 +14,11 @@ declare type ShortTermMemory = {
 
 declare type LongTermMemory = {
   uuid: string
-  start: number
-  end: number
+  startTime: number
+  endTime: number
   summary: string
   content: string
+  recallTimes: number
 }
 
 declare type StoreKeys = 
