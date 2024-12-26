@@ -2,7 +2,7 @@
 
 创造一个可以带走的"数字生命". 本项目同时支持 Web 和桌面端, 两端共享除特定 API 外的所有代码. 开发环境要求包括 `Rust` (仅桌面端需要)、`Node.js`、`Bun` (可通过 `npm install -g bun` 安装)
 
-如果您想快速体验本项目, 请访问 <https://being.leafyee.xyz>, 并在本地运行 `ollama` 服务 (见[2.1 环境变量](#21-环境变量))
+如果您想快速体验本项目, 请访问 <https://being.leafyee.xyz>, 并在本地运行 `ollama` 服务 (见[2 开发和部署](#2-开发和部署))
 
 | 记忆模型 (暂定) | 示意图 |
 | :---: | :---: |
@@ -36,7 +36,7 @@
 
 本项目的 LLM 推理通过 `ollama` 实现. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
 
-在 Web 端时, 您可能需要手动设置 `ollama`、`F5 TTS API` 的 `CORS` 策略以避免请求被浏览器拦截; 对于前者, 可以直接设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"` 或 `"being.leafyee.xyz"` 等
+在 Web 端时, 您可能需要手动设置 `ollama` 的 `CORS` 策略以避免请求被浏览器拦截: 首先设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"` 或 `"being.leafyee.xyz"`、在终端中运行 `echo $OLLAMA_ORIGINS` 确认设置成功、在终端中运行 `ollama serve` 启动服务 (即使进行了上述设置, 仍然可能会在 `Safari` 中遇到 `CORS` 问题, 请尝试使用 `Chrome` 或其他浏览器)
 
 ### 2.1 环境变量
 
