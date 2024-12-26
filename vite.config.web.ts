@@ -11,7 +11,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           'live2d': ['oh-my-live2d'],
-          'huggingface': ['@huggingface/transformers'],
         },
       },
     },
