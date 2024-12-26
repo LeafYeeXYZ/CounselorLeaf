@@ -17,6 +17,7 @@ declare type LongTermMemory = {
   start: number
   end: number
   summary: string
+  content: string
 }
 
 declare type StoreKeys = 
