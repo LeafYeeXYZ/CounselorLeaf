@@ -41,7 +41,7 @@ const localShortTermMemory = await get('short_term_memory')
 export const useMemory = create<Memory>()((setState, getState) => ({
   getPrompt: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, selfName, userName } = getState()
-    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你的长期记忆\n\n${longTermMemory.map(({ summary, start, end }) => `(时间: ${new Date(start).toLocaleString()} - ${new Date(end).toLocaleString()}) ${summary}`).join('\n\n') || '(无)'}\n\n> 当前时间: ${new Date().toLocaleString()}`
+    return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你的长期记忆的摘要\n\n${longTermMemory.map(({ summary, start, end, uuid }) => `(记忆ID: ${uuid}) (时间: ${new Date(start).toLocaleString()} - ${new Date(end).toLocaleString()}) ${summary}`).join('\n\n') || '(无)'}\n\n> 当前时间: ${new Date().toLocaleString()}`
   },
   saveAllMemory: () => {
     const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory, selfName, userName } = getState()

@@ -38,7 +38,7 @@ export function ChatReady() {
       const prompt = getPrompt()
       const answer = chat([
         { role: 'system', content: prompt },
-        ...input.map(({ role, content }) => ({ role, content })),
+        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 时间: ${new Date(timestamp).toLocaleString()} (时间由系统生成, 请勿在回答中自行生成)` })),
       ])
       let response = ''
       let tokenSet = false
@@ -157,7 +157,9 @@ export function ChatReady() {
         name='text'
         rules={[{ required: true, message: '请输入消息' }]}
       >
-        <Input.TextArea />
+        <Input.TextArea 
+          autoSize={{ minRows: 3, maxRows: 3 }}
+        />
       </Form.Item>
       <Form.Item>
         <div className='w-full flex justify-between items-center gap-3'>
@@ -217,7 +219,7 @@ export function ChatReady() {
         </div>
       </Form.Item>
       <Form.Item label='短时记忆'>
-        <div className='w-full max-h-60 overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+        <div className='w-full max-h-[calc(100dvh-27.5rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
           <div className='w-full flex flex-col gap-3'>
             {shortTermMemory.map(({ role, content }, index) => (
               <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
