@@ -1,4 +1,8 @@
 import { env } from '../env.ts'
+import { Client } from '@gradio/client'
+import emojiRegex from 'emoji-regex'
+const client = await Client.connect('mrfakename/E2-F5-TTS')
+const emoji = emojiRegex()
 
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {
@@ -34,6 +38,10 @@ const test_browser: SpeakApiTest = async () => {
 
 async function speak_f5tts(text: string): Promise<void> {
   try {
+    text = text.replace(new RegExp(emoji, 'g'), '')
+    if (text.length === 0) {
+      return
+    }
     const url = env.VITE_F5_TTS_SERVER_URL
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
     const refAudio: Uint8Array = new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
@@ -78,29 +86,29 @@ const test_f5tts: SpeakApiTest = async () => {
   }
 }
 
-import { Client } from '@gradio/client'
-import emojiRegex from 'emoji-regex'
-const emoji = emojiRegex()
-const client = await Client.connect('mrfakename/E2-F5-TTS')
 async function speak_huggingface(text: string): Promise<void> {
-  text = text.replace(new RegExp(emoji, 'g'), '')
-  if (text.length === 0) {
-    return
+  try {
+    text = text.replace(new RegExp(emoji, 'g'), '')
+    if (text.length === 0) {
+      return
+    }
+    const audio = new Blob([new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())], { type: 'audio/wav' })
+    const refer = await (await fetch('/tts/luoshaoye.txt')).text()
+    const result = await client.predict('/basic_tts', {
+      ref_audio_input: audio,
+      ref_text_input: refer,
+      gen_text_input: text,
+    })
+    const data = result.data as { url: string }[]
+    const url = data[0].url
+    const audioElement = new Audio(url)
+    audioElement.play()
+    return new Promise<void>(resolve => {
+      audioElement.onended = () => resolve()
+    })
+  } catch (e) {
+    throw new Error(`HuggingFace API 错误: ${e instanceof Error ? e.message : e}`)
   }
-  const audio = new Blob([new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())], { type: 'audio/wav' })
-  const refer = await (await fetch('/tts/luoshaoye.txt')).text()
-  const result = await client.predict('/basic_tts', {
-    ref_audio_input: audio,
-    ref_text_input: refer,
-    gen_text_input: text,
-  })
-  const data = result.data as { url: string }[]
-  const url = data[0].url
-  const audioElement = new Audio(url)
-  audioElement.play()
-  return new Promise<void>(resolve => {
-    audioElement.onended = () => resolve()
-  })
 }
 const test_huggingface: SpeakApiTest = async () => {
   try {
