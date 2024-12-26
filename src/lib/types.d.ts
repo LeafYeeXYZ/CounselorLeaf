@@ -1,4 +1,5 @@
 declare type Env = {
+  VITE_OLLAMA_LABEL_NAME: string
   VITE_OLLAMA_SERVER_URL: string
   VITE_OLLAMA_MODEL_NAME: string
   VITE_OLLAMA_MAX_TOKENS: number

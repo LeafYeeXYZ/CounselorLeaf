@@ -11,4 +11,7 @@ export const env: Env = {
   VITE_F5_TTS_SERVER_URL: import.meta.env.VITE_F5_TTS_SERVER_URL ?
     String(import.meta.env.VITE_F5_TTS_SERVER_URL) :
     'http://127.0.0.1:5010/api',
+  VITE_OLLAMA_LABEL_NAME: import.meta.env.VITE_OLLAMA_LABEL_NAME ?
+    String(import.meta.env.VITE_OLLAMA_LABEL_NAME) :
+    '',
 }

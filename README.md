@@ -47,6 +47,7 @@
 | `VITE_OLLAMA_SERVER_URL` | `'http://127.0.0.1:11434'` | `ollama` 服务地址 |
 | `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |
 | `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
+| `VITE_OLLAMA_LABEL_NAME` | `'Ollama - <model_name>'` | 前端显示的模型名称 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [`F5-TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
 
 ### 2.2 桌面端

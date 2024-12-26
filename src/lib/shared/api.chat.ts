@@ -22,6 +22,8 @@ const test_ollama: ChatApiTest = async () => {
   const { models } = await ollama.list().catch((err) => {
     if (err.message === 'Load failed') {
       throw new Error('Ollama 服务未启动')
+    } else {
+      throw err
     }
   }) as ListResponse
   if (models.every(({ name }) => name !== env.VITE_OLLAMA_MODEL_NAME)) {
@@ -31,7 +33,7 @@ const test_ollama: ChatApiTest = async () => {
 }
 export const chatApiList: ChatApiList = [
   { 
-    name: `Ollama - ${env.VITE_OLLAMA_MODEL_NAME}`,
+    name: env.VITE_OLLAMA_LABEL_NAME || `Ollama - ${env.VITE_OLLAMA_MODEL_NAME}`,
     api: chat_ollama, 
     test: test_ollama,
     maxToken: env.VITE_OLLAMA_MAX_TOKENS,
