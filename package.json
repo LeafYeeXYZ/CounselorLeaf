@@ -24,7 +24,6 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
-    "@huggingface/transformers": "^3.2.2",
     "@tauri-apps/plugin-dialog": "~2.2.0",
     "@tauri-apps/plugin-store": "~2.2.0",
     "antd": "^5.22.5",

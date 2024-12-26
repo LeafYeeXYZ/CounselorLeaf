@@ -1,16 +1,8 @@
 declare type Env = {
-  // [Tauri] Ollama API
   VITE_OLLAMA_SERVER_URL: string
   VITE_OLLAMA_MODEL_NAME: string
   VITE_OLLAMA_MAX_TOKENS: number
-  // [Web] Chat Server
-  VITE_WEB_SERVER_URL: string
-  VITE_WEB_MAX_TOKENS: number
-  // [Tauri] F5 TTS API
   VITE_F5_TTS_SERVER_URL: string
-  // [Web] Transformer.js
-  VITE_WASM_MAX_TOKENS: number
-  VITE_USE_WEB_GPU: boolean
 }
 
 declare type ShortTermMemory = {

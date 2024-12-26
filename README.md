@@ -1,8 +1,6 @@
 # Digital Life / 数字生命
 
-这是一个试图创造具有可解释性的"长时记忆"的 AI 生命项目, 目前正在开发中
-
-本项目同时支持 Web 和桌面端, 两端共享除特定 API 外的所有代码. 开发环境要求包括 `Rust` (仅桌面端需要)、`Node.js`、`Bun` (可通过 `npm install -g bun` 安装)
+创造一个可以带走的"数字生命". 本项目同时支持 Web 和桌面端, 两端共享除特定 API 外的所有代码. 开发环境要求包括 `Rust` (仅桌面端需要)、`Node.js`、`Bun` (可通过 `npm install -g bun` 安装)
 
 | 记忆模型 (暂定) | 示意图 |
 | :---: | :---: |
@@ -11,8 +9,9 @@
 - [Digital Life / 数字生命](#digital-life--数字生命)
   - [1 项目说明](#1-项目说明)
   - [2 开发和部署](#2-开发和部署)
-    - [2.1 桌面端](#21-桌面端)
-    - [2.2 Web 端](#22-web-端)
+    - [2.1 环境变量](#21-环境变量)
+    - [2.2 桌面端](#22-桌面端)
+    - [2.3 Web 端](#23-web-端)
   - [3 待办事项](#3-待办事项)
   - [4 长时记忆](#4-长时记忆)
     - [4.1 现有做法](#41-现有做法)
@@ -33,9 +32,11 @@
 
 ## 2 开发和部署
 
-### 2.1 桌面端
+### 2.1 环境变量
 
-桌面端的语言模型使用 `ollama`. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
+本项目的 LLM 推理通过 `ollama` 实现. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
+
+下面的环境变量都不是必须的
 
 | 环境变量名 | 默认值 | 说明 |
 | :---: | :---: | :---: |
@@ -43,6 +44,10 @@
 | `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |
 | `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [`F5-TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
+
+> 在 Web 端时, 您可能需要手动设置 `ollama`、`F5 TTS API` 的 `CORS` 策略以避免请求被浏览器拦截; 对于前者, 可以直接设置 `OLLAMA_ORIGINS` 环境变量
+
+### 2.2 桌面端
 
 ```bash
 # 克隆项目
@@ -56,16 +61,9 @@ bun d:tauri
 bun b:tauri
 ```
 
-### 2.2 Web 端
+### 2.3 Web 端
 
-Web 端构建后的输出目录为 `/dist-web`. LLM 推理通过[远程 API](https://github.com/LeafYeeXYZ/MyAPIs)或 `transformers.js` 实现. `VITE_WEB_SERVER_URL` 环境变量为[服务器地址](https://github.com/LeafYeeXYZ/MyAPIs), 如 `https://api.xxx.workers.dev` (不带末尾斜杠)
-
-| 环境变量名 | 默认值 | 说明 |
-| :---: | :---: | :---: |
-| `VITE_WEB_SERVER_URL` | `''` | [Web 端远程 API](https://github.com/LeafYeeXYZ/MyAPIs) 的地址 |
-| `VITE_WEB_MAX_TOKENS` | `1000` | Web 端远程 API 的最大 `token` 数 |
-| `VITE_WASM_MAX_TOKENS` | `5000` | Web 端 `transformers.js` 的最大 `token` 数 |
-| `VITE_USE_WEB_GPU` |  | 仅当设为 `'webgpu'` 时, `transformers.js` 将使用 `WebGPU` 进行推理 |
+请注意 Web 端构建后的输出目录为 `/dist-web` 而非 `/dist`
 
 ```bash
 # 克隆项目

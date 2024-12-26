@@ -1,46 +1,8 @@
-export { set, get, save } from './web/api.store.ts'
-export { chatApiList } from './web/api.chat.ts'
-export { speakApiList } from './web/api.speak.ts'
-export { listenApiList } from './web/api.listen.ts'
-export { live2dList, type LoadLive2d, type Live2dApi } from './web/api.live2d.ts'
-
-export async function shortMemoToLong({
-  chatApi,
-  memoryAboutSelf,
-  memoryAboutUser,
-  shortTermMemories,
-} : {
-  chatApi: ChatApi,
-  memoryAboutSelf: string,
-  memoryAboutUser: string,
-  shortTermMemories: ShortTermMemory[],
-}): Promise<{
-  memoryAboutSelf: string,
-  memoryAboutUser: string,
-  longTermMemory: LongTermMemory,
-}> {
-  console.log({ memoryAboutSelf, memoryAboutUser, shortTermMemories, chatApi })
-  throw new Error('Not implemented')
-}
-
-export async function longMemoToLong({
-  chatApi,
-  memoryAboutSelf,
-  memoryAboutUser,
-  longTermMemories,
-} : {
-  chatApi: ChatApi,
-  memoryAboutSelf: string,
-  memoryAboutUser: string,
-  longTermMemories: LongTermMemory[],
-}): Promise<{
-  memoryAboutSelf: string,
-  memoryAboutUser: string,
-  longTermMemory: LongTermMemory,
-}> {
-  console.log({ memoryAboutSelf, memoryAboutUser, longTermMemories, chatApi })
-  throw new Error('Not implemented')
-}
+export { chatApiList } from './shared/api.chat.ts'
+export { speakApiList } from './shared/api.speak.ts'
+export { listenApiList } from './shared/api.listen.ts'
+export { set, get, save } from './tauri/api.store.ts'
+export { live2dList, type LoadLive2d, type Live2dApi } from './tauri/api.live2d.ts'
 
 export function uuid() {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {

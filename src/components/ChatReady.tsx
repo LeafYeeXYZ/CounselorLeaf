@@ -131,7 +131,7 @@ export function ChatReady() {
           messageApi?.error('记忆负荷过大, 请先更新记忆')
           return
         }
-        flushSync(() => setDisabled('对话中...'))
+        flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>对话中 <LoadingOutlined /></p>))
         form.setFieldValue('text', '')
         await onFinish(values)
         flushSync(() => setDisabled(false))
