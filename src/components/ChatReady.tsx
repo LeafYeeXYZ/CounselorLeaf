@@ -116,7 +116,7 @@ export function ChatReady() {
     }
   }
   const onUpdate = async () => {
-    messageApi?.info('本功能暂未实现, 目前仅为清除短时记忆')
+    messageApi?.info('本功能暂未实现, 目前仅为清除短时记忆, 未来本功能将由模型自动调用')
     setUsedToken(undefined)
     await setShortTermMemory([])
   }
