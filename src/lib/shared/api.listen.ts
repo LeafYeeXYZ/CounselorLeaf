@@ -1,7 +1,7 @@
 // @ts-expect-error TS 无法识别 Web Speech API
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
 
-const listen_browser: ListenApi = () => {
+const listen_browser: ListenApi = (callback) => {
   const recognition = new SpeechRecognition()
   recognition.lang = 'zh-CN'
   recognition.interimResults = true
@@ -14,6 +14,7 @@ const listen_browser: ListenApi = () => {
     for (let i = event.resultIndex; i < event.results.length; ++i) {
       text += event.results[i][0].transcript
     }
+    typeof callback === 'function' && callback(text)
   }
   recognition.onend = () => {
     resolve(text)

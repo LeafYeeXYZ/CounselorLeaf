@@ -40,6 +40,6 @@ declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest, maxT
 declare type SpeakApi = (text: string) => Promise<void>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type SpeakApiList = ({ name: string, api: SpeakApi, test: SpeakApiTest } | { name: string, api: null, test: null })[]
-declare type ListenApi = () => { result: Promise<string>, start: () => void, stop: () => void }
+declare type ListenApi = (callback?: (text: string) => void) => { result: Promise<string>, start: () => void, stop: () => void }
 declare type ListenApiTest = () => Promise<boolean>
 declare type ListenApiList = ({ name: string, api: ListenApi, test: ListenApiTest } | { name: string, api: null, test: null })[]
