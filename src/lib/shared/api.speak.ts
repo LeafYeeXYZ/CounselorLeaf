@@ -1,6 +1,7 @@
 import { env } from '../env.ts'
 import emojiRegex from 'emoji-regex'
 const emoji = emojiRegex()
+import { toBase64 } from '../utils.ts'
 
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {
@@ -84,8 +85,62 @@ const test_f5tts: SpeakApiTest = async () => {
   }
 }
 
+const speak_fish: SpeakApi = async (text) => {
+  try {
+    text = text.replace(new RegExp(emoji, 'g'), '')
+    if (text.length === 0) {
+      return
+    }
+    const url = env.VITE_FISH_SPEECH_SERVER_URL + '/v1/tts'
+    const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
+    const refAudio: string = toBase64(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text,
+        use_memory_cache: 'on',
+        references: [{
+          audio: refAudio,
+          text: refText,
+        }]
+      }),
+    })
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    }
+    const audio = new Uint8Array(await res.arrayBuffer())
+    const blob = new Blob([audio], { type: 'audio/wav' })
+    const audioUrl = URL.createObjectURL(blob)
+    const audioElement = new Audio(audioUrl)
+    audioElement.play()
+    return new Promise<void>(resolve => {
+      audioElement.onended = () => {
+        URL.revokeObjectURL(audioUrl)
+        resolve()
+      }
+    })
+  } catch (e) {
+    throw new Error(`Fish Speech API 错误: ${e instanceof Error ? e.message : e}`)
+  }
+}
+const test_fish: SpeakApiTest = async () => {
+  try {
+    const url = env.VITE_FISH_SPEECH_SERVER_URL + '/v1/tts'
+    const res = await fetch(url)
+    if (res.status === 405) {
+      return true
+    } else {
+      throw new Error(`HTTP ${res.status} ${res.statusText}`)
+    } 
+  } catch (e) {
+    throw new Error(`Fish Speech API 测试失败: ${e instanceof Error ? e.message : e}`)
+  }
+}
+
 export const speakApiList: SpeakApiList = [
   { name: '关闭', api: null, test: null },
   { name: 'Web Speech API', api: speak_browser, test: test_browser },
   { name: 'F5 TTS API', api: speak_f5tts, test: test_f5tts },
+  { name: 'Fish Speech API', api: speak_fish, test: test_fish },
 ]

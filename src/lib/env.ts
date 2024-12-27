@@ -14,4 +14,7 @@ export const env: Env = {
   VITE_OLLAMA_LABEL_NAME: import.meta.env.VITE_OLLAMA_LABEL_NAME ?
     String(import.meta.env.VITE_OLLAMA_LABEL_NAME) :
     '',
+  VITE_FISH_SPEECH_SERVER_URL: import.meta.env.VITE_FISH_SPEECH_SERVER_URL ?
+    String(import.meta.env.VITE_FISH_SPEECH_SERVER_URL) :
+    'http://127.0.0.1:8080',
 }

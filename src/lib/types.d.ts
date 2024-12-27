@@ -4,6 +4,7 @@ declare type Env = {
   VITE_OLLAMA_MODEL_NAME: string
   VITE_OLLAMA_MAX_TOKENS: number
   VITE_F5_TTS_SERVER_URL: string
+  VITE_FISH_SPEECH_SERVER_URL: string
 }
 
 declare type ShortTermMemory = {

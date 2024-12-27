@@ -28,7 +28,7 @@
 - **本项目的优势和特点**: 与同类项目如 <https://github.com/t41372/Open-LLM-VTuber> 的区别在于, 本项目使用更为简单和灵活, 同时支持 Web 和桌面版本, 用户无需安装任何多余的软件; 同时, 本项目的 API 设计也比较灵活, 可以便捷地拓展多种后端实现; 最后如上所述, 可解释性的记忆能提供更多可能
 - **关于基础模型**: 目前默认用的是 `qwen2.5:7b` (本地)、`qwen1.5:13b-awq` (Web - API)、`qwen2.5:0.5b` (Web Transformers.js), 后期可能会使用 <https://github.com/SmartFlowAI/EmoLLM> 或其他模型
 - **关于 `live2d`**: 目前使用 <https://github.com/oh-my-live2d/oh-my-live2d>, 也尝试过 <https://github.com/guansss/pixi-live2d-display>. 但是两者都无法完全满足需求, 后期可能会 `fork` 之后按需修改
-- **关于语音生成**: 目前用的是 `Web Speech API`, 但效果感觉一般, 默认关闭. 桌面端还实验性地支持 <https://github.com/SWivid/F5-TTS> (使用 <https://github.com/jianchang512/f5-tts-api>), 效果很不错, 但对配置要求较高, 且对 Mac 不友好. 后期可能会尝试其他 `TTS` 技术
+- **关于语音生成**: `Web Speech API` 和本地 `TTS` 服务, 见[2.1 环境变量](#21-环境变量)
 - **关于语音输入**: 目前用的也是 `Web Speech API`, 效果不错, 默认关闭. 后期也会探索使用其他 `STT` 技术、添加实时对话功能
 - **外部世界信息**: 未来会加入可选的天气、新闻、股票等信息给 AI (通过相关平台的 API 在线获取)、通过 <https://github.com/microsoft/markitdown> 支持文件输入 (把 `Python` 作为 `Tauri` 的 `sidecar` 运行)
 
@@ -48,7 +48,10 @@
 | `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |
 | `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
 | `VITE_OLLAMA_LABEL_NAME` | `'Ollama - <model_name>'` | 前端显示的模型名称 |
-| `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5-TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
+| `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5 TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
+| `VITE_FISH_SPEECH_SERVER_URL` | `'http://127.0.0.1:8080'` | [本地 `Fish Speech` 服务地址](https://speech.fish.audio/zh/inference/#http-api) |
+
+> `Fish Speech` 在使用 `MPS` 模式时, `Pytorch` 报告 `dType` 错误, 故暂且只能用 `CPU` 推理
 
 ### 2.2 桌面端
 
