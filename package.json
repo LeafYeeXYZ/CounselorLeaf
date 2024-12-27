@@ -27,7 +27,7 @@
     "@gradio/client": "^1.8.0",
     "@tauri-apps/plugin-dialog": "~2.2.0",
     "@tauri-apps/plugin-store": "~2.2.0",
-    "antd": "^5.22.5",
+    "antd": "^5.22.7",
     "emoji-regex": "^10.4.0",
     "idb-keyval": "^6.2.1",
     "oh-my-live2d": "^0.19.3",
@@ -51,7 +51,7 @@
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.6.3",
-    "typescript-eslint": "^8.18.1",
-    "vite": "^6.0.5"
+    "typescript-eslint": "^8.18.2",
+    "vite": "^6.0.6"
   }
 }
