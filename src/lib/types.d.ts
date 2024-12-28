@@ -17,9 +17,17 @@ declare type LongTermMemory = {
   uuid: string
   startTime: number
   endTime: number
+  title: string
   summary: string
-  content: string
   recallTimes: number
+}
+
+declare type ArchivedMemory = {
+  uuid: string
+  belongTo: string // uuid in long term memory
+  role: string
+  content: string
+  timestamp: number
 }
 
 declare type StoreKeys = 
@@ -30,10 +38,11 @@ declare type StoreKeys =
   'self_name' |
   'user_name' |
   'last_used_token' |
-  'memory_about_self' | // 模型对用户的持久化记忆
-  'memory_about_user' | // 模型对自己的持久化记忆
-  'long_term_memory' | // 长期记忆, 包含数次对话的总结
-  'short_term_memory' // 短期记忆, 包含当前对话的内容
+  'short_term_memory' |
+  'long_term_memory' |
+  'archived_memory' |
+  'memory_about_self' |
+  'memory_about_user'
 
 declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean, token?: number }, void, void>
 declare type ChatApiTest = () => Promise<boolean>

@@ -25,10 +25,10 @@ export function Memory() {
       const end = new Date(item.endTime)
       return {
         key: 'memory', // 故意的, 便于同时展开
-        label: item.summary,
+        label: item.title,
         children: (
           <div className='w-full'>
-            {'['}{start.getFullYear().toString().slice(2)}-{start.getMonth() + 1}-{start.getDate()} {start.getHours()}:{start.getMinutes()}:{start.getSeconds()} - {end.getFullYear().toString().slice(2)}-{end.getMonth() + 1}-{end.getDate()} {end.getHours()}:{end.getMinutes()}:{end.getSeconds()}{'] [回忆次数: '}{item.recallTimes}{'] '}{item.content}
+            {'['}{start.getFullYear().toString().slice(2)}-{start.getMonth() + 1}-{start.getDate()} {start.getHours()}:{start.getMinutes()}:{start.getSeconds()} - {end.getFullYear().toString().slice(2)}-{end.getMonth() + 1}-{end.getDate()} {end.getHours()}:{end.getMinutes()}:{end.getSeconds()}{'] [回忆次数: '}{item.recallTimes}{'] '}{item.summary}
           </div>
         ),
       }
