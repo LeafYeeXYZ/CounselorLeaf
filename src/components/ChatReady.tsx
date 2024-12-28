@@ -5,7 +5,7 @@ import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined }
 import { useApi } from '../lib/useApi.ts'
 import { useStates } from '../lib/useStates.ts'
 import { useMemory } from '../lib/useMemory.ts'
-import { sleep, clone } from '../lib/utils.ts'
+import { sleep, clone, getDate } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
 interface FormValues {
@@ -38,7 +38,11 @@ export function ChatReady() {
       const prompt = getPrompt()
       const answer = chat([
         { role: 'system', content: prompt },
-        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 时间: ${new Date(timestamp).toLocaleString()} (时间由系统生成, 请勿在回答中自行生成)` })),
+        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 发出这条消息的时间: ${getDate(timestamp)} (时间由系统生成, 请勿在回答中自行生成)` })),
+      ])
+      console.log([
+        { role: 'system', content: prompt },
+        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 发出这条消息的时间: ${getDate(timestamp)} (时间由系统生成, 请勿在回答中自行生成)` })),
       ])
       let response = ''
       let tokenSet = false

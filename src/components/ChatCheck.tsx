@@ -16,24 +16,12 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       return
     }
     // 加载服务
-    testChat().then(() => {
-      // 测试语音合成功能
-      return typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true)
-    }).then(() => {
-      // 测试语音转文字功能
-      return typeof testListen === 'function' ? testListen() : Promise.resolve(true)
-    }).then(() => {
-      // 如果语音转文字功能开启, 请求权限
-      return typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }) : Promise.resolve(null)
-    }).then((stream) => {
-      // 关闭音频流
-      if (stream !== null) {
-        stream.getTracks().forEach((track) => track.stop())
-      }
-      // 设置通知 API
-      return Promise.resolve()
-    }).then(() => {
-      // 完成加载
+    Promise.all([
+      testChat(),
+      typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true),
+      typeof testListen === 'function' ? testListen() : Promise.resolve(true),
+      typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => stream.getTracks().forEach((track) => track.stop())) : Promise.resolve(true),
+    ]).then(() => {
       setReady(true)
       setDisabled((disabled === true || disabled === '加载出错') ? false : disabled)
     }).catch((e) => {
