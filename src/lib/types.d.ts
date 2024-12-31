@@ -23,7 +23,6 @@ declare type LongTermMemory = {
 }
 
 declare type ArchivedMemory = {
-  uuid: string
   belongTo: string // uuid in long term memory
   role: string
   content: string

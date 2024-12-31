@@ -112,7 +112,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return hours >= UPDATE_MEMORY_AFTER_HOURS
   },
   updateMemory: async (chatApi) => {
-    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser } = getState()
+    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory } = getState()
     const response = await chatApi.chat({
       model: env.VITE_OLLAMA_MODEL_NAME,
       stream: false,
@@ -122,20 +122,26 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       ],
     })
     const result = UpdateMemoryResponse.parse(JSON.parse(response.message.content))
-    const timestamps = shortTermMemory.map((item) => item.timestamp)
+    const prev = clone(shortTermMemory)
+    const _uuid = uuid()
+    const timestamps = prev.map((item) => item.timestamp)
     result.updatedMemoryAboutSelf && await setMemoryAboutSelf(result.updatedMemoryAboutSelf)
     result.updatedMemoryAboutUser && await setMemoryAboutUser(result.updatedMemoryAboutUser)
     await setCurrentSummary('')
     await setShortTermMemory([])
     await setLongTermMemory([
       {
-        uuid: uuid(),
+        uuid: _uuid,
         title: result.titleOfMessages || '无标题',
         summary: result.summaryOfMessages || '无总结',
         startTime: Math.min(...timestamps),
         endTime: Math.max(...timestamps),
       },
       ...clone(longTermMemory),
+    ])
+    await setArchivedMemory([
+      ...prev.map(({ role, content, timestamp }) => ({ role, content, timestamp, belongTo: _uuid })),
+      ...clone(archivedMemory),
     ])
     return
   },
