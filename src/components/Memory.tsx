@@ -1,5 +1,5 @@
-import { useStates } from '../lib/useStates.ts'
-import { useMemory } from '../lib/useMemory.ts'
+import { useStates } from '../lib/hooks/useStates.ts'
+import { useMemory } from '../lib/hooks/useMemory.ts'
 import { Form, Collapse, type CollapseProps, Button, Popover, Input, Space } from 'antd'
 import { ExportOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useMemo, useState, useRef } from 'react'

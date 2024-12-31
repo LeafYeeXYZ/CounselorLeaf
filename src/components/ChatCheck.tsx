@@ -1,5 +1,5 @@
-import { useStates } from '../lib/useStates.ts'
-import { useApi } from '../lib/useApi.ts'
+import { useStates } from '../lib/hooks/useStates.ts'
+import { useApi } from '../lib/hooks/useApi.ts'
 import { useState, useEffect } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button } from 'antd'

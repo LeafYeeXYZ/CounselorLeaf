@@ -1,4 +1,4 @@
-import { useApi } from '../lib/useApi.ts'
+import { useApi } from '../lib/hooks/useApi.ts'
 import { Form, Select } from 'antd'
 
 export function Config() {
