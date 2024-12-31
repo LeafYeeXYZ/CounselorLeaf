@@ -42,7 +42,8 @@ declare type StoreKeys =
   'long_term_memory' |
   'archived_memory' |
   'memory_about_self' |
-  'memory_about_user'
+  'memory_about_user' |
+  'current_summary'
 
 declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean, token?: number }, void, void>
 declare type ChatApiTest = () => Promise<boolean>

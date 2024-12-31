@@ -19,6 +19,9 @@ type Memory = {
   setShortTermMemory: (memory: ShortTermMemory[]) => Promise<void>
   setArchivedMemory: (memory: ArchivedMemory[]) => Promise<void>
 
+  currentSummary: string
+  setCurrentSummary: (summary: string) => Promise<void>
+
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
 
@@ -38,14 +41,21 @@ const localMemoryAboutUser = await get('memory_about_user')
 const localLongTermMemory = await get('long_term_memory')
 const localShortTermMemory = await get('short_term_memory')
 const localArchivedMemory = await get('archived_memory')
+const localCurrentSummary = await get('current_summary')
 
 export const useMemory = create<Memory>()((setState, getState) => ({
   getPrompt: () => {
     const { memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
     return `你是一个虚拟人类, 下面是你的记忆和对你的要求:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n> 当前的实时时间: ${getTime()}`
   },
+  currentSummary: localCurrentSummary || '',
+  setCurrentSummary: async (summary) => {
+    setState({ currentSummary: summary })
+    await set('current_summary', summary)
+    return
+  },
   saveAllMemory: () => {
-    const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory, archivedMemory, selfName, userName } = getState()
+    const { memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory, archivedMemory, selfName, userName, currentSummary } = getState()
     const data = JSON.stringify({
       selfName,
       userName,
@@ -54,13 +64,15 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       longTermMemory,
       shortTermMemory,
       archivedMemory,
+      currentSummary,
     }, null, 2)
     return save(data)
   },
   resetAllMemory: async () => {
-    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory } = getState()
+    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory, setCurrentSummary } = getState()
     await setMemoryAboutSelf('')
     await setMemoryAboutUser('')
+    await setCurrentSummary('')
     await setLongTermMemory([])
     await setShortTermMemory([])
     await setArchivedMemory([])

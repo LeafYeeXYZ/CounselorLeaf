@@ -40,10 +40,6 @@ export function ChatReady() {
         { role: 'system', content: prompt },
         ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 发出这条消息的时间: ${getDate(timestamp)} (时间由系统生成, 请勿在回答中自行生成)` })),
       ])
-      console.log([
-        { role: 'system', content: prompt },
-        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 发出这条消息的时间: ${getDate(timestamp)} (时间由系统生成, 请勿在回答中自行生成)` })),
-      ])
       let response = ''
       let tokenSet = false
       await setShortTermMemory(input)
