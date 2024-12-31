@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { get, set, save, getTime } from './utils.ts'
+import { get, set, save, getTime } from '../utils.ts'
 
 type Memory = {
 

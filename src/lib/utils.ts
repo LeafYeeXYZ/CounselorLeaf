@@ -1,8 +1,8 @@
-export { chatApiList } from './shared/api.chat.ts'
-export { speakApiList } from './shared/api.speak.ts'
-export { listenApiList } from './shared/api.listen.ts'
-export { set, get, save } from './tauri/api.store.ts'
-export { live2dList, type LoadLive2d, type Live2dApi } from './tauri/api.live2d.ts'
+export { chatApiList } from './api/shared/api.chat.ts'
+export { speakApiList } from './api/shared/api.speak.ts'
+export { listenApiList } from './api/shared/api.listen.ts'
+export { set, get, save } from './api/tauri/api.store.ts'
+export { live2dList, type LoadLive2d, type Live2dApi } from './api/tauri/api.live2d.ts'
 
 /**
  * 获取时间: XXXX年X月X日X时X分X秒

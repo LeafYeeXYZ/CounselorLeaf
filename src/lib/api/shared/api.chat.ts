@@ -1,6 +1,6 @@
 import type { ListResponse } from 'ollama'
 import { Ollama } from 'ollama/browser'
-import { env } from '../env.ts'
+import { env } from '../../env.ts'
 
 const ollama = new Ollama({ host: env.VITE_OLLAMA_SERVER_URL })
 

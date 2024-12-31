@@ -1,7 +1,7 @@
-import { env } from '../env.ts'
+import { env } from '../../env.ts'
 import emojiRegex from 'emoji-regex'
 const emoji = emojiRegex()
-import { toBase64 } from '../utils.ts'
+import { toBase64 } from '../../utils.ts'
 
 let voices: SpeechSynthesisVoice[] = []
 while (voices.length === 0) {
