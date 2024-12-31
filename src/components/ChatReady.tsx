@@ -122,6 +122,7 @@ export function ChatReady() {
     try {
       await updateMemory(chat)
       await setUsedToken(undefined)
+      messageApi?.success('记忆更新成功')
       return
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
