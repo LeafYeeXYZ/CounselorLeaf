@@ -1,5 +1,8 @@
 import { useApi } from '../lib/hooks/useApi.ts'
-import { Form, Select } from 'antd'
+import { useStates } from '../lib/hooks/useStates.ts'
+import { toBase64 } from '../lib/utils.ts'
+import { Form, Select, Upload, Button } from 'antd'
+import { FileImageOutlined, UndoOutlined } from '@ant-design/icons'
 
 export function Config() {
 
@@ -17,6 +20,7 @@ export function Config() {
     currentLive2d,
     currentListenApi,
   } = useApi()
+  const { setBackground, messageApi } = useStates()
 
   return (
     <section className='w-full h-full flex flex-col justify-center items-center'>
@@ -59,6 +63,34 @@ export function Config() {
               await setLoadLive2d(value)
             }}
           />
+        </Form.Item>
+        <Form.Item label='背景图片'>
+          <div className='flex justify-between flex-nowrap gap-3'>
+            <Upload
+              accept='.jpg,.jpeg,.png'
+              showUploadList={false}
+              beforeUpload={async (file) => {
+                const base64 = toBase64(await file.arrayBuffer())
+                setBackground(`data:${file.type};base64,${base64}`)
+                messageApi?.success('背景设置成功')
+                return false
+              }}
+            >
+              <Button icon={<FileImageOutlined />}>
+                点击上传
+              </Button>
+            </Upload>
+            <Button 
+              className='w-full' 
+              icon={<UndoOutlined />}
+              onClick={() => {
+                setBackground()
+                messageApi?.success('已恢复默认背景')
+              }}
+            >
+              恢复默认背景
+            </Button>
+          </div>
         </Form.Item>
       </Form>
     </section>

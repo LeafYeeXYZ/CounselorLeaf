@@ -17,7 +17,7 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 
 export default function App() {
 
-  const { setMessageApi, disabled } = useStates()
+  const { setMessageApi, disabled, background } = useStates()
   const { loadLive2d, setLive2dApi } = useApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [messageApi, messageElement] = message.useMessage()
@@ -36,6 +36,12 @@ export default function App() {
       setLive2dApi(null)
     }
   }, [loadLive2d, setLive2dApi])
+
+  // 加载背景
+  useEffect(() => {
+    const element = document.getElementById('back')! as HTMLImageElement
+    element.src = background
+  }, [background])
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>

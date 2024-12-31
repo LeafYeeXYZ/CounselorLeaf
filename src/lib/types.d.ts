@@ -42,7 +42,8 @@ declare type StoreKeys =
   'archived_memory' |
   'memory_about_self' |
   'memory_about_user' |
-  'current_summary'
+  'current_summary' |
+  'background_image'
 
 declare type ChatApi = import('ollama/browser').Ollama
 declare type ChatApiTest = () => Promise<boolean>
