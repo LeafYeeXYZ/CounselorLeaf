@@ -1,8 +1,9 @@
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
-import { Form, Collapse, type CollapseProps, Button, Popover, Input, Space } from 'antd'
+import { Form, Collapse, type CollapseProps, Button, Popover, Input, Space, Tag } from 'antd'
 import { ExportOutlined, DeleteOutlined } from '@ant-design/icons'
 import { useMemo, useState, useRef } from 'react'
+import { getTime } from '../lib/utils.ts'
 
 export function Memory() {
 
@@ -21,14 +22,14 @@ export function Memory() {
 
   const longTermMemoryItems = useMemo<CollapseProps['items']>(() => {
     return longTermMemory.map((item) => {
-      const start = new Date(item.startTime)
-      const end = new Date(item.endTime)
       return {
-        key: 'memory', // 故意的, 便于同时展开
+        key: item.uuid,
         label: item.title,
         children: (
-          <div className='w-full'>
-            {'['}{start.getFullYear().toString().slice(2)}-{start.getMonth() + 1}-{start.getDate()} {start.getHours()}:{start.getMinutes()}:{start.getSeconds()} - {end.getFullYear().toString().slice(2)}-{end.getMonth() + 1}-{end.getDate()} {end.getHours()}:{end.getMinutes()}:{end.getSeconds()}{'] [回忆次数: '}{item.recallTimes}{'] '}{item.summary}
+          <div className='w-full flex flex-col gap-2'>
+            <div>{item.summary}</div>
+            <div>开始时间:<Tag className='mx-1'>{getTime(item.startTime)}</Tag></div>
+            <div>结束时间:<Tag className='mx-1'>{getTime(item.endTime)}</Tag></div>
           </div>
         ),
       }

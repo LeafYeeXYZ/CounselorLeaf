@@ -2,8 +2,10 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { Chat } from './components/Chat.tsx'
 import { Memory } from './components/Memory.tsx'
 import { Config } from './components/Config'
+import { Debug } from './components/Debug.tsx'
 import { useStates } from './lib/hooks/useStates.ts'
 import { useApi } from './lib/hooks/useApi.ts'
+import { env } from './lib/env.ts'
 import { Segmented, message } from 'antd'
 import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined } from '@ant-design/icons'
 
@@ -66,6 +68,7 @@ export default function App() {
         </div>
       </div>
       {messageElement}
+      {env.VITE_DEBUG_COMPONENT ? <Debug /> : undefined}
       <div id='live2d' className='-z-50 w-0 h-0 fixed top-0 left-0'></div>
     </main>
   )

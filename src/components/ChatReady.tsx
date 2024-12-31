@@ -1,11 +1,11 @@
 import { flushSync } from 'react-dom'
 import { useRef, useEffect, useState, useMemo } from 'react'
-import { Button, Form, Input, Tag, Popover } from 'antd'
+import { Button, Form, Input, Tag, Popover, Popconfirm } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
-import { sleep, clone, getDate } from '../lib/utils.ts'
+import { sleep, clone } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
 interface FormValues {
@@ -18,7 +18,7 @@ export function ChatReady() {
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi } = useStates()
   const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
-  const { getPrompt, shortTermMemory, setShortTermMemory, userName, selfName } = useMemory()
+  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -35,11 +35,7 @@ export function ChatReady() {
         ...prev,
         { role: 'user', content: values.text, timestamp: time },
       ]
-      const prompt = getPrompt()
-      const answer = chat([
-        { role: 'system', content: prompt },
-        ...input.map(({ role, content, timestamp }) => ({ role, content: `${content}\n\n> 发出这条消息的时间: ${getDate(timestamp)} (时间由系统生成, 请勿在回答中自行生成)` })),
-      ])
+      const answer = chatWithMemory(chat, values.text)
       let response = ''
       let tokenSet = false
       await setShortTermMemory(input)
@@ -85,6 +81,10 @@ export function ChatReady() {
           await setUsedToken(chunk.token)
         }
       }
+      // 直接开始更新总结
+      const update = Promise.withResolvers<void>()
+      updateCurrentSummary(chat).then(() => update.resolve()).catch((e) => update.reject(e))
+      // 等待最后一句话说完
       if (buffer.length !== 0) {
         const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
         if (typeof speak === 'function') {
@@ -110,15 +110,22 @@ export function ChatReady() {
         await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
       }
       await setShortTermMemory(output)
+      // 等待更新总结
+      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
+      await update.promise
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
       await setShortTermMemory(prev)
     }
   }
   const onUpdate = async () => {
-    messageApi?.info('本功能暂未实现, 目前仅为清除短时记忆, 未来本功能将由模型自动调用')
-    setUsedToken(undefined)
-    await setShortTermMemory([])
+    try {
+      await updateMemory(chat)
+      await setUsedToken(undefined)
+      return
+    } catch (error) {
+      messageApi?.error(error instanceof Error ? error.message : '未知错误')
+    }
   }
 
   return (
@@ -204,18 +211,25 @@ export function ChatReady() {
           >
             发送
           </Button>
-          <Button 
-            className='w-full' 
-            icon={<ClearOutlined />} 
-            disabled={disabled !== false || shortTermMemory.length === 0}
-            onClick={async () => { 
-              flushSync(() => setDisabled('更新记忆中...'))
+          <Popconfirm
+            title={<span>系统会根据时间自动更新记忆<br />您确定要立即更新记忆吗?</span>}
+            onConfirm={async () => {
+              flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
               await onUpdate()
               form.resetFields()
               flushSync(() => setDisabled(false))
-            }}>
-            更新记忆
-          </Button>
+            }}
+            okText='确定'
+            cancelText='取消'
+          >
+            <Button 
+              className='w-full' 
+              icon={<ClearOutlined />} 
+              disabled={disabled !== false || shortTermMemory.length === 0}
+            >
+              更新记忆
+            </Button>
+          </Popconfirm>
         </div>
       </Form.Item>
       <Form.Item label='短时记忆'>

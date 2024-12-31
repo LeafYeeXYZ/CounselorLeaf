@@ -8,7 +8,7 @@ type API = {
   chatApiList: string[]
   currentChatApi: string
   setChatApi: (name: string) => Promise<void>
-  usedToken: number | undefined
+  usedToken: number // -1 means unknown
   maxToken: number
   setUsedToken: (token: number | undefined) => Promise<void>
   
@@ -44,10 +44,10 @@ const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? liv
 
 export const useApi = create<API>()((setState) => ({
   chat: defaultChatApi.api,
-  usedToken: localUsedToken,
+  usedToken: localUsedToken ? Number(localUsedToken) : -1,
   setUsedToken: async (token) => {
     setState({ usedToken: token })
-    await set('last_used_token', token)
+    await set('last_used_token', token ?? -1)
     return
   },
   maxToken: defaultChatApi.maxToken,

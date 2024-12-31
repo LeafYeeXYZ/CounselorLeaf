@@ -5,6 +5,7 @@ declare type Env = {
   VITE_OLLAMA_MAX_TOKENS: number
   VITE_F5_TTS_SERVER_URL: string
   VITE_FISH_SPEECH_SERVER_URL: string
+  VITE_DEBUG_COMPONENT: boolean
 }
 
 declare type ShortTermMemory = {
@@ -19,7 +20,6 @@ declare type LongTermMemory = {
   endTime: number
   title: string
   summary: string
-  recallTimes: number
 }
 
 declare type ArchivedMemory = {
@@ -45,7 +45,7 @@ declare type StoreKeys =
   'memory_about_user' |
   'current_summary'
 
-declare type ChatApi = (messages: { role: string, content: string }[]) => AsyncGenerator<{ response: string, done: boolean, token?: number }, void, void>
+declare type ChatApi = import('ollama/browser').Ollama
 declare type ChatApiTest = () => Promise<boolean>
 declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest, maxToken: number }[]
 declare type SpeakApi = (text: string) => Promise<void>

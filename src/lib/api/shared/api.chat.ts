@@ -4,20 +4,7 @@ import { env } from '../../env.ts'
 
 const ollama = new Ollama({ host: env.VITE_OLLAMA_SERVER_URL })
 
-const chat_ollama: ChatApi = async function* (messages: { role: string, content: string }[]) {
-  const response = await ollama.chat({
-    model: env.VITE_OLLAMA_MODEL_NAME,
-    messages,
-    stream: true,
-  })
-  for await (const chunk of response) {
-    if (chunk.done) {
-      yield { response: chunk.message.content ?? '', done: true, token: chunk.prompt_eval_count + chunk.eval_count }
-    } else {
-      yield { response: chunk.message.content ?? '', done: false }
-    }
-  }
-}
+const chat_ollama: ChatApi = ollama
 const test_ollama: ChatApiTest = async () => {
   const { models } = await ollama.list().catch((err) => {
     if (err.message === 'Load failed') {
