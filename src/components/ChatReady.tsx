@@ -151,7 +151,7 @@ export function ChatReady() {
     >
       <Form.Item
         label={<span>
-          消息{usedToken && (
+          消息{(typeof usedToken === 'number' && usedToken > 0) && (
             <Popover 
               content={`${usedToken} / ${maxToken}`}
             >
