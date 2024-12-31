@@ -48,7 +48,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       className='flex gap-[0.3rem] justify-center items-center flex-col w-full max-h-[calc(100dvh-10.25rem)] p-4 rounded-md border border-blue-900'>
       {statusError ? (<>
         <div>加载出错:</div>
-        <div className='text-center'>{status}</div>
+        <div className='text-center'>{statusText}</div>
         <div>请检查服务状态或修改设置</div>
         <Button className='mt-[0.3rem]' onClick={() => {
           setStatusText('加载中')

@@ -1,7 +1,7 @@
 import { flushSync } from 'react-dom'
 import { useRef, useEffect, useState, useMemo } from 'react'
 import { Button, Form, Input, Tag, Popover, Popconfirm } from 'antd'
-import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined } from '@ant-design/icons'
+import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined, BarsOutlined, RestOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
@@ -18,7 +18,7 @@ export function ChatReady() {
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi } = useStates()
   const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
-  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary } = useMemory()
+  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -118,16 +118,6 @@ export function ChatReady() {
       await setShortTermMemory(prev)
     }
   }
-  const onUpdate = async () => {
-    try {
-      await updateMemory(chat)
-      await setUsedToken(undefined)
-      messageApi?.success('记忆更新成功')
-      return
-    } catch (error) {
-      messageApi?.error(error instanceof Error ? error.message : '未知错误')
-    }
-  }
 
   return (
     <Form
@@ -212,25 +202,73 @@ export function ChatReady() {
           >
             发送
           </Button>
-          <Popconfirm
-            title={<span>系统会根据时间自动更新记忆<br />您确定要立即更新记忆吗?</span>}
-            onConfirm={async () => {
-              flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-              await onUpdate()
-              form.resetFields()
-              flushSync(() => setDisabled(false))
-            }}
-            okText='确定'
-            cancelText='取消'
+          <Popover
+            title='更多功能'
+            trigger={(disabled !== false || shortTermMemory.length === 0) ? 'click' : ['hover', 'click']}
+            content={<div className='flex flex-col gap-2'>
+              <Popconfirm
+                title={<span>系统会根据时间自动更新记忆<br />但您也可以通过本功能手动更新<br />您确定要立即更新记忆吗?</span>}
+                onConfirm={async () => {
+                  try {
+                    flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
+                    await updateMemory(chat)
+                    await setUsedToken(undefined)
+                    messageApi?.success('记忆更新成功')
+                    form.resetFields()
+                  } catch (error) {
+                    messageApi?.error(error instanceof Error ? error.message : '未知错误')
+                  } finally {
+                    setDisabled(false)
+                  }
+                }}
+                okText='确定'
+                cancelText='取消'
+              >
+                <Button 
+                  className='w-full' 
+                  icon={<ClearOutlined />} 
+                  disabled={disabled !== false || shortTermMemory.length === 0}
+                >
+                  更新记忆
+                </Button>
+              </Popconfirm>
+              <Popconfirm
+                title={<span>本操作将直接清除当前对话内容<br />不会更新记忆和自我概念<br />您确定要清楚当前对话吗?</span>}
+                onConfirm={async () => {
+                  try {
+                    flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>清除对话中 <LoadingOutlined /></p>))
+                    await setShortTermMemory([])
+                    await setCurrentSummary('')
+                    await setUsedToken(undefined)
+                    messageApi?.success('对话已清除')
+                    form.resetFields()
+                  } catch (error) {
+                    messageApi?.error(error instanceof Error ? error.message : '未知错误')
+                  } finally {
+                    setDisabled(false)
+                  }
+                }}
+                okText='确定'
+                cancelText='取消'
+              >
+                <Button 
+                  className='w-full' 
+                  icon={<RestOutlined />}
+                  disabled={disabled !== false || shortTermMemory.length === 0}
+                >
+                  清除当前对话
+                </Button>
+              </Popconfirm>
+            </div>}
           >
-            <Button 
-              className='w-full' 
-              icon={<ClearOutlined />} 
+            <Button
+              icon={<BarsOutlined />}
+              className='w-full'
               disabled={disabled !== false || shortTermMemory.length === 0}
             >
-              更新记忆
+              更多功能
             </Button>
-          </Popconfirm>
+          </Popover>
         </div>
       </Form.Item>
       <Form.Item label='短时记忆'>
