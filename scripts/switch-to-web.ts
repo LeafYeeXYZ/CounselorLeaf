@@ -19,7 +19,7 @@ async function copyDir(src: string, dest: string) {
 
 const path = resolve(__dirname ?? import.meta.dirname, '../src/lib/utils.ts')
 const content = await fs.readFile(path, 'utf-8')
-await fs.writeFile(path, content.replace(/\.\/tauri\/api\./g, './web/api.'))
+await fs.writeFile(path, content.replace(/\.\/api\/tauri\/api\./g, './api/web/api.'))
 
 const publicTauri = resolve(__dirname ?? import.meta.dirname, '../public')
 const publicWeb = resolve(__dirname ?? import.meta.dirname, '../public-web')
