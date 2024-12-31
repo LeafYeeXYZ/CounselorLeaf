@@ -54,12 +54,14 @@ export function Memory() {
           <Space.Compact block>
             <Form.Item noStyle name='userName'>
               <Input 
-                placeholder='你的名字'
+                addonBefore='你叫'
+                placeholder='请输入'
               />
             </Form.Item>
             <Form.Item noStyle name='selfName'>
               <Input 
-                placeholder='他的名字'
+                addonBefore='他叫'
+                placeholder='请输入'
               />
             </Form.Item>
             <Button
@@ -74,17 +76,17 @@ export function Memory() {
             </Button>
           </Space.Compact>
         </Form.Item>
-        <Form.Item label='关于自己的记忆'>
+        <Form.Item label='他的关于自己的记忆'>
           <div className='w-full max-h-32 overflow-auto border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
             {memoryAboutSelf || '没有记忆'}
           </div>
         </Form.Item>
-        <Form.Item label='关于你的记忆'>
+        <Form.Item label='他的关于你的记忆'>
           <div className='w-full max-h-32 overflow-auto border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
             {memoryAboutUser || '没有记忆'}
           </div>
         </Form.Item>
-        <Form.Item label='长时记忆'>
+        <Form.Item label='他的日记本'>
           <div className='w-full max-h-60 overflow-auto rounded-lg border border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
             <Collapse
               className='border-none'
