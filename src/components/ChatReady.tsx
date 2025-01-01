@@ -50,10 +50,10 @@ export function ChatReady() {
         response += text
         const splited = buffer.split(reg).filter((s) => s.length !== 0)
         if (splited.length > 1) {
-          const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
+          let _speak: Promise<void> = Promise.resolve()
           for (const s of splited.slice(0, -1)) {
             if (typeof speak === 'function') {
-              speak(splited.slice(0, -1).join('').replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+              _speak = speak(splited.slice(0, -1).join('').replace(emoji, ''))
             }
             let words = ''
             for (const w of s) {
@@ -72,9 +72,7 @@ export function ChatReady() {
             await sleep(1000) // 每个句子之间的间隔
           }
           buffer = splited[splited.length - 1]
-          if (typeof speak === 'function') {
-            await promise // 等待这句话说完
-          }
+          await _speak
         }
         if (chunk.done && chunk.token !== undefined) {
           tokenSet = true
@@ -82,13 +80,12 @@ export function ChatReady() {
         }
       }
       // 直接开始更新总结
-      const update = Promise.withResolvers<void>()
-      updateCurrentSummary(chat).then(() => update.resolve()).catch((e) => update.reject(e))
+      const summarize = updateCurrentSummary(chat)
       // 等待最后一句话说完
       if (buffer.length !== 0) {
-        const { promise, resolve, reject } = Promise.withResolvers<void>() // 等待这句话说完
+        let _speak: Promise<void> = Promise.resolve()
         if (typeof speak === 'function') {
-          speak(buffer.replace(emoji, '')).then(() => resolve()).catch((e) => reject(e))
+          _speak = speak(buffer.replace(emoji, ''))
         }
         let words = ''
         for (const w of buffer) {
@@ -100,9 +97,7 @@ export function ChatReady() {
           live2d?.tipsMessage(words, 2000, Date.now())
           await sleep(30)
         }
-        if (typeof speak === 'function') {
-          await promise // 等待这句话说完
-        }
+        await _speak
       }
       const output = [...input, { role: 'assistant', content: response, timestamp: time }]
       if (!tokenSet) {
@@ -112,7 +107,7 @@ export function ChatReady() {
       await setShortTermMemory(output)
       // 等待更新总结
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-      await update.promise
+      await summarize
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
       await setShortTermMemory(prev)
