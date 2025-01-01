@@ -4,9 +4,17 @@
 
 如果您想快速体验本项目, 请访问 <https://being.leafyee.xyz>, 并在本地运行 `ollama` 服务 (见[2 开发和部署](#2-开发和部署))
 
-| 记忆模型 (暂定) | 示意图 |
-| :---: | :---: |
-| ![](./readme/model.png) | ![](./readme/intro.png) |
+![示意图](./readme/intro.png)
+
+> 聊天界面示意图
+
+![记忆模型](./readme/model-within.png)
+
+> 记忆模型 (对话内)
+
+![记忆模型](./readme/model-between.png)
+
+> 记忆模型 (对话间)
 
 - [Digital Life / 数字生命](#digital-life--数字生命)
   - [1 项目说明](#1-项目说明)
@@ -20,6 +28,8 @@
     - [4.2 本项目设计](#42-本项目设计)
   - [5 Live2d 模型版权声明](#5-live2d-模型版权声明)
   - [6 参考文献](#6-参考文献)
+
+> **临时引用信息**: `叶一杉. (2025). DigitalLife: 具有长时记忆、自我概念、听说读写能力的"数字生命". https://github.com/LeafYeeXYZ/DigitalLife`
 
 ## 1 项目说明
 
