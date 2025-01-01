@@ -35,7 +35,6 @@ type Memory = {
   updateCurrentSummary: (chatApi: ChatApi) => Promise<void>
 }
 
-const UPDATE_MEMORY_MIN_MESSAGES = 3 * 2
 const UPDATE_MEMORY_AFTER_HOURS = 6
 const DEFAULT_SELF_NAME = '小叶子'
 const DEFAULT_USER_NAME = '旅行者'
@@ -104,7 +103,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
   },
   shouldUpdateMemory: () => {
     const { shortTermMemory } = getState()
-    if (shortTermMemory.length === 0 || shortTermMemory.length < UPDATE_MEMORY_MIN_MESSAGES) {
+    if (shortTermMemory.length === 0) {
       return false
     }
     const timestamp = Math.max(...shortTermMemory.map((item) => item.timestamp))
@@ -118,7 +117,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       stream: false,
       format: zodToJsonSchema(UpdateMemoryResponse),
       messages: [
-        { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
+        { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
       ],
     })
     const result = UpdateMemoryResponse.parse(JSON.parse(response.message.content))
