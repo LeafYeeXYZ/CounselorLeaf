@@ -35,7 +35,7 @@ export function ChatReady() {
         ...prev,
         { role: 'user', content: values.text, timestamp: time },
       ]
-      const answer = chatWithMemory(chat, values.text)
+      const answer = chatWithMemory(chat, input)
       let response = ''
       let tokenSet = false
       await setShortTermMemory(input)
@@ -151,6 +151,7 @@ export function ChatReady() {
         rules={[{ required: true, message: '请输入消息' }]}
       >
         <Input.TextArea 
+          disabled={false}
           autoSize={{ minRows: 3, maxRows: 3 }}
         />
       </Form.Item>
