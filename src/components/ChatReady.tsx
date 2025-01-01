@@ -161,14 +161,17 @@ export function ChatReady() {
       </Form.Item>
       <Form.Item>
         <div className='w-full flex justify-between items-center gap-3'>
-          {recognition !== null ? (
+          <Popover
+            title='语音输入'
+            content='点击按钮开始, 再次点击结束'
+            trigger={['hover', 'click']}
+          >
             <Button
-              className='w-full'
-              icon={<LoadingOutlined />}
-              onClick={async () => {
+              disabled={disabled !== false || listen === null}
+              onClick={recognition !== null ? async () => {
                 try {
-                  recognition!.stop()
-                  const text = await recognition!.result
+                  recognition.stop()
+                  const text = await recognition.result
                   form.setFieldsValue({ text })
                   messageApi?.success('语音识别成功')
                 } catch (e) {
@@ -176,25 +179,16 @@ export function ChatReady() {
                 } finally {
                   setRecognition(null)
                 }
-              }}
-            >
-              结束录音
-            </Button>
-          ) : (
-            <Button
-              className='w-full'
-              icon={<NotificationOutlined />}
-              disabled={disabled !== false || listen === null}
-              onClick={() => {
-                messageApi?.info('再次点击按钮可以结束录音')
+              } : () => {
+                messageApi?.info('再次点击按钮结束说话')
                 const recognition = listen!()
                 setRecognition(recognition)
                 recognition.start()
               }}
             >
-              开始录音
+              {recognition !== null ? <LoadingOutlined /> : <NotificationOutlined />}
             </Button>
-          )}
+          </Popover>
           <Button 
             htmlType='submit' 
             className='w-full'
@@ -203,7 +197,7 @@ export function ChatReady() {
             发送
           </Button>
           <Popover
-            title='更多功能'
+            title='更多'
             trigger={(disabled !== false || shortTermMemory.length === 0) ? 'click' : ['hover', 'click']}
             content={<div className='flex flex-col gap-2'>
               <Popconfirm
@@ -262,11 +256,9 @@ export function ChatReady() {
             </div>}
           >
             <Button
-              icon={<BarsOutlined />}
-              className='w-full'
               disabled={disabled !== false || shortTermMemory.length === 0}
             >
-              更多功能
+              <BarsOutlined />
             </Button>
           </Popover>
         </div>
