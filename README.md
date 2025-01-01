@@ -33,14 +33,14 @@
 
 ## 1 项目说明
 
-- **愿景**: 如流浪地球2 (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命"; 交互效果类似于: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
+- **愿景**: 如*流浪地球2* (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命". 期望的交互效果: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
 - **关于长时记忆**: 见[4 长时记忆](#4-长时记忆)
-- **本项目的优势和特点**: 与同类项目如 <https://github.com/t41372/Open-LLM-VTuber> 的区别在于, 本项目使用更为简单和灵活, 同时支持 Web 和桌面版本, 用户无需安装任何多余的软件; 同时, 本项目的 API 设计也比较灵活, 可以便捷地拓展多种后端实现; 最后如上所述, 可解释性的记忆能提供更多可能
-- **关于基础模型**: 目前默认用的是 `qwen2.5:7b` (本地)、`qwen1.5:13b-awq` (Web - API)、`qwen2.5:0.5b` (Web Transformers.js), 后期可能会使用 <https://github.com/SmartFlowAI/EmoLLM> 或其他模型
-- **关于 `live2d`**: 目前使用 <https://github.com/oh-my-live2d/oh-my-live2d>, 也尝试过 <https://github.com/guansss/pixi-live2d-display>. 但是两者都无法完全满足需求, 后期可能会 `fork` 之后按需修改
-- **关于语音生成**: `Web Speech API` 和本地 `TTS` 服务, 见[2.1 环境变量](#21-环境变量)
-- **关于语音输入**: 目前用的也是 `Web Speech API`, 效果不错, 默认关闭. 后期也会探索使用其他 `STT` 技术、添加实时对话功能
-- **外部世界信息**: 未来会加入可选的天气、新闻、股票等信息给 AI (通过相关平台的 API 在线获取)、通过 <https://github.com/microsoft/markitdown> 支持文件输入 (把 `Python` 作为 `Tauri` 的 `sidecar` 运行)
+- **特点和优势**: 使用简单和灵活 (相比同类项目如 <<https://github.com/t41372/Open-LLM-VTuber>>), API 可拓展性强; 基于心理学理论为 AI 引入自我概念, 并拥有可解释性的永久性记忆 (未来也许能用作进一步研究的材料)
+- **关于推理模型**: 默认使用 `ollama` 以及 `qwen2.5:7b` 模型, 未来可能会支持使用 `OpenAI` 兼容的 `API`
+- **关于 `live2d`**: 使用 <https://github.com/oh-my-live2d/oh-my-live2d>
+- **关于语音生成**: 使用 `Web Speech API` 和本地 `TTS` 服务
+- **关于语音输入**: 使用 `Web Speech API`, 未来可能会探索使用其他 `STT` 技术
+- **外部世界信息**: 未来可能会加入可选的天气、新闻、股票等信息、支持图片输入输出、通过 <https://github.com/microsoft/markitdown> 支持文件输入等
 
 ## 2 开发和部署
 
