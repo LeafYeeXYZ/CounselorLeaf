@@ -30,6 +30,7 @@ export default function App() {
   // 加载看板娘
   useEffect(() => {
     const live2d = loadLive2d(document.getElementById('live2d')!)
+    live2d.stageSlideIn()
     setLive2dApi(live2d)
     return () => {
       document.getElementById('live2d')!.innerHTML = ''
