@@ -43,7 +43,8 @@ declare type StoreKeys =
   'memory_about_self' |
   'memory_about_user' |
   'current_summary' |
-  'background_image'
+  'background_image' |
+  'qweather_api_key'
 
 declare type ChatApi = import('ollama/browser').Ollama
 declare type ChatApiTest = () => Promise<boolean>

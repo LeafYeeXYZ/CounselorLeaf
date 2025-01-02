@@ -5,6 +5,7 @@ import { get, set as _set } from '../utils.ts'
 
 const DAFAULT_BACKGROUND = '/back.png'
 const background = await get('background_image') || DAFAULT_BACKGROUND
+const qWeatherApiKey = await get('qweather_api_key') || ''
 
 type GlobalState = {
   disabled: false | string | ReactNode
@@ -12,7 +13,9 @@ type GlobalState = {
   messageApi: MessageInstance | null
   setMessageApi: (messageApi: MessageInstance | null) => void
   background: string
-  setBackground: (background?: string) => void
+  setBackground: (background?: string) => Promise<void>
+  qWeatherApiKey: string
+  setQWeatherApiKey: (apiKey: string) => Promise<void>
 }
 
 export const useStates = create<GlobalState>()((set) => ({
@@ -21,8 +24,13 @@ export const useStates = create<GlobalState>()((set) => ({
   messageApi: null,
   setMessageApi: (messageApi) => set({ messageApi }),
   background,
-  setBackground: (background) => {
+  setBackground: async (background) => {
     set({ background: background || DAFAULT_BACKGROUND })
-    _set('background_image', background || DAFAULT_BACKGROUND)
-  }
+    await _set('background_image', background || DAFAULT_BACKGROUND)
+  },
+  qWeatherApiKey,
+  setQWeatherApiKey: async (apiKey) => {
+    set({ qWeatherApiKey: apiKey })
+    await _set('qweather_api_key', apiKey || '')
+  },
 }))

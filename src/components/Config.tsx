@@ -1,7 +1,8 @@
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
+import { useMemory } from '../lib/hooks/useMemory.ts'
 import { toBase64 } from '../lib/utils.ts'
-import { Form, Select, Upload, Button } from 'antd'
+import { Form, Select, Upload, Button, Input } from 'antd'
 import { FileImageOutlined, UndoOutlined } from '@ant-design/icons'
 
 export function Config() {
@@ -20,7 +21,15 @@ export function Config() {
     currentLive2d,
     currentListenApi,
   } = useApi()
-  const { setBackground, messageApi } = useStates()
+  const { 
+    setBackground, 
+    qWeatherApiKey,
+    setQWeatherApiKey,
+    messageApi 
+  } = useStates()
+  const {
+    selfName,
+  } = useMemory()
 
   return (
     <section className='w-full h-full flex flex-col justify-center items-center'>
@@ -64,6 +73,13 @@ export function Config() {
             }}
           />
         </Form.Item>
+        <Form.Item label='和风天气 API Key'>
+          <Input
+            placeholder={`设置后, ${selfName}将联网获取当前位置的天气信息`}
+            value={qWeatherApiKey}
+            onChange={async (e) => await setQWeatherApiKey(e.target.value || '')}
+          />
+        </Form.Item>
         <Form.Item label='背景图片'>
           <div className='flex justify-between flex-nowrap gap-3'>
             <Upload
@@ -71,7 +87,7 @@ export function Config() {
               showUploadList={false}
               beforeUpload={async (file) => {
                 const base64 = toBase64(await file.arrayBuffer())
-                setBackground(`data:${file.type};base64,${base64}`)
+                await setBackground(`data:${file.type};base64,${base64}`)
                 messageApi?.success('背景设置成功')
                 return false
               }}
@@ -83,8 +99,8 @@ export function Config() {
             <Button 
               className='w-full' 
               icon={<UndoOutlined />}
-              onClick={() => {
-                setBackground()
+              onClick={async () => {
+                await setBackground()
                 messageApi?.success('已恢复默认背景')
               }}
             >

@@ -13,8 +13,8 @@
     "windows": [
       {
         "title": "数字生命",
-        "width": 800,
-        "height": 700,
+        "width": 1200,
+        "height": 800,
         "resizable": true,
         "fullscreen": false,
         "minWidth": 800,

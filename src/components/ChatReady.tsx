@@ -16,7 +16,7 @@ export function ChatReady() {
 
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
-  const { disabled, setDisabled, messageApi } = useStates()
+  const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
   const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
   useEffect(() => {
@@ -35,7 +35,7 @@ export function ChatReady() {
         ...prev,
         { role: 'user', content: values.text, timestamp: time },
       ]
-      const answer = chatWithMemory(chat, input)
+      const answer = chatWithMemory(chat, input, { qWeatherApiKey })
       let response = ''
       let tokenSet = false
       await setShortTermMemory(input)

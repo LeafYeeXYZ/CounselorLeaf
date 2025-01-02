@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { get, set, save, getTime, uuid, clone } from '../utils.ts'
+import { get, set, save, getTime, uuid, clone, getWeather } from '../utils.ts'
 import { env } from '../env.ts'
 import { z } from 'zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
@@ -31,8 +31,12 @@ type Memory = {
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
-  chatWithMemory: (chatApi: ChatApi, input: ShortTermMemory[]) => AsyncGenerator<{ response: string, done: false } | { response: string, done: true, token: number }, void, unknown>
+  chatWithMemory: (chatApi: ChatApi, input: ShortTermMemory[], options?: ChatOptions) => AsyncGenerator<{ response: string, done: false } | { response: string, done: true, token: number }, void, unknown>
   updateCurrentSummary: (chatApi: ChatApi) => Promise<void>
+}
+
+type ChatOptions = {
+  qWeatherApiKey?: string
 }
 
 const UPDATE_MEMORY_AFTER_HOURS = 6
@@ -62,10 +66,11 @@ const UpdateCurrentSummaryResponse = z.object({
 })
 
 export const useMemory = create<Memory>()((setState, getState) => ({
-  chatWithMemory: async function* (chatApi, input) {
+  chatWithMemory: async function* (chatApi, input, options) {
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
+    const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
     const messages: { role: string, content: string }[] = []
-    messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前时间: ${getTime(Date.now())}\n- 对话开始时间: ${getTime(input[0].timestamp)}` })
+    messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前时间: ${getTime(Date.now())}\n- 对话开始时间: ${getTime(input[0].timestamp)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
     messages.push(...input.map(({ role, content }) => ({ role, content })))
     const response = await chatApi.chat({
       model: env.VITE_OLLAMA_MODEL_NAME,

@@ -24,6 +24,18 @@ export function Debug() {
         >
           重置记忆
         </Button>
+        <Button
+          block
+          onClick={() => {
+            navigator.geolocation.getCurrentPosition((position) => {
+              messageApi?.info(`当前位置: ${position.coords.latitude}, ${position.coords.longitude}`)
+            }, (error) => {
+              messageApi?.error(`获取位置失败: ${error.message}`)
+            })
+          }}
+        >
+          获取位置
+        </Button>
       </div>}
     >
       <div className='fixed w-8 h-8 rounded-full border border-yellow-500 bg-yellow-50 top-2 right-2 opacity-50 hover:opacity-100 transition-opacity' />

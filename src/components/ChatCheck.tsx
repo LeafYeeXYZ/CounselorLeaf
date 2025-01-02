@@ -8,7 +8,7 @@ import { Button } from 'antd'
 
 export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) {
 
-  const { setDisabled, disabled } = useStates()
+  const { setDisabled, disabled, qWeatherApiKey } = useStates()
   const { testChat, testListen, testSpeak, chat } = useApi()
   const { shouldUpdateMemory, updateMemory } = useMemory()
   const [statusText, setStatusText] = useState<string>('加载中')
@@ -25,6 +25,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true),
       typeof testListen === 'function' ? testListen() : Promise.resolve(true),
       typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => stream.getTracks().forEach((track) => track.stop())) : Promise.resolve(true),
+      qWeatherApiKey ? new Promise<void>((resolve, reject) => { navigator.geolocation.getCurrentPosition(() => resolve(), reject) }) : Promise.resolve(),
     ]).then(() => {
       if (shouldUpdateMemory()) {
         flushSync(() => setStatusText('更新记忆中'))
@@ -40,7 +41,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       setStatusText(e.message)
       setDisabled('加载出错')
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey])
   
   return (
     <div 
