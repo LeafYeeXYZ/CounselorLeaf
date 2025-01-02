@@ -1,8 +1,8 @@
 export { chatApiList } from './api/shared/api.chat.ts'
 export { speakApiList } from './api/shared/api.speak.ts'
 export { listenApiList } from './api/shared/api.listen.ts'
+export { live2dList, type LoadLive2d, type Live2dApi } from './api/shared/api.live2d.ts'
 export { set, get, save } from './api/tauri/api.store.ts'
-export { live2dList, type LoadLive2d, type Live2dApi } from './api/tauri/api.live2d.ts'
 
 export async function getWeather(apiKey: string): Promise<string> {
   try {

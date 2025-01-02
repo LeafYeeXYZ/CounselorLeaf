@@ -18,8 +18,8 @@
     "dev:tauri": "bun run switch:tauri && bun run tauri dev",
     "build:tauri": "bun run switch:tauri && bun run tauri build",
     "build:win": "bun run switch:tauri && bun run tauri build --runner cargo-xwin --target x86_64-pc-windows-msvc",
-    "dev:web": "bun run switch:web && vite --config vite.config.web.ts",
-    "build:web": "bun run switch:web && vite build --config vite.config.web.ts",
+    "dev:web": "bun run switch:web && vite",
+    "build:web": "bun run switch:web && vite build --outDir ./dist-web",
     "preview:web": "vite preview --outDir ./dist-web"
   },
   "dependencies": {

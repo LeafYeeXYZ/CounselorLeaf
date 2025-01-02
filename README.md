@@ -73,9 +73,9 @@ cd DigitalLife
 # 安装依赖
 bun install
 # 运行
-bun d:tauri
+bun dev:tauri
 # 构建
-bun b:tauri
+bun build:tauri
 ```
 
 ### 2.3 Web 端
@@ -89,9 +89,9 @@ cd DigitalLife
 # 安装依赖
 bun install
 # 运行
-bun d:web
+bun dev:web
 # 构建
-bun b:web
+bun build:web
 ```
 
 ## 3 待办事项
@@ -108,6 +108,7 @@ bun b:web
   - [x] 当前时间
   - [x] 天气
   - [ ] 新闻 
+- [ ] 自主行动和迭代
 
 ## 4 长时记忆
 

@@ -6,5 +6,12 @@ export default defineConfig({
   plugins: [react()],
   build: {
     target: 'esnext',
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'live2d': ['oh-my-live2d'],
+        },
+      },
+    },
   },
 })
