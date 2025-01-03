@@ -1,5 +1,4 @@
 declare type Env = {
-  VITE_MODEL_MAX_TOKENS: number
   VITE_F5_TTS_SERVER_URL: string
   VITE_FISH_SPEECH_SERVER_URL: string
   VITE_DEBUG_COMPONENT: boolean

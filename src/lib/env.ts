@@ -1,7 +1,4 @@
 export const env: Env = {
-  VITE_MODEL_MAX_TOKENS: import.meta.env.VITE_MODEL_MAX_TOKENS ?
-    Number(import.meta.env.VITE_MODEL_MAX_TOKENS) :
-    100_000,
   VITE_F5_TTS_SERVER_URL: import.meta.env.VITE_F5_TTS_SERVER_URL ?
     String(import.meta.env.VITE_F5_TTS_SERVER_URL) :
     'http://127.0.0.1:5010/api',
