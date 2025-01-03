@@ -1,18 +1,18 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect, useState, useMemo } from 'react'
+import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
 import { Button, Form, Input, Tag, Popover, Popconfirm } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined, BarsOutlined, RestOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
-import { sleep, clone } from '../lib/utils.ts'
+import { sleep } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
 interface FormValues {
   text: string
 }
 
-export function ChatText() {
+export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
@@ -28,7 +28,7 @@ export function ChatText() {
   const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
 
   const onFinish = async (values: FormValues) => {
-    const prev = clone(shortTermMemory)
+    const prev = shortTermMemoryRef.current
     const time = Date.now()
     try {
       const input = [
@@ -105,6 +105,7 @@ export function ChatText() {
         await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
       }
       await setShortTermMemory(output)
+      shortTermMemoryRef.current = output
       // 等待更新总结
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
       await summarize
@@ -203,6 +204,7 @@ export function ChatText() {
                     flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
                     await updateMemory(chat)
                     await setUsedToken(undefined)
+                    shortTermMemoryRef.current = []
                     messageApi?.success('记忆更新成功')
                     form.resetFields()
                   } catch (error) {
@@ -230,6 +232,7 @@ export function ChatText() {
                     await setShortTermMemory([])
                     await setCurrentSummary('')
                     await setUsedToken(undefined)
+                    shortTermMemoryRef.current = []
                     messageApi?.success('对话已清除')
                     form.resetFields()
                   } catch (error) {

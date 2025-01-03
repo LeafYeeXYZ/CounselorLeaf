@@ -2,7 +2,6 @@ import { useStates } from '../lib/hooks/useStates.ts'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
 import { useState, useEffect } from 'react'
-import { flushSync } from 'react-dom'
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 
@@ -19,7 +18,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     if (statusText !== '加载中') {
       return
     }
-    flushSync(() => setChatMode('none'))
+    setChatMode('none')
     // 加载服务
     Promise.all([
       testChat(),
@@ -29,7 +28,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       qWeatherApiKey ? new Promise<void>((resolve, reject) => { navigator.geolocation.getCurrentPosition(() => resolve(), reject) }) : Promise.resolve(),
     ]).then(() => {
       if (shouldUpdateMemory()) {
-        flushSync(() => setStatusText('更新记忆中'))
+        setStatusText('更新记忆中')
         return updateMemory(chat)
       } else {
         return Promise.resolve()

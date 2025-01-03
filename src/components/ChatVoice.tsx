@@ -1,16 +1,16 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect, useState, useMemo } from 'react'
+import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
 import { Button, Form, Tag, Popover, Popconfirm } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, BarsOutlined, RestOutlined, SoundOutlined, PauseOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
-import { sleep, clone } from '../lib/utils.ts'
+import { sleep } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 2000
 
-export function ChatVoice() {
+export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
   const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
@@ -28,8 +28,8 @@ export function ChatVoice() {
     }
   }, [shortTermMemory])
 
-  const onChat = async (text: string) => { // same as that in <ChatText />
-    const prev = clone(shortTermMemory)
+  const onChat = async (text: string) => {
+    const prev = shortTermMemoryRef.current
     const time = Date.now()
     try {
       const input = [
@@ -106,6 +106,7 @@ export function ChatVoice() {
         await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
       }
       await setShortTermMemory(output)
+      shortTermMemoryRef.current = output
       // 等待更新总结
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
       await summarize
@@ -117,7 +118,10 @@ export function ChatVoice() {
   const startCallback = () => {
     sessionStorage.setItem('voice_chat_chatted', 'no')
     recognition?.stop()
-    setRecognition(listen!(listenCallback))
+    const api = listen!(listenCallback)
+    setRecognition(api)
+    api.start()
+    api.result.catch(() => {})
     setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>持续对话中 <LoadingOutlined /></p>)
     setCanSpeak(true)
   }
@@ -128,7 +132,6 @@ export function ChatVoice() {
     setCanSpeak(false)
   }
   const listenCallback = (text: string) => {
-    console.log(text)
     if (sessionStorage.getItem('voice_chat_chatted') === 'yes') {
       return
     }
@@ -136,12 +139,15 @@ export function ChatVoice() {
       return
     }
     clearTimeout(Number(sessionStorage.getItem('voice_chat_timer')))
-    flushSync(() => setTextBuffer(text))
+    setTextBuffer(text)
     sessionStorage.setItem('voice_chat_timer', setTimeout(() => {
       sessionStorage.setItem('voice_chat_chatted', 'yes')
       setCanSpeak(false)
       onChat(text)
-        .then(startCallback)
+        .then(() => {
+          setTextBuffer('')
+          startCallback()
+        })
         .catch((e) => {
           stopCallback()
           messageApi?.error(e instanceof Error ? e.message : '未知错误')
@@ -232,6 +238,7 @@ export function ChatVoice() {
                     flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
                     await updateMemory(chat)
                     await setUsedToken(undefined)
+                    shortTermMemoryRef.current = []
                     messageApi?.success('记忆更新成功')
                   } catch (error) {
                     messageApi?.error(error instanceof Error ? error.message : '未知错误')
@@ -258,6 +265,7 @@ export function ChatVoice() {
                     await setShortTermMemory([])
                     await setCurrentSummary('')
                     await setUsedToken(undefined)
+                    shortTermMemoryRef.current = []
                     messageApi?.success('对话已清除')
                   } catch (error) {
                     messageApi?.error(error instanceof Error ? error.message : '未知错误')
