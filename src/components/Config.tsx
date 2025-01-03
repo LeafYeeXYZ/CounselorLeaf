@@ -1,114 +1,28 @@
-import { useApi } from '../lib/hooks/useApi.ts'
-import { useStates } from '../lib/hooks/useStates.ts'
-import { useMemory } from '../lib/hooks/useMemory.ts'
-import { toBase64 } from '../lib/utils.ts'
-import { Form, Select, Upload, Button, Input } from 'antd'
-import { FileImageOutlined, UndoOutlined } from '@ant-design/icons'
+import { useState, type ReactNode } from 'react'
+import { ConfigService } from './ConfigService.tsx'
+import { ConfigLayout } from './ConfigLayout.tsx'
+import { ConfigOthers } from './ConfigOthers.tsx'
+import { Segmented } from 'antd'
+
+const PAGES: { label: string, element: ReactNode, isDefault?: boolean }[] = [
+  { label: '服务设置', element: <ConfigService />, isDefault: true },
+  { label: '自定义', element: <ConfigLayout /> },
+  { label: '其他设置', element: <ConfigOthers /> },
+]
 
 export function Config() {
 
-  const { 
-    setSpeakApi, 
-    setChatApi, 
-    setLoadLive2d,
-    setListenApi,
-    speakApiList,
-    chatApiList,
-    live2dList,
-    listenApiList,
-    currentSpeakApi,
-    currentChatApi,
-    currentLive2d,
-    currentListenApi,
-  } = useApi()
-  const { 
-    setBackground, 
-    qWeatherApiKey,
-    setQWeatherApiKey,
-    messageApi 
-  } = useStates()
-  const {
-    selfName,
-  } = useMemory()
+  const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
 
   return (
     <section className='w-full h-full flex flex-col justify-center items-center'>
-      <Form 
-        layout='vertical' 
-        className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-10.25rem)]'
-      >
-        <Form.Item label='语音合成服务'>
-          <Select 
-            options={speakApiList.map((name) => ({ label: name, value: name }))}
-            value={currentSpeakApi}
-            onChange={async (value) => { 
-              await setSpeakApi(value)
-            }}
-          />
-        </Form.Item>
-        <Form.Item label='对话生成服务'>
-          <Select 
-            options={chatApiList.map((name) => ({ label: name, value: name }))}
-            defaultValue={currentChatApi}
-            onChange={async (value) => { 
-              await setChatApi(value)
-            }}
-          />
-        </Form.Item>
-        <Form.Item label='语音识别服务'>
-          <Select 
-            options={listenApiList.map((name) => ({ label: name, value: name }))}
-            defaultValue={currentListenApi}
-            onChange={async (value) => { 
-              await setListenApi(value)
-            }}
-          />
-        </Form.Item>
-        <Form.Item label='聊天形象'>
-          <Select 
-            options={live2dList.map((name) => ({ label: name, value: name }))}
-            defaultValue={currentLive2d}
-            onChange={async (value) => { 
-              await setLoadLive2d(value)
-            }}
-          />
-        </Form.Item>
-        <Form.Item label='和风天气 API Key'>
-          <Input
-            placeholder={`设置后, ${selfName}将联网获取当前位置的天气信息`}
-            value={qWeatherApiKey}
-            onChange={async (e) => await setQWeatherApiKey(e.target.value || '')}
-          />
-        </Form.Item>
-        <Form.Item label='背景图片'>
-          <div className='flex justify-between flex-nowrap gap-3'>
-            <Upload
-              accept='.jpg,.jpeg,.png'
-              showUploadList={false}
-              beforeUpload={async (file) => {
-                const base64 = toBase64(await file.arrayBuffer())
-                await setBackground(`data:${file.type};base64,${base64}`)
-                messageApi?.success('背景设置成功')
-                return false
-              }}
-            >
-              <Button icon={<FileImageOutlined />}>
-                点击上传
-              </Button>
-            </Upload>
-            <Button 
-              className='w-full' 
-              icon={<UndoOutlined />}
-              onClick={async () => {
-                await setBackground()
-                messageApi?.success('已恢复默认背景')
-              }}
-            >
-              恢复默认背景
-            </Button>
-          </div>
-        </Form.Item>
-      </Form>
+      <Segmented
+        className='border border-blue-900 p-1 absolute top-[4.5rem]'
+        defaultValue={PAGES.find(({ isDefault }) => isDefault)!.label}
+        options={PAGES.map(({ label }) => ({ label, value: label }))}
+        onChange={(value) => setPage(PAGES.find(({ label }) => label === value)!.element)}
+      />
+      {page}
     </section>
   )
 }
