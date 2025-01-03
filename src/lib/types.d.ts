@@ -1,8 +1,9 @@
 declare type Env = {
-  VITE_OLLAMA_LABEL_NAME: string
-  VITE_OLLAMA_SERVER_URL: string
-  VITE_OLLAMA_MODEL_NAME: string
-  VITE_OLLAMA_MAX_TOKENS: number
+  VITE_OPENAI_ENDPOINT: string
+  VITE_OPENAI_API_KEY: string
+  VITE_OPENAI_MODEL_NAME: string
+  VITE_OPENAI_MAX_TOKENS: number
+  VITE_MODEL_LABEL_NAME: string
   VITE_F5_TTS_SERVER_URL: string
   VITE_FISH_SPEECH_SERVER_URL: string
   VITE_DEBUG_COMPONENT: boolean
@@ -46,7 +47,7 @@ declare type StoreKeys =
   'background_image' |
   'qweather_api_key'
 
-declare type ChatApi = import('ollama/browser').Ollama
+declare type ChatApi = import('openai').OpenAI
 declare type ChatApiTest = () => Promise<boolean>
 declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest, maxToken: number }[]
 declare type SpeakApi = (text: string) => Promise<void>

@@ -44,9 +44,9 @@
 
 ## 2 开发和部署
 
-本项目的 LLM 推理通过 `ollama` 实现. 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` (或通过环境变量指定的其他模型) 下载模型, 并启动 `ollama` 服务
+本项目的 LLM 推理使用 `OpenAI SDK` 实现, 您可以使用任何兼容的服务, 如 `ollama`. 默认情况下, 本项目使用 `ollama` 服务和 `qwen2.5:7b` 模型, 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 并启动 `ollama` 服务; 或通过环境变量指定其他模型/服务
 
-在 Web 端时, 您可能需要手动设置 `ollama` 的 `CORS` 策略以避免请求被浏览器拦截: 首先设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"` 或 `"being.leafyee.xyz"`、在终端中运行 `echo $OLLAMA_ORIGINS` 确认设置成功、在终端中运行 `ollama serve` 启动服务 (即使进行了上述设置, 仍然可能会在 `Safari` 中遇到 `CORS` 问题, 请尝试使用 `Chrome` 浏览器)
+> 如果使用 `ollama`, 在 Web 端时, 您可能需要手动设置 `ollama` 的 `CORS` 策略以避免请求被浏览器拦截: 首先设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"`、在终端中运行 `echo $OLLAMA_ORIGINS` 确认设置成功、在终端中运行 `ollama serve` 启动服务 (即使进行了上述设置, 仍然可能会在 `Safari` 中遇到 `CORS` 问题, 请尝试使用 `Chrome` 浏览器)
 
 ### 2.1 环境变量
 
@@ -54,10 +54,11 @@
 
 | 环境变量名 | 默认值 | 说明 |
 | :---: | :---: | :---: |
-| `VITE_OLLAMA_SERVER_URL` | `'http://127.0.0.1:11434'` | `ollama` 服务地址 |
-| `VITE_OLLAMA_MODEL_NAME` | `'qwen2.5:7b'` | `ollama` 使用的模型 |
-| `VITE_OLLAMA_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
-| `VITE_OLLAMA_LABEL_NAME` | `'Ollama - <model_name>'` | 前端显示的模型名称 |
+| `VITE_OPENAI_ENDPOINT` | `'http://127.0.0.1:11434/v1/'` | `OpenAI` 服务地址, 默认为 `ollama` 兼容 `API` |
+| `VITE_OPENAI_API_KEY` | `'ollama'` | `OpenAI` 服务的 `API` 密钥 |
+| `VITE_OPENAI_MODEL_NAME` | `'qwen2.5:7b'` | `OpenAI` 模型名称 |
+| `VITE_OPENAI_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
+| `VITE_MODEL_LABEL_NAME` | `'Ollama - <model_name>'` | 前端显示的模型名称 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5 TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
 | `VITE_FISH_SPEECH_SERVER_URL` | `'http://127.0.0.1:8080'` | [本地 `Fish Speech` 服务地址](https://speech.fish.audio/zh/inference/#http-api) |
 | `VITE_DEBUG_COMPONENT` | `'off'` | 设为 `'on'` 时, 会显示调试组件 |

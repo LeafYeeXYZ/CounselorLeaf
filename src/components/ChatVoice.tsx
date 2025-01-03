@@ -105,11 +105,11 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         tokenSet = true
         await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
       }
-      await setShortTermMemory(output)
-      shortTermMemoryRef.current = output
       // 等待更新总结
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
       await summarize
+      await setShortTermMemory(output)
+      shortTermMemoryRef.current = output
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
       await setShortTermMemory(prev)

@@ -1,28 +1,28 @@
-import type { ListResponse } from 'ollama'
-import { Ollama } from 'ollama/browser'
+import 'openai/shims/web'
+import OpenAI from 'openai'
 import { env } from '../../env.ts'
 
-const ollama = new Ollama({ host: env.VITE_OLLAMA_SERVER_URL })
+const client = new OpenAI({
+  baseURL: env.VITE_OPENAI_ENDPOINT,
+  apiKey: env.VITE_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+})
 
-const chat_ollama: ChatApi = ollama
-const test_ollama: ChatApiTest = async () => {
-  const { models } = await ollama.list().catch((err) => {
-    if (err.message === 'Load failed') {
-      throw new Error('Ollama 服务未启动')
-    } else {
-      throw err
+export const chatApiList: ChatApiList = [{
+  name: env.VITE_MODEL_LABEL_NAME || `Ollama - ${env.VITE_OPENAI_MODEL_NAME}`,
+  api: client,
+  test: async () => {
+    const { data } = await client.models.list().catch((err) => {
+      if (err.message === 'Connection error.') {
+        throw new Error('推理模型未启动')
+      } else {
+        throw err
+      }
+    })
+    if (data.every(({ id }) => id !== env.VITE_OPENAI_MODEL_NAME)) {
+      throw new Error(`当前服务缺少模型 ${env.VITE_OPENAI_MODEL_NAME}`)
     }
-  }) as ListResponse
-  if (models.every(({ name }) => name !== env.VITE_OLLAMA_MODEL_NAME)) {
-    throw new Error(`Ollama 缺少模型 ${env.VITE_OLLAMA_MODEL_NAME}`)
-  }
-  return true
-}
-export const chatApiList: ChatApiList = [
-  { 
-    name: env.VITE_OLLAMA_LABEL_NAME || `Ollama - ${env.VITE_OLLAMA_MODEL_NAME}`,
-    api: chat_ollama, 
-    test: test_ollama,
-    maxToken: env.VITE_OLLAMA_MAX_TOKENS,
+    return true
   },
-]
+  maxToken: env.VITE_OPENAI_MAX_TOKENS,
+}]
