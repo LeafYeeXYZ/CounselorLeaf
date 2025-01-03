@@ -7,7 +7,8 @@ import { useStates } from './lib/hooks/useStates.ts'
 import { useApi } from './lib/hooks/useApi.ts'
 import { env } from './lib/env.ts'
 import { Segmented, message } from 'antd'
-import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined } from '@ant-design/icons'
+import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, GithubOutlined } from '@ant-design/icons'
+import { openLink } from './lib/utils.ts'
 
 const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: boolean }[] = [
   { label: '记忆', element: <Memory />, icon: <BookOutlined /> },
@@ -17,7 +18,7 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 
 export default function App() {
 
-  const { setMessageApi, disabled, background } = useStates()
+  const { setMessageApi, disabled, background, chatMode } = useStates()
   const { loadLive2d, setLive2dApi } = useApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [messageApi, messageElement] = message.useMessage()
@@ -53,6 +54,7 @@ export default function App() {
           </div>
           <nav className='absolute bottom-6'>
             <Segmented
+              disabled={disabled !== false && chatMode !== 'none'}
               className='border border-blue-900 p-1'
               defaultValue={PAGES.find(({ isDefault }) => isDefault)!.label}
               options={PAGES.map(({ label, icon }) => ({ label, icon, value: label }))}
@@ -76,6 +78,12 @@ export default function App() {
       </div>
       {messageElement}
       {env.VITE_DEBUG_COMPONENT ? <Debug /> : undefined}
+      <div 
+        className='fixed top-2 right-2 cursor-pointer bg-white px-2 py-1 rounded-md border border-blue-900'
+        onClick={() => openLink('https://github.com/LeafYeeXYZ/DigitalLife')}
+      >
+        <GithubOutlined className='m-0' />
+      </div>
       <div id='live2d' className='-z-50 w-0 h-0 fixed top-0 left-0'></div>
     </main>
   )

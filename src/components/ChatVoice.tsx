@@ -1,39 +1,40 @@
 import { flushSync } from 'react-dom'
 import { useRef, useEffect, useState, useMemo } from 'react'
-import { Button, Form, Input, Tag, Popover, Popconfirm } from 'antd'
-import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined, BarsOutlined, RestOutlined } from '@ant-design/icons'
+import { Button, Form, Tag, Popover, Popconfirm } from 'antd'
+import { MessageOutlined, ClearOutlined, LoadingOutlined, BarsOutlined, RestOutlined, SoundOutlined, PauseOutlined, InfoCircleOutlined } from '@ant-design/icons'
 import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
 import { sleep, clone } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
-interface FormValues {
-  text: string
-}
+const DELAY_MS_BEFORE_START_RESPONSE = 2000
 
 export function ChatVoice() {
 
-  const [form] = Form.useForm<FormValues>()
-  const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
   const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
+  
+  const [canSpeak, setCanSpeak] = useState<boolean>(false)
+  const [textBuffer, setTextBuffer] = useState<string>('')
+  const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
+  const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
+
+  const memoContainerRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
     }
   }, [shortTermMemory])
-  const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
-  const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
 
-  const onFinish = async (values: FormValues) => {
+  const onChat = async (text: string) => { // same as that in <ChatText />
     const prev = clone(shortTermMemory)
     const time = Date.now()
     try {
       const input = [
         ...prev,
-        { role: 'user', content: values.text, timestamp: time },
+        { role: 'user', content: text, timestamp: time },
       ]
       const answer = chatWithMemory(chat, input, { qWeatherApiKey })
       let response = ''
@@ -113,30 +114,50 @@ export function ChatVoice() {
       await setShortTermMemory(prev)
     }
   }
+  const startCallback = () => {
+    sessionStorage.setItem('voice_chat_chatted', 'no')
+    recognition?.stop()
+    setRecognition(listen!(listenCallback))
+    setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>持续对话中 <LoadingOutlined /></p>)
+    setCanSpeak(true)
+  }
+  const stopCallback = () => {
+    recognition?.stop()
+    setRecognition(null)
+    setDisabled(false)
+    setCanSpeak(false)
+  }
+  const listenCallback = (text: string) => {
+    console.log(text)
+    if (sessionStorage.getItem('voice_chat_chatted') === 'yes') {
+      return
+    }
+    if (text === '') {
+      return
+    }
+    clearTimeout(Number(sessionStorage.getItem('voice_chat_timer')))
+    flushSync(() => setTextBuffer(text))
+    sessionStorage.setItem('voice_chat_timer', setTimeout(() => {
+      sessionStorage.setItem('voice_chat_chatted', 'yes')
+      setCanSpeak(false)
+      onChat(text)
+        .then(startCallback)
+        .catch((e) => {
+          stopCallback()
+          messageApi?.error(e instanceof Error ? e.message : '未知错误')
+        })
+    }, DELAY_MS_BEFORE_START_RESPONSE).toString())
+  }
 
   return (
     <Form
       className='w-full max-h-[calc(100dvh-16rem)] relative overflow-auto p-6 pb-2 rounded-md border border-blue-900'
       layout='vertical'
-      form={form}
-      onFinish={async (values: FormValues) => {
-        if (usedToken && usedToken >= maxToken) {
-          messageApi?.error('记忆负荷过大, 请先更新记忆')
-          return
-        }
-        flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>对话中 <LoadingOutlined /></p>))
-        form.setFieldValue('text', '')
-        await onFinish(values)
-        flushSync(() => setDisabled(false))
-      }}
-      initialValues={{
-        text: '你好!',
-      }}
       disabled={disabled !== false}
     >
       <Form.Item
         label={<span>
-          消息{(typeof usedToken === 'number' && usedToken > 0) && (
+          当前状态{(typeof usedToken === 'number' && usedToken > 0) && (
             <Popover 
               content={`${usedToken} / ${maxToken}`}
             >
@@ -147,51 +168,59 @@ export function ChatVoice() {
             </Popover>
           )}
         </span>}
-        name='text'
-        rules={[{ required: true, message: '请输入消息' }]}
       >
-        <Input.TextArea 
-          disabled={false}
-          autoSize={{ minRows: 3, maxRows: 3 }}
-        />
+        <div 
+          className='w-full flex justify-center items-center gap-2 border border-[#d9d9d9] rounded-md p-3'
+          style={{ 
+            backgroundColor: recognition === null ? '#f0f9ff' : canSpeak ? '#f0fdf4' : '#fefce8',
+            borderColor: recognition === null ? '#0369a1' : canSpeak ? '#15803d' : '#a16207',
+          }}
+        >
+          {recognition === null ? (<>
+            <InfoCircleOutlined className='m-0' />
+            <div>点击下方按钮开始对话</div>
+          </>) : canSpeak ? (<>
+            {textBuffer || (<>
+              <MessageOutlined className='m-0' />
+              <div>请说</div>
+            </>)}
+          </>) : (<>
+            <LoadingOutlined className='m-0' />
+            <div>请稍等</div>
+          </>)}
+        </div>
       </Form.Item>
       <Form.Item>
         <div className='w-full flex justify-between items-center gap-3'>
-          <Popover
-            title='语音输入'
-            content='点击按钮开始, 再次点击结束'
-            trigger={['hover', 'click']}
-          >
-            <Button
-              disabled={disabled !== false || listen === null}
-              onClick={recognition !== null ? async () => {
-                try {
-                  recognition.stop()
-                  const text = await recognition.result
-                  form.setFieldsValue({ text })
-                  messageApi?.success('语音识别成功')
-                } catch (e) {
-                  messageApi?.warning(e instanceof Error ? e.message : typeof e === 'string' ? e : '未知错误')
-                } finally {
-                  setRecognition(null)
+          {recognition ? (
+            <Button 
+              disabled={canSpeak === false}
+              className='w-full'
+              icon={<PauseOutlined />}
+              onClick={stopCallback}
+            >
+              停止对话
+            </Button>
+          ) : (
+            <Button 
+              className='w-full'
+              icon={<SoundOutlined />}
+              onClick={async () => {
+                if (usedToken && usedToken >= maxToken) {
+                  messageApi?.error('记忆负荷过大, 请先更新记忆')
+                  return
                 }
-              } : () => {
-                messageApi?.info('再次点击按钮结束说话')
-                const recognition = listen!()
-                setRecognition(recognition)
-                recognition.start()
+                if (!listen) {
+                  messageApi?.error('请先启用语音识别服务')
+                  return
+                }
+                startCallback()
+                messageApi?.info('再次点击按钮可暂停对话')
               }}
             >
-              {recognition !== null ? <LoadingOutlined /> : <NotificationOutlined />}
+              开始对话
             </Button>
-          </Popover>
-          <Button 
-            htmlType='submit' 
-            className='w-full'
-            icon={<MessageOutlined />}
-          >
-            发送
-          </Button>
+          )}
           <Popover
             title='更多'
             trigger={(disabled !== false || shortTermMemory.length === 0) ? 'click' : ['hover', 'click']}
@@ -204,7 +233,6 @@ export function ChatVoice() {
                     await updateMemory(chat)
                     await setUsedToken(undefined)
                     messageApi?.success('记忆更新成功')
-                    form.resetFields()
                   } catch (error) {
                     messageApi?.error(error instanceof Error ? error.message : '未知错误')
                   } finally {
@@ -231,7 +259,6 @@ export function ChatVoice() {
                     await setCurrentSummary('')
                     await setUsedToken(undefined)
                     messageApi?.success('对话已清除')
-                    form.resetFields()
                   } catch (error) {
                     messageApi?.error(error instanceof Error ? error.message : '未知错误')
                   } finally {
@@ -252,7 +279,7 @@ export function ChatVoice() {
             </div>}
           >
             <Button
-              disabled={disabled !== false || shortTermMemory.length === 0}
+              disabled={disabled !== false || shortTermMemory.length === 0 || recognition !== null}
             >
               <BarsOutlined />
             </Button>

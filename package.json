@@ -26,6 +26,7 @@
     "@ant-design/icons": "^5.5.2",
     "@gradio/client": "^1.8.0",
     "@tauri-apps/plugin-dialog": "~2.2.0",
+    "@tauri-apps/plugin-shell": "~2",
     "@tauri-apps/plugin-store": "~2.2.0",
     "antd": "^5.22.7",
     "emoji-regex": "^10.4.0",
