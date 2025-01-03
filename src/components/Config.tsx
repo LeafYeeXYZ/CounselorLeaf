@@ -1,8 +1,8 @@
 import { useState, type ReactNode } from 'react'
+import { Segmented } from 'antd'
 import { ConfigService } from './ConfigService.tsx'
 import { ConfigLayout } from './ConfigLayout.tsx'
 import { ConfigOthers } from './ConfigOthers.tsx'
-import { Segmented } from 'antd'
 
 const PAGES: { label: string, element: ReactNode, isDefault?: boolean }[] = [
   { label: '服务设置', element: <ConfigService />, isDefault: true },
