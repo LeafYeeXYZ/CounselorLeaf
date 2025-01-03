@@ -9,15 +9,18 @@ export function ConfigMain() {
     openaiEndpoint,
     openaiApiKey,
     openaiModelName,
+    maxToken,
     setOpenaiEndpoint,
     setOpenaiApiKey,
     setOpenaiModelName,
+    setMaxToken,
   } = useChatApi()
   const { messageApi } = useStates()
   const [form] = Form.useForm()
   const [openaiModelNameModified, setOpenaiModelNameModified] = useState(false)
   const [openaiApiKeyModified, setOpenaiApiKeyModified] = useState(false)
   const [openaiEndpointModified, setOpenaiEndpointModified] = useState(false)
+  const [maxTokenModified, setMaxTokenModified] = useState(false)
 
   return (
     <Form 
@@ -69,6 +72,22 @@ export function ConfigMain() {
               await setOpenaiModelName(form.getFieldValue('openaiModelName'))
               setOpenaiModelNameModified(false)
               messageApi?.success('推理服务模型已更新')
+            }}
+          >更新</Button>
+        </Space.Compact>
+      </Form.Item>
+      <Form.Item label='推理模型最大 Token 数'>
+        <Space.Compact block>
+          <Form.Item noStyle name='maxToken' initialValue={maxToken}>
+            <Input onChange={() => setMaxTokenModified(true)} />
+          </Form.Item>
+          <Button
+            type={maxTokenModified ? 'primary' : 'default'}
+            autoInsertSpace={false} 
+            onClick={async () => {
+              await setMaxToken(Number(form.getFieldValue('maxToken')))
+              setMaxTokenModified(false)
+              messageApi?.success('推理模型最大 Token 数已更新')
             }}
           >更新</Button>
         </Space.Compact>

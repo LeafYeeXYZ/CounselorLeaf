@@ -54,7 +54,6 @@
 
 | 环境变量名 | 默认值 | 说明 |
 | :---: | :---: | :---: |
-| `VITE_MODEL_MAX_TOKENS` | `100000` | 模型的最大 `token` 数 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5 TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
 | `VITE_FISH_SPEECH_SERVER_URL` | `'http://127.0.0.1:8080'` | [本地 `Fish Speech` 服务地址](https://speech.fish.audio/zh/inference/#http-api) |
 | `VITE_DEBUG_COMPONENT` | `'off'` | 设为 `'on'` 时, 会显示调试组件 |

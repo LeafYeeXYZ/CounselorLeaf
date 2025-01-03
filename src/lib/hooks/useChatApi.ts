@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { env } from '../env.ts'
 import { set, get } from '../utils.ts'
 import OpenAI from 'openai'
 
@@ -7,6 +6,7 @@ type API = {
   chat: ChatApi
   testChat: ChatApiTest
   maxToken: number
+  setMaxToken: (token: number) => Promise<void>
   openaiEndpoint: string
   setOpenaiEndpoint: (url: string) => Promise<void>
   openaiApiKey: string
@@ -18,7 +18,9 @@ type API = {
 }
 
 const localUsedToken = await get('last_used_token')
+const localMaxToken = await get('model_max_tokens')
 const defaultUsedToken = localUsedToken ? Number(localUsedToken) : -1
+const defaultMaxToken = localMaxToken ? Number(localMaxToken) : 100_000
 const defaultOpenaiEndpoint = await get('openai_endpoint') ?? 'http://localhost:11434/v1/'
 const defaultOpenaiApiKey = await get('openai_api_key') ?? 'ollama'
 const defaultOpenaiModelName = await get('openai_model_name') ?? 'qwen2.5:7b'
@@ -66,5 +68,10 @@ export const useChatApi = create<API>()((setState, getState) => ({
     }
     return true
   },
-  maxToken: env.VITE_MODEL_MAX_TOKENS,
+  maxToken: defaultMaxToken,
+  setMaxToken: async (token) => {
+    setState({ maxToken: token })
+    await set('model_max_tokens', token.toString())
+    return
+  }
 }))

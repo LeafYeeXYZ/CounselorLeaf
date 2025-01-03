@@ -1,14 +1,4 @@
 import { loadOml2d } from 'oh-my-live2d'
-import type { Oml2dEvents, Oml2dMethods, Oml2dProperties } from 'oh-my-live2d'
-
-export type Live2dApi = Oml2dMethods & Oml2dEvents & Oml2dProperties
-export type LoadLive2d = (
-  element: HTMLElement,
-) => Live2dApi
-export type Live2dList = { 
-  name: string
-  api: LoadLive2d
-}[]
 
 // 1. 要是实例原生有个 destroy 方法就好了, 现在需要手动移除元素
 // 2. 模型没能定位到 parentElement 上, 且只能也在左下或右下
