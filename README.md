@@ -57,7 +57,7 @@
 | `VITE_OPENAI_ENDPOINT` | `'http://127.0.0.1:11434/v1/'` | `OpenAI` 服务地址, 默认为 `ollama` 兼容 `API` |
 | `VITE_OPENAI_API_KEY` | `'ollama'` | `OpenAI` 服务的 `API` 密钥 |
 | `VITE_OPENAI_MODEL_NAME` | `'qwen2.5:7b'` | `OpenAI` 模型名称 |
-| `VITE_OPENAI_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
+| `VITE_MODEL_MAX_TOKENS` | `100000` | 上述模型的最大 `token` 数 |
 | `VITE_MODEL_LABEL_NAME` | `'Ollama - <model_name>'` | 前端显示的模型名称 |
 | `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5 TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
 | `VITE_FISH_SPEECH_SERVER_URL` | `'http://127.0.0.1:8080'` | [本地 `Fish Speech` 服务地址](https://speech.fish.audio/zh/inference/#http-api) |

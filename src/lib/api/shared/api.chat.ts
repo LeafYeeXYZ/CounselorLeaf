@@ -24,5 +24,5 @@ export const chatApiList: ChatApiList = [{
     }
     return true
   },
-  maxToken: env.VITE_OPENAI_MAX_TOKENS,
+  maxToken: env.VITE_MODEL_MAX_TOKENS,
 }]

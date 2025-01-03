@@ -8,8 +8,8 @@ export const env: Env = {
   VITE_OPENAI_MODEL_NAME: import.meta.env.VITE_OPENAI_MODEL_NAME ?
     String(import.meta.env.VITE_OPENAI_MODEL_NAME) :
     'qwen2.5:7b',
-  VITE_OPENAI_MAX_TOKENS: import.meta.env.VITE_OPENAI_MAX_TOKENS ?
-    Number(import.meta.env.VITE_OPENAI_MAX_TOKENS) :
+  VITE_MODEL_MAX_TOKENS: import.meta.env.VITE_MODEL_MAX_TOKENS ?
+    Number(import.meta.env.VITE_MODEL_MAX_TOKENS) :
     100_000,
   VITE_MODEL_LABEL_NAME: import.meta.env.VITE_MODEL_LABEL_NAME ?
     String(import.meta.env.VITE_MODEL_LABEL_NAME) :
