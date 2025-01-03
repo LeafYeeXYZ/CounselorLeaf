@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { get, set, save, getTime, uuid, clone, getWeather } from '../utils.ts'
-import { env } from '../env.ts'
 import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 
@@ -23,7 +22,7 @@ type Memory = {
   setArchivedMemory: (memory: ArchivedMemory[]) => Promise<void>
   // 记忆更新 (短时记忆 -> 长时记忆, 并递归更新自我概念)
   shouldUpdateMemory: () => boolean
-  updateMemory: (chatApi: ChatApi) => Promise<void>
+  updateMemory: (chatApi: ChatApi, model: string) => Promise<void>
   // 重置和保存
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
@@ -31,8 +30,8 @@ type Memory = {
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
-  chatWithMemory: (chatApi: ChatApi, input: ShortTermMemory[], options?: ChatOptions) => AsyncGenerator<{ response: string, done: false } | { response: string, done: true, token: number }, void, unknown>
-  updateCurrentSummary: (chatApi: ChatApi) => Promise<void>
+  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], options?: ChatOptions) => AsyncGenerator<{ response: string, done: false } | { response: string, done: true, token: number }, void, unknown>
+  updateCurrentSummary: (chatApi: ChatApi, model: string) => Promise<void>
 }
 
 type ChatOptions = {
@@ -66,14 +65,14 @@ const UpdateCurrentSummaryResponse = z.object({
 })
 
 export const useMemory = create<Memory>()((setState, getState) => ({
-  chatWithMemory: async function* (chatApi, input, options) {
+  chatWithMemory: async function* (chatApi, model, input, options) {
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
     const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
     messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前时间: ${getTime(Date.now())}\n- 对话开始时间: ${getTime(input[0].timestamp)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
     messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
     const response = await chatApi.chat.completions.create({
-      model: env.VITE_OPENAI_MODEL_NAME,
+      model,
       stream: true,
       stream_options: { include_usage: true },
       messages,
@@ -86,7 +85,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       }
     }
   },
-  updateCurrentSummary: async (chatApi) => {
+  updateCurrentSummary: async (chatApi, model) => {
     const { shortTermMemory, setCurrentSummary, currentSummary } = getState()
     if (shortTermMemory.length < 2) {
       throw new Error('没有需要总结的对话内容')
@@ -103,11 +102,11 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     //     { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类. 在你与用户的对话过程中, 你必须不断根据最新的对话内容, 生成/更新你对对话内容的总结. 你的总结中应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
     //   ],
     // })
-    const response = await (await fetch(`${env.VITE_OPENAI_ENDPOINT}chat/completions`, {
+    const response = await (await fetch(`${chatApi.baseURL}chat/completions`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${env.VITE_OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `Bearer ${chatApi.apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: env.VITE_OPENAI_MODEL_NAME,
+        model,
         stream: false,
         response_format: zodResponseFormat(UpdateCurrentSummaryResponse, 'update_current_summary_response'),
         messages: [
@@ -126,7 +125,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     await setCurrentSummary(result.updatedSummary)
     return
   },
-  updateMemory: async (chatApi) => {
+  updateMemory: async (chatApi, model) => {
     const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory } = getState()
     console.warn('Ollama 暂不兼容 OpenAI JS SDK 的 beta 结构化输入, 为了兼容性考虑, 使用 fetch 方式发送请求')
     console.warn('typeof chatApi', typeof chatApi)
@@ -138,11 +137,11 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     //     { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
     //   ],
     // })
-    const response = await (await fetch(`${env.VITE_OPENAI_ENDPOINT}chat/completions`, {
+    const response = await (await fetch(`${chatApi.baseURL}chat/completions`, {
       method: 'POST',
-      headers: { 'Authorization': `Bearer ${env.VITE_OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
+      headers: { 'Authorization': `Bearer ${chatApi.apiKey}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: env.VITE_OPENAI_MODEL_NAME,
+        model,
         stream: false,
         response_format: zodResponseFormat(UpdateMemoryResponse, 'update_memory_response'),
         messages: [

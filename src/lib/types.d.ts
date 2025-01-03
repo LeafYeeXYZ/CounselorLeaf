@@ -1,9 +1,5 @@
 declare type Env = {
-  VITE_OPENAI_ENDPOINT: string
-  VITE_OPENAI_API_KEY: string
-  VITE_OPENAI_MODEL_NAME: string
   VITE_MODEL_MAX_TOKENS: number
-  VITE_MODEL_LABEL_NAME: string
   VITE_F5_TTS_SERVER_URL: string
   VITE_FISH_SPEECH_SERVER_URL: string
   VITE_DEBUG_COMPONENT: boolean
@@ -32,9 +28,13 @@ declare type ArchivedMemory = {
 
 declare type StoreKeys = 
   'default_live2d' |
-  'default_chat_api' |
   'default_speak_api' |
   'default_listen_api' |
+  'background_image' |
+  'qweather_api_key' |
+  'openai_api_key' |
+  'openai_endpoint' |
+  'openai_model_name' |
   'self_name' |
   'user_name' |
   'last_used_token' |
@@ -43,13 +43,10 @@ declare type StoreKeys =
   'archived_memory' |
   'memory_about_self' |
   'memory_about_user' |
-  'current_summary' |
-  'background_image' |
-  'qweather_api_key'
+  'current_summary'
 
 declare type ChatApi = import('openai').OpenAI
 declare type ChatApiTest = () => Promise<boolean>
-declare type ChatApiList = { name: string, api: ChatApi, test: ChatApiTest, maxToken: number }[]
 declare type SpeakApi = (text: string) => Promise<void>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type SpeakApiList = ({ name: string, api: SpeakApi, test: SpeakApiTest } | { name: string, api: null, test: null })[]

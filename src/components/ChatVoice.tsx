@@ -13,7 +13,7 @@ const DELAY_MS_BEFORE_START_RESPONSE = 2000
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
-  const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken } = useApi()
+  const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken, openaiModelName } = useApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
   
   const [canSpeak, setCanSpeak] = useState<boolean>(false)
@@ -36,7 +36,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         ...prev,
         { role: 'user', content: text, timestamp: time },
       ]
-      const answer = chatWithMemory(chat, input, { qWeatherApiKey })
+      const answer = chatWithMemory(chat, openaiModelName, input, { qWeatherApiKey })
       let response = ''
       let tokenSet = false
       await setShortTermMemory(input)
@@ -81,7 +81,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         }
       }
       // 直接开始更新总结
-      const summarize = updateCurrentSummary(chat)
+      const summarize = updateCurrentSummary(chat, openaiModelName)
       // 等待最后一句话说完
       if (buffer.length !== 0) {
         let _speak: Promise<void> = Promise.resolve()
@@ -236,7 +236,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
                 onConfirm={async () => {
                   try {
                     flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-                    await updateMemory(chat)
+                    await updateMemory(chat, openaiModelName)
                     await setUsedToken(undefined)
                     shortTermMemoryRef.current = []
                     messageApi?.success('记忆更新成功')
@@ -295,7 +295,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         </div>
       </Form.Item>
       <Form.Item label='短时记忆'>
-        <div className='w-full max-h-[calc(100dvh-27.5rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+        <div className='w-full max-h-[calc(100dvh-31.75rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
           <div className='w-full flex flex-col gap-3'>
             {shortTermMemory.map(({ role, content }, index) => (
               <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>

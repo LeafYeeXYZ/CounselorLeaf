@@ -5,18 +5,17 @@ export function ConfigService() {
 
   const { 
     setSpeakApi, 
-    setChatApi, 
     setListenApi,
     speakApiList,
-    chatApiList,
     listenApiList,
     currentSpeakApi,
-    currentChatApi,
     currentListenApi,
   } = useApi()
+  const [form] = Form.useForm()
 
   return (
     <Form 
+      form={form}
       layout='vertical' 
       className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
     >
@@ -26,15 +25,6 @@ export function ConfigService() {
           value={currentSpeakApi}
           onChange={async (value) => { 
             await setSpeakApi(value)
-          }}
-        />
-      </Form.Item>
-      <Form.Item label='对话生成服务'>
-        <Select 
-          options={chatApiList.map((name) => ({ label: name, value: name }))}
-          defaultValue={currentChatApi}
-          onChange={async (value) => { 
-            await setChatApi(value)
           }}
         />
       </Form.Item>
