@@ -12,7 +12,7 @@ interface FormValues {
   text: string
 }
 
-export function ChatReady() {
+export function ChatText() {
 
   const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
@@ -116,7 +116,7 @@ export function ChatReady() {
 
   return (
     <Form
-      className='w-full max-h-[calc(100dvh-10.25rem)] relative overflow-auto p-6 pb-2 rounded-md border border-blue-900'
+      className='w-full max-h-[calc(100dvh-16rem)] relative overflow-auto p-6 pb-2 rounded-md border border-blue-900'
       layout='vertical'
       form={form}
       onFinish={async (values: FormValues) => {
