@@ -1,5 +1,7 @@
 import { useStates } from '../lib/hooks/useStates.ts'
-import { useApi } from '../lib/hooks/useApi.ts'
+import { useChatApi } from '../lib/hooks/useChatApi.ts'
+import { useListenApi } from '../lib/hooks/useListenApi.ts'
+import { useSpeakApi } from '../lib/hooks/useSpeakApi.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
 import { useState, useEffect } from 'react'
 import { LoadingOutlined } from '@ant-design/icons'
@@ -8,7 +10,9 @@ import { Button } from 'antd'
 export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) {
 
   const { setDisabled, disabled, qWeatherApiKey, setChatMode } = useStates()
-  const { testChat, testListen, testSpeak, chat } = useApi()
+  const { testChat, chat, openaiModelName } = useChatApi()
+  const { testListen } = useListenApi()
+  const { testSpeak } = useSpeakApi()
   const { shouldUpdateMemory, updateMemory } = useMemory()
   const [statusText, setStatusText] = useState<string>('加载中')
   const [statusError, setStatusError] = useState<boolean>(false)
@@ -29,7 +33,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     ]).then(() => {
       if (shouldUpdateMemory()) {
         setStatusText('更新记忆中')
-        return updateMemory(chat)
+        return updateMemory(chat, openaiModelName)
       } else {
         return Promise.resolve()
       }
@@ -42,7 +46,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       setStatusText(e.message)
       setDisabled('加载出错')
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, setChatMode])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, setChatMode, openaiModelName])
   
   return (
     <div 

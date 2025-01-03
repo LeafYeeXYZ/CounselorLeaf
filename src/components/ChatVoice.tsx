@@ -2,18 +2,24 @@ import { flushSync } from 'react-dom'
 import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
 import { Button, Form, Tag, Popover, Popconfirm } from 'antd'
 import { MessageOutlined, ClearOutlined, LoadingOutlined, BarsOutlined, RestOutlined, SoundOutlined, PauseOutlined, InfoCircleOutlined } from '@ant-design/icons'
-import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
 import { sleep } from '../lib/utils.ts'
 import emojiReg from 'emoji-regex'
+import { useChatApi } from '../lib/hooks/useChatApi.ts'
+import { useListenApi } from '../lib/hooks/useListenApi.ts'
+import { useSpeakApi } from '../lib/hooks/useSpeakApi.ts'
+import { useLive2dApi } from '../lib/hooks/useLive2dApi.ts'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 2000
 
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
-  const { chat, speak, listen, live2d, maxToken, usedToken, setUsedToken, openaiModelName } = useApi()
+  const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
+  const { speak } = useSpeakApi()
+  const { listen } = useListenApi()
+  const { live2d } = useLive2dApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
   
   const [canSpeak, setCanSpeak] = useState<boolean>(false)

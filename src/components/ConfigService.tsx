@@ -1,16 +1,11 @@
-import { useApi } from '../lib/hooks/useApi.ts'
+import { useListenApi } from '../lib/hooks/useListenApi.ts'
+import { useSpeakApi } from '../lib/hooks/useSpeakApi.ts'
 import { Form, Select } from 'antd'
 
 export function ConfigService() {
 
-  const { 
-    setSpeakApi, 
-    setListenApi,
-    speakApiList,
-    listenApiList,
-    currentSpeakApi,
-    currentListenApi,
-  } = useApi()
+  const { setSpeakApi, speakApiList, currentSpeakApi } = useSpeakApi()
+  const { setListenApi, listenApiList, currentListenApi } = useListenApi()
   const [form] = Form.useForm()
 
   return (

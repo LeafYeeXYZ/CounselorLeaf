@@ -1,8 +1,8 @@
-import { useApi } from '../lib/hooks/useApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { toBase64 } from '../lib/utils.ts'
 import { Form, Select, Upload, Button } from 'antd'
 import { FileImageOutlined, UndoOutlined } from '@ant-design/icons'
+import { useLive2dApi } from '../lib/hooks/useLive2dApi.ts'
 
 export function ConfigLayout() {
 
@@ -10,7 +10,7 @@ export function ConfigLayout() {
     setLoadLive2d,
     live2dList,
     currentLive2d,
-  } = useApi()
+  } = useLive2dApi()
   const { 
     setBackground, 
     messageApi 

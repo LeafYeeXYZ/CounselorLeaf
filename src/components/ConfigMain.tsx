@@ -1,4 +1,4 @@
-import { useApi } from '../lib/hooks/useApi.ts'
+import { useChatApi } from '../lib/hooks/useChatApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
 import { Form, Button, Space, Input } from 'antd'
 import { useState } from 'react'
@@ -12,7 +12,7 @@ export function ConfigMain() {
     setOpenaiEndpoint,
     setOpenaiApiKey,
     setOpenaiModelName,
-  } = useApi()
+  } = useChatApi()
   const { messageApi } = useStates()
   const [form] = Form.useForm()
   const [openaiModelNameModified, setOpenaiModelNameModified] = useState(false)

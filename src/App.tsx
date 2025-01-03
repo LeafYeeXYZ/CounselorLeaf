@@ -4,7 +4,7 @@ import { Memory } from './components/Memory.tsx'
 import { Config } from './components/Config'
 import { Debug } from './components/Debug.tsx'
 import { useStates } from './lib/hooks/useStates.ts'
-import { useApi } from './lib/hooks/useApi.ts'
+import { useLive2dApi } from './lib/hooks/useLive2dApi.ts'
 import { env } from './lib/env.ts'
 import { Segmented, message } from 'antd'
 import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, GithubOutlined } from '@ant-design/icons'
@@ -19,7 +19,7 @@ const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: b
 export default function App() {
 
   const { setMessageApi, disabled, background, chatMode } = useStates()
-  const { loadLive2d, setLive2dApi } = useApi()
+  const { loadLive2d, setLive2dApi } = useLive2dApi()
   const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [messageApi, messageElement] = message.useMessage()
 
