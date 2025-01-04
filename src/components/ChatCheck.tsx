@@ -45,6 +45,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       setStatusError(true)
       setStatusText(e.message)
       setDisabled('加载出错')
+      setChatMode('error')
     })
   }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, setChatMode, openaiModelName])
   

@@ -54,7 +54,7 @@ export default function App() {
           </div>
           <nav className='absolute bottom-6'>
             <Segmented
-              disabled={disabled !== false && chatMode !== 'none'}
+              disabled={disabled !== false && chatMode !== 'error'}
               className='border border-blue-900 p-1'
               defaultValue={PAGES.find(({ isDefault }) => isDefault)!.label}
               options={PAGES.map(({ label, icon }) => ({ label, icon, value: label }))}
