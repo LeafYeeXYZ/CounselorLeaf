@@ -42,6 +42,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         { role: 'user', content: text, timestamp: time },
       ]
       await setShortTermMemory(input)
+      live2d?.tipsMessage('......', 20000, Date.now())
       const { result, tokens } = await chatWithMemory(chat, openaiModelName, input, { qWeatherApiKey })
       const output = [
         ...input,
@@ -50,7 +51,6 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～|~/g
       const emoji = emojiReg()
-      live2d?.clearTips()
       const summary = updateCurrentSummary(chat, openaiModelName, output)
       const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
