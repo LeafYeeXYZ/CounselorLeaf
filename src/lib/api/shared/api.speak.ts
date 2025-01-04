@@ -125,12 +125,25 @@ const speak_fish = async (text: string, endpoint: string): Promise<void> => {
 const test_fish = async (endpoint: string): Promise<boolean> => {
   try {
     const url = endpoint + '/v1/tts'
-    const res = await fetch(url)
-    if (res.status === 405) {
+    const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
+    const refAudio: string = toBase64(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: '你好',
+        use_memory_cache: 'on',
+        references: [{
+          audio: refAudio,
+          text: refText,
+        }]
+      }),
+    })
+    if (res.status === 200) {
       return true
     } else {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
-    } 
+    }
   } catch (e) {
     throw new Error(`Fish Speech API 测试失败: ${e instanceof Error ? e.message : e}`)
   }
