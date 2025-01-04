@@ -42,7 +42,9 @@ export function ConfigMain() {
             type={openaiEndpointModified ? 'primary' : 'default'}
             autoInsertSpace={false} 
             onClick={async () => {
-              await setOpenaiEndpoint(form.getFieldValue('openaiEndpoint'))
+              const endpoint = form.getFieldValue('openaiEndpoint')
+              if (!endpoint) return messageApi?.error('请输入推理服务地址')
+              await setOpenaiEndpoint(endpoint.endsWith('/') ? endpoint : `${endpoint}/`)
               setOpenaiEndpointModified(false)
               messageApi?.success('推理服务地址已更新')
             }}
@@ -58,7 +60,9 @@ export function ConfigMain() {
             type={openaiApiKeyModified ? 'primary' : 'default'}
             autoInsertSpace={false} 
             onClick={async () => {
-              await setOpenaiApiKey(form.getFieldValue('openaiApiKey'))
+              const key = form.getFieldValue('openaiApiKey')
+              if (!key) return messageApi?.error('请输入推理服务密钥')
+              await setOpenaiApiKey(key)
               setOpenaiApiKeyModified(false)
               messageApi?.success('推理服务密钥已更新')
             }}
@@ -74,7 +78,9 @@ export function ConfigMain() {
             type={openaiModelNameModified ? 'primary' : 'default'}
             autoInsertSpace={false} 
             onClick={async () => {
-              await setOpenaiModelName(form.getFieldValue('openaiModelName'))
+              const model = form.getFieldValue('openaiModelName')
+              if (!model) return messageApi?.error('请输入推理服务模型')
+              await setOpenaiModelName(model)
               setOpenaiModelNameModified(false)
               messageApi?.success('推理服务模型已更新')
             }}
