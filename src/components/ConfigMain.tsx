@@ -31,7 +31,7 @@ export function ConfigMain() {
       <Form.Item label={<span>推理服务地址<Tag className='ml-[0.3rem]'>OpenAI Endpoint</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiEndpoint' initialValue={openaiEndpoint}>
-            <Input onChange={() => setOpenaiEndpointModified(true)} />
+            <Input className='w-full' onChange={() => setOpenaiEndpointModified(true)} />
           </Form.Item>
           <Button
             type={openaiEndpointModified ? 'primary' : 'default'}
@@ -47,7 +47,7 @@ export function ConfigMain() {
       <Form.Item label={<span>推理服务密钥<Tag className='ml-[0.3rem]'>OpenAI API Key</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiApiKey' initialValue={openaiApiKey}>
-            <Input onChange={() => setOpenaiApiKeyModified(true)} />
+            <Input className='w-full' onChange={() => setOpenaiApiKeyModified(true)} />
           </Form.Item>
           <Button
             type={openaiApiKeyModified ? 'primary' : 'default'}
@@ -63,7 +63,7 @@ export function ConfigMain() {
       <Form.Item label={<span>推理服务模型<Tag className='ml-[0.3rem]'>OpenAI Model Name</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiModelName' initialValue={openaiModelName}>
-            <Input onChange={() => setOpenaiModelNameModified(true)} />
+            <Input className='w-full' onChange={() => setOpenaiModelNameModified(true)} />
           </Form.Item>
           <Button 
             type={openaiModelNameModified ? 'primary' : 'default'}
@@ -79,7 +79,7 @@ export function ConfigMain() {
       <Form.Item label='推理模型最大 Token 数'>
         <Space.Compact block>
           <Form.Item noStyle name='maxToken' initialValue={maxToken}>
-            <InputNumber onChange={() => setMaxTokenModified(true)} min={2_000} max={120_000} step={1_000} />
+            <InputNumber className='w-full' onChange={() => setMaxTokenModified(true)} min={2_000} max={120_000} step={1_000} />
           </Form.Item>
           <Button
             type={maxTokenModified ? 'primary' : 'default'}
