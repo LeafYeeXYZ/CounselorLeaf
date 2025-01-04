@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { get, set, save, getTime, uuid, clone, getWeather } from '../utils.ts'
 import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
+import { zodToJsonSchema } from 'zod-to-json-schema'
 
 type Memory = {
   // 相关记忆信息
@@ -33,6 +34,9 @@ type Memory = {
   // 聊天
   chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], options?: ChatOptions) => Promise<{ result: string, tokens: number }>
   updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[]) => Promise<void>
+  // 是否使用最新的 Structured Output API
+  useStructuredOutputs: boolean
+  setUseStructuredOutputs: (value: boolean) => Promise<void>
 }
 
 type ChatOptions = {
@@ -54,6 +58,7 @@ const localLongTermMemory = await get('long_term_memory')
 const localShortTermMemory = await get('short_term_memory')
 const localArchivedMemory = await get('archived_memory')
 const localCurrentSummary = await get('current_summary')
+const localUseStructuredOutputs = await get('use_structured_outputs')
 
 const UpdateMemoryResponse = z.object({
   updatedMemoryAboutSelf: z.string(),
@@ -66,6 +71,11 @@ const UpdateCurrentSummaryResponse = z.object({
 })
 
 export const useMemory = create<Memory>()((setState, getState) => ({
+  useStructuredOutputs: localUseStructuredOutputs ? localUseStructuredOutputs === 'true' : false,
+  setUseStructuredOutputs: async (value) => {
+    setState({ useStructuredOutputs: value })
+    await set('use_structured_outputs', value.toString())
+  },
   chatWithMemory: async (chatApi, model, input, options) => {
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
     const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
@@ -85,36 +95,34 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return { result, tokens }
   },
   updateCurrentSummary: async (chatApi, model, input) => {
-    const { setCurrentSummary, currentSummary } = getState()
+    const { setCurrentSummary, currentSummary, useStructuredOutputs } = getState()
     if (input.length < 2) {
       throw new Error('没有需要总结的对话内容')
     }
     const oldMessages = input.slice(0, input.length - 2)
     const newMessages = input.slice(input.length - 2)
-    console.warn('Ollama 暂不兼容 OpenAI JS SDK 的 beta 结构化输入, 为了兼容性考虑, 使用 fetch 方式发送请求')
-    console.warn('typeof chatApi', typeof chatApi)
-    // const response = await chatApi.beta.chat.completions.parse({
-    //   model: env.VITE_OPENAI_MODEL_NAME,
-    //   stream: false,
-    //   response_format: zodResponseFormat(UpdateCurrentSummaryResponse, 'update_current_summary_response'),
-    //   messages: [
-    //     { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类. 在你与用户的对话过程中, 你必须不断根据最新的对话内容, 生成/更新你对对话内容的总结. 你的总结中应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
-    //   ],
-    // })
-    const response = await (await fetch(`${chatApi.baseURL}chat/completions`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${chatApi.apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    let result: Record<string, unknown> = {}
+    if (useStructuredOutputs) {
+      const response = await chatApi.beta.chat.completions.parse({
         model,
         stream: false,
         response_format: zodResponseFormat(UpdateCurrentSummaryResponse, 'update_current_summary_response'),
         messages: [
           { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类. 在你与用户的对话过程中, 你必须不断根据最新的对话内容, 生成/更新你对对话内容的总结. 你的总结中应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
         ],
-      }),
-    })).json()
-    // const result = response.choices[0].message?.parsed
-    const result = UpdateCurrentSummaryResponse.parse(JSON.parse(response.choices[0].message.content))
+      })
+      result = response.choices[0].message?.parsed || {}
+    } else {
+      const response = await chatApi.chat.completions.create({
+        model,
+        stream: false,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(UpdateCurrentSummaryResponse), null, 2)}\n\n# 要求\n\n你是一个虚拟人类. 在你与用户的对话过程中, 你必须不断根据最新的对话内容, 生成/更新你对对话内容的总结. 你的总结中应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
+        ],
+      })
+      result = JSON.parse(response.choices[0].message.content || '{}')
+    }
     if (
       !result ||
       typeof result.updatedSummary !== 'string'
@@ -125,31 +133,29 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return
   },
   updateMemory: async (chatApi, model) => {
-    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory } = getState()
-    console.warn('Ollama 暂不兼容 OpenAI JS SDK 的 beta 结构化输入, 为了兼容性考虑, 使用 fetch 方式发送请求')
-    console.warn('typeof chatApi', typeof chatApi)
-    // const response = await chatApi.beta.chat.completions.parse({
-    //   model: env.VITE_OPENAI_MODEL_NAME,
-    //   stream: false,
-    //   response_format: zodResponseFormat(UpdateMemoryResponse, 'update_memory_response'),
-    //   messages: [
-    //     { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
-    //   ],
-    // })
-    const response = await (await fetch(`${chatApi.baseURL}chat/completions`, {
-      method: 'POST',
-      headers: { 'Authorization': `Bearer ${chatApi.apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs } = getState()
+    let result: Record<string, unknown> = {}
+    if (useStructuredOutputs) {
+      const response = await chatApi.beta.chat.completions.parse({
         model,
         stream: false,
         response_format: zodResponseFormat(UpdateMemoryResponse, 'update_memory_response'),
         messages: [
           { role: 'system', content: `**请按格式返回JSON字符串**\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
         ],
-      }),
-    })).json()
-    // const result = response.choices[0].message?.parsed
-    const result = UpdateMemoryResponse.parse(JSON.parse(response.choices[0].message.content))
+      })
+      result = response.choices[0].message?.parsed || {}
+    } else {
+      const response = await chatApi.chat.completions.create({
+        model,
+        stream: false,
+        response_format: { type: 'json_object' },
+        messages: [
+          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(UpdateMemoryResponse), null, 2)}\n\n# 要求\n\n你是一个虚拟人类, 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结应当包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '(无其他记忆)'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '(无其他记忆)'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}` },
+        ],
+      })
+      result = JSON.parse(response.choices[0].message.content || '{}')
+    }
     if (
       !result || 
       typeof result.updatedMemoryAboutSelf !== 'string' || 

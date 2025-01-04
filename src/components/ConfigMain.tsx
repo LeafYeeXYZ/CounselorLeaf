@@ -1,6 +1,7 @@
 import { useChatApi } from '../lib/hooks/useChatApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
-import { Form, Button, Space, Input, Tag, InputNumber } from 'antd'
+import { useMemory } from '../lib/hooks/useMemory.ts'
+import { Form, Button, Space, Input, Tag, InputNumber, Select } from 'antd'
 import { useState } from 'react'
 
 export function ConfigMain() {
@@ -15,6 +16,10 @@ export function ConfigMain() {
     setOpenaiModelName,
     setMaxToken,
   } = useChatApi()
+  const {
+    useStructuredOutputs,
+    setUseStructuredOutputs,
+  } = useMemory()
   const { messageApi } = useStates()
   const [form] = Form.useForm()
   const [openaiModelNameModified, setOpenaiModelNameModified] = useState(false)
@@ -75,6 +80,19 @@ export function ConfigMain() {
             }}
           >更新</Button>
         </Space.Compact>
+      </Form.Item>
+      <Form.Item label='使用结构化输出功能'>
+        <Select
+          defaultValue={useStructuredOutputs}
+          onChange={async (value) => {
+            await setUseStructuredOutputs(value)
+            messageApi?.success(`模型将${value ? '' : '不'}使用结构化输出`)
+          }}
+          options={[
+            { label: '是 (使用 { type: \'json_schema\' })', value: true },
+            { label: '否 (使用 { type: \'json_object\' })', value: false },
+          ]}
+        />
       </Form.Item>
       <Form.Item label='推理模型最大 Token 数'>
         <Space.Compact block>

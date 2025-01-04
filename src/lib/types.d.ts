@@ -35,7 +35,8 @@ declare type ConfigKeys =
   'fish_speech_endpoint' |
   'openai_api_key' |
   'openai_endpoint' |
-  'openai_model_name'
+  'openai_model_name' |
+  'use_structured_outputs'
 
 declare type MemoryKeys =
   'self_name' |
