@@ -1,6 +1,6 @@
 import { useStates } from '../lib/hooks/useStates.ts'
 import { useMemory } from '../lib/hooks/useMemory.ts'
-import { Form, Button, Popover, Input } from 'antd'
+import { Form, Button, Popover, Input, Upload } from 'antd'
 import { ExportOutlined, DeleteOutlined, ImportOutlined } from '@ant-design/icons'
 import { useState, useRef } from 'react'
 
@@ -9,6 +9,7 @@ export function MemoryAction() {
   const { 
     resetAllMemory,
     saveAllMemory,
+    importAllMemory,
   } = useMemory()
   const { messageApi } = useStates()
 
@@ -34,13 +35,29 @@ export function MemoryAction() {
         </Button>
       </Form.Item>
       <Form.Item label='导入记忆'>
-        <Button
-          block
-          icon={<ImportOutlined />}
-          disabled
+        <Upload.Dragger
+          showUploadList={false}
+          accept='.json'
+          beforeUpload={async (file) => {
+            try {
+              const json = await file.text()
+              await importAllMemory(json)
+              messageApi?.success('记忆导入成功')
+            } catch (e) {
+              messageApi?.error(`记忆导入失败: ${e instanceof Error ? e.message : e}`)
+            }
+            return false
+          }}
         >
-          导入记忆
-        </Button>
+          <Button
+            type='text'
+            block
+            icon={<ImportOutlined />}
+          >
+            导入记忆
+          </Button>
+          <p className='text-xs mt-[0.3rem]'>可点击上传或直接拖拽文件到此处</p>
+        </Upload.Dragger>
       </Form.Item>
       <Form.Item label='重置记忆'>
         <Popover

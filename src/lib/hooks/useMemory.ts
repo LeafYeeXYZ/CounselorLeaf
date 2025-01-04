@@ -26,6 +26,7 @@ type Memory = {
   // 重置和保存
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
+  importAllMemory: (memory: string) => Promise<void>
   // 当前上下文总结 (递归更新)
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
@@ -213,13 +214,44 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return save(data)
   },
   resetAllMemory: async () => {
-    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory, setCurrentSummary } = getState()
+    const { setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory, setCurrentSummary, setSelfName, setUserName } = getState()
+    await setSelfName(DEFAULT_SELF_NAME)
+    await setUserName(DEFAULT_USER_NAME)
     await setMemoryAboutSelf(DEFAULT_MEMORY_ABOUT_SELF)
     await setMemoryAboutUser(DEFAULT_MEMORY_ABOUT_USER)
     await setCurrentSummary('')
     await setLongTermMemory([])
     await setShortTermMemory([])
     await setArchivedMemory([])
+    return
+  },
+  importAllMemory: async (memory) => {
+    const { setSelfName, setUserName, setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory, setCurrentSummary } = getState()
+    const data = JSON.parse(memory)
+    if (
+      typeof data !== 'object' ||
+      typeof data.selfName !== 'string' ||
+      typeof data.userName !== 'string' ||
+      typeof data.memoryAboutSelf !== 'string' ||
+      typeof data.memoryAboutUser !== 'string' ||
+      typeof data.currentSummary !== 'string' ||
+      !Array.isArray(data.longTermMemory) ||
+      !Array.isArray(data.shortTermMemory) ||
+      !Array.isArray(data.archivedMemory) ||
+      data.longTermMemory.some((item: LongTermMemory) => typeof item.uuid !== 'string' || typeof item.title !== 'string' || typeof item.summary !== 'string' || typeof item.startTime !== 'number' || typeof item.endTime !== 'number') || 
+      data.shortTermMemory.some((item: ShortTermMemory) => typeof item.role !== 'string' || typeof item.content !== 'string' || typeof item.timestamp !== 'number') ||
+      data.archivedMemory.some((item: ArchivedMemory) => typeof item.role !== 'string' || typeof item.content !== 'string' || typeof item.timestamp !== 'number' || typeof item.belongTo !== 'string')
+    ) {
+      throw new Error('数据格式错误')
+    }
+    await setSelfName(data.selfName || DEFAULT_SELF_NAME)
+    await setUserName(data.userName || DEFAULT_USER_NAME)
+    await setMemoryAboutSelf(data.memoryAboutSelf || DEFAULT_MEMORY_ABOUT_SELF)
+    await setMemoryAboutUser(data.memoryAboutUser || DEFAULT_MEMORY_ABOUT_USER)
+    await setCurrentSummary(data.currentSummary || '')
+    await setLongTermMemory(data.longTermMemory)
+    await setShortTermMemory(data.shortTermMemory)
+    await setArchivedMemory(data.archivedMemory)
     return
   },
   selfName: localSelfName || DEFAULT_SELF_NAME,
