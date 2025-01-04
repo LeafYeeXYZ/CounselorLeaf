@@ -54,24 +54,19 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       live2d?.clearTips()
       const _speak = typeof speak === 'function' ? speak(result.replace(emoji, '')) : Promise.resolve()
       const summary = updateCurrentSummary(chat, openaiModelName, output)
-      const splited = result.split(reg).filter((s) => s.length !== 0)
       let current = ''
-      for (const s of splited) {
-        let words = ''
-        for (const w of s) {
-          current += w
-          await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-          words += w
-          live2d?.tipsMessage(words, 10000, Date.now())
-          await sleep(30)
+      let staps = ''
+      for (const w of result) {
+        current += w
+        await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
+        await sleep(30)
+        if (w.match(reg)) {
+          staps = ''
+          await sleep(1000)
+        } else {
+          staps += w
+          live2d?.tipsMessage(staps, 10000, Date.now())
         }
-        const comma = result[words.length]
-        if (comma.match(reg)) {
-          current += comma
-          await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-          await sleep(30)
-        }
-        await sleep(1000)
       }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
       await summary
