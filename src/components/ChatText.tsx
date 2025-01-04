@@ -51,13 +51,13 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       const reg = /。|？|！|,|，|;|；|~|～|~/g
       const emoji = emojiReg()
       live2d?.clearTips()
-      const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
       const summary = updateCurrentSummary(chat, openaiModelName, output)
-      let current = ''
-      let staps = ''
+      const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
       await start
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
+      let current = ''
+      let staps = ''
       for (const w of result) {
         current += w
         await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
