@@ -1,20 +1,12 @@
 # Digital Life / 数字生命
 
-创造一个可以带走的"数字生命". 本项目同时支持 Web 和桌面端, 两端共享除特定 API 外的所有代码. 开发环境要求包括 `Rust` (仅桌面端需要)、`Node.js`、`Bun` (可通过 `npm install -g bun` 安装)
+创造一个有自我概念、长时记忆的"数字生命". 同时支持 Web 和桌面端、支持多种推理、TTS、STT 服务
 
-如果您想快速体验本项目, 请访问 <https://being.leafyee.xyz>, 并在本地运行 `ollama` 服务 (见[2 开发和部署](#2-开发和部署))
+如果您想快速体验本项目, 可访问 <https://being.leafyee.xyz>, 安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 运行 `OLLAMA_ORIGINS="*" ollama serve` 启动服务, 并用 `Chrome` 浏览器访问 <https://being.leafyee.xyz> (详见[2 开发和部署](#2-开发和部署))
 
 ![示意图](./readme/intro.png)
 
 > 聊天界面示意图
-
-![记忆模型](./readme/model-within.png)
-
-> 记忆模型 (对话内)
-
-![记忆模型](./readme/model-between.png)
-
-> 记忆模型 (对话间)
 
 - [Digital Life / 数字生命](#digital-life--数字生命)
   - [1 项目说明](#1-项目说明)
@@ -33,18 +25,33 @@
 
 ## 1 项目说明
 
-- **愿景**: 如*流浪地球2* (<https://digitallife.ac.cn>) 那样, 创造一个可以带走的"数字生命". 期望的交互效果: [【【Neuro】吊打GPT！点击就看AI女王绝杀ChatGPT】](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)
-- **关于长时记忆**: 见[4 长时记忆](#4-长时记忆)
-- **特点和优势**: 使用简单和灵活 (相比同类项目如 <<https://github.com/t41372/Open-LLM-VTuber>>), API 可拓展性强; 基于心理学理论为 AI 引入自我概念, 并拥有可解释性的永久性记忆 (未来也许能用作进一步研究的材料)
-- **关于推理模型**: 默认使用 `ollama` 以及 `qwen2.5:7b` 模型, 未来可能会支持使用 `OpenAI` 兼容的 `API`
-- **关于 `live2d`**: 使用 <https://github.com/oh-my-live2d/oh-my-live2d>
-- **关于语音生成**: 使用 `Web Speech API` 和本地 `TTS` 服务
-- **关于语音输入**: 使用 `Web Speech API`, 未来可能会探索使用其他 `STT` 技术
-- **外部世界信息**: 未来可能会加入可选的天气、新闻、股票等信息、支持图片输入输出、通过 <https://github.com/microsoft/markitdown> 支持文件输入等
+本项目希望如*流浪地球2* (<https://digitallife.ac.cn>) 那样, 创造一个有自己的情感、记忆的"数字生命". 并通过 `Live2d` 技术, 使其有更好的交互效果 (如[Neuro Sama](https://www.bilibili.com/video/BV1Db1WYgESn/?share_source=copy_web&vd_source=f73d7b1cc6b3e028bd1d6a660f91c4f1)). 相比[同类项目](https://github.com/t41372/Open-LLM-VTuber), 本项目使用更为简单 (直接在 <https://being.leafyee.xyz> 即可体验), 且记忆功能更为强大
+
+关于长时记忆, 本项目参考了多篇论文, 并设计了一个独特的记忆系统. 相见[4 长时记忆](#4-长时记忆)
+
+| 模块 | 可选项 | 说明 |
+| :---: | :---: | :---: |
+| 推理 | `ollama` | 默认即使用 `ollama` 服务, 无需额外设置 |
+| | 任意 `OpenAI` 兼容服务 | 在应用内设置 `Endpoint` 和 `API Key` 即可 |
+| 语音生成 `TTS` | 关闭 | 默认关闭 `TTS` 功能 |
+| | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `TTS` 功能 |
+| | [本地 `F5 TTS` 服务](https://github.com/jianchang512/f5-tts-api) | 默认服务地址为 `'http://127.0.0.1:5010/api'`, 可在应用内修改 |
+| | [本地 `Fish Speech` 服务](https://speech.fish.audio/zh/inference/#http-api) | 默认服务地址为 `'http://127.0.0.1:8080'`, 可在应用内修改 |
+| 语音输入 `STT` | 关闭 | 默认关闭 `STT` 功能 |
+| | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
+| `Live2d` | - | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
+| 其他 | 天气信息 | 默认关闭, 可在应用内设置[和风天气 API Key](https://dev.qweather.com/)开启 |
+| | 时间信息 | 默认开启, 为当前设备时间 |
+| | 新闻信息 | 🚧 WIP |
+| | 图片输入 | 🚧 WIP |
+| | 图片输出 | 🚧 WIP |
+| | 文件输入 | 🚧 WIP, 可能会使用 <https://github.com/microsoft/markitdown> |
 
 ## 2 开发和部署
 
-本项目的 LLM 推理使用 `OpenAI SDK` 实现, 您可以使用任何兼容的服务, 如 `ollama`. 默认情况下, 本项目使用 `ollama` 服务和 `qwen2.5:7b` 模型, 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 并启动 `ollama` 服务; 或应用内设置指定其他模型/服务
+本项目同时支持 Web 和桌面端, 所有设置均可在应用内完成, 无需修改代码
+
+LLM 推理使用 `OpenAI SDK` 实现, 您可以使用任何兼容的服务, 如 `ollama`. 默认情况下, 本项目使用 `ollama` 服务和 `qwen2.5:7b` 模型, 请提前安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 并启动 `ollama` 服务; 或应用内设置指定其他模型/服务
 
 > 如果使用 `ollama`, 在 Web 端时, 您可能需要手动设置 `ollama` 的 `CORS` 策略以避免请求被浏览器拦截: 首先设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"`、在终端中运行 `echo $OLLAMA_ORIGINS` 确认设置成功、在终端中运行 `ollama serve` 启动服务 (即使进行了上述设置, 仍然可能会在 `Safari` 中遇到 `CORS` 问题, 请尝试使用 `Chrome` 浏览器)
 
@@ -52,9 +59,7 @@
 
 | 环境变量名 | 默认值 | 说明 |
 | :---: | :---: | :---: |
-| `VITE_F5_TTS_SERVER_URL` | `'http://127.0.0.1:5010/api'` | [本地 `F5 TTS` 服务地址](https://github.com/jianchang512/f5-tts-api) |
-| `VITE_FISH_SPEECH_SERVER_URL` | `'http://127.0.0.1:8080'` | [本地 `Fish Speech` 服务地址](https://speech.fish.audio/zh/inference/#http-api) |
-| `VITE_DEBUG_COMPONENT` | `'off'` | 设为 `'on'` 时, 会显示调试组件 |
+| `VITE_DEBUG_COMPONENT` | `'off'` | 仅当设为 `'on'` 时, 会显示调试组件 |
 
 ### 2.2 桌面端
 
@@ -123,6 +128,14 @@ bun build:web
 基于以上考虑, 本项目的长时记忆设计为: 让当前上下文中包含"自我概念"、"对用户的概念"、当日对话、递归生成的当日对话总结 (类似于 Wang et al., 2024), 并让模型按需提取过往的"日记"; 提取的方式是模型自主决策的函数调用 (Function Calling). 同时, 记忆更新的时机为连续数小时 (当前为六小时) 无新增对话后, 并在过程中递归更新"自我概念"和"对用户的概念"
 
 记忆的提取方式有两种: 通过日期和通过需求; 后者将通过在另一个模型上下文中输入需求和日记摘要的方式来找到相关记忆 (类似于 Lee et al. (2024) 的方法); 如果后期日记过多, 也可能会采用 Hou et al. (2024) 的向量相关法检索记忆. 除了通过函数调用来检索记忆外, 未来模型也可以通过函数调用来动态进行心理危机预警、联网搜索、控制外部设备等操作
+
+![记忆模型](./readme/model-within.png)
+
+> 记忆模型 (对话内)
+
+![记忆模型](./readme/model-between.png)
+
+> 记忆模型 (对话间)
 
 ## 5 Live2d 模型版权声明
 
