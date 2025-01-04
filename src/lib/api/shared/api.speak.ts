@@ -1,4 +1,3 @@
-import { env } from '../../env.ts'
 import emojiRegex from 'emoji-regex'
 const emoji = emojiRegex()
 import { toBase64 } from '../../utils.ts'
@@ -35,13 +34,12 @@ const test_browser: SpeakApiTest = async () => {
   }
 }
 
-const speak_f5tts: SpeakApi = async (text) => {
+const speak_f5tts = async (text: string, endpoint: string): Promise<void> => {
   try {
     text = text.replace(new RegExp(emoji, 'g'), '')
     if (text.length === 0) {
       return
     }
-    const url = env.VITE_F5_TTS_SERVER_URL
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
     const refAudio: Uint8Array = new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
     const formData = new FormData()
@@ -49,7 +47,7 @@ const speak_f5tts: SpeakApi = async (text) => {
     formData.append('gen_text', text)
     formData.append('model', 'f5-tts')
     formData.append('audio', new Blob([refAudio], { type: 'audio/wav' }))
-    const res = await fetch(url, {
+    const res = await fetch(endpoint, {
       method: 'POST',
       body: formData,
     })
@@ -71,9 +69,9 @@ const speak_f5tts: SpeakApi = async (text) => {
     throw new Error(`F5 TTS API 错误: ${e instanceof Error ? e.message : e}`)
   }
 }
-const test_f5tts: SpeakApiTest = async () => {
+const test_f5tts = async (endpoint: string): Promise<boolean> => {
   try {
-    const url = env.VITE_F5_TTS_SERVER_URL.replace('/api', '/test')
+    const url = endpoint.replace('/api', '/test')
     const res = await fetch(url)
     if (res.status === 404) {
       return true
@@ -85,13 +83,13 @@ const test_f5tts: SpeakApiTest = async () => {
   }
 }
 
-const speak_fish: SpeakApi = async (text) => {
+const speak_fish = async (text: string, endpoint: string): Promise<void> => {
   try {
     text = text.replace(new RegExp(emoji, 'g'), '')
     if (text.length === 0) {
       return
     }
-    const url = env.VITE_FISH_SPEECH_SERVER_URL + '/v1/tts'
+    const url = endpoint + '/v1/tts'
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
     const refAudio: string = toBase64(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
     const res = await fetch(url, {
@@ -124,9 +122,9 @@ const speak_fish: SpeakApi = async (text) => {
     throw new Error(`Fish Speech API 错误: ${e instanceof Error ? e.message : e}`)
   }
 }
-const test_fish: SpeakApiTest = async () => {
+const test_fish = async (endpoint: string): Promise<boolean> => {
   try {
-    const url = env.VITE_FISH_SPEECH_SERVER_URL + '/v1/tts'
+    const url = endpoint + '/v1/tts'
     const res = await fetch(url)
     if (res.status === 405) {
       return true
@@ -139,8 +137,8 @@ const test_fish: SpeakApiTest = async () => {
 }
 
 export const speakApiList: SpeakApiList = [
-  { name: '关闭', api: null, test: null },
-  { name: 'Web Speech API', api: speak_browser, test: test_browser },
-  { name: 'F5 TTS API', api: speak_f5tts, test: test_f5tts },
-  { name: 'Fish Speech API', api: speak_fish, test: test_fish },
+  { name: '关闭', api: null },
+  { name: 'Web Speech API', api: () => ({ api: speak_browser, test: test_browser }) },
+  { name: 'F5 TTS API', api: ({ f5TtsEndpoint }) => ({ api: (text: string) => speak_f5tts(text, f5TtsEndpoint), test: () => test_f5tts(f5TtsEndpoint) }) },
+  { name: 'Fish Speech API', api: ({ fishSpeechEndpoint }) => ({ api: (text: string) => speak_fish(text, fishSpeechEndpoint), test: () => test_fish(fishSpeechEndpoint) }) },
 ]

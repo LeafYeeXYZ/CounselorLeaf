@@ -38,6 +38,6 @@ const test_browser: ListenApiTest = async () => {
 }
 
 export const listenApiList: ListenApiList = [
-  { name: '关闭', api: null, test: null },
-  { name: 'Web Speech API', api: listen_browser, test: test_browser },
+  { name: '关闭', api: null },
+  { name: 'Web Speech API', api: () => ({ api: listen_browser, test: test_browser }) },
 ]
