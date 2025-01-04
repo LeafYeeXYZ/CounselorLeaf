@@ -61,7 +61,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       for (const w of result) {
         current += w
         await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-        await sleep(30)
+        await sleep(40)
         if (w.match(reg)) {
           staps = ''
           await sleep(1000)
