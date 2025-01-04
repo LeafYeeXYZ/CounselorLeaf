@@ -1,6 +1,6 @@
 import { useChatApi } from '../lib/hooks/useChatApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
-import { Form, Button, Space, Input, Tag } from 'antd'
+import { Form, Button, Space, Input, Tag, InputNumber } from 'antd'
 import { useState } from 'react'
 
 export function ConfigMain() {
@@ -79,7 +79,7 @@ export function ConfigMain() {
       <Form.Item label='推理模型最大 Token 数'>
         <Space.Compact block>
           <Form.Item noStyle name='maxToken' initialValue={maxToken}>
-            <Input onChange={() => setMaxTokenModified(true)} />
+            <InputNumber onChange={() => setMaxTokenModified(true)} min={2_000} max={120_000} step={1_000} />
           </Form.Item>
           <Button
             type={maxTokenModified ? 'primary' : 'default'}
