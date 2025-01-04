@@ -74,7 +74,9 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         await sleep(1000)
       }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-      await Promise.all([_speak, summary])
+      await summary
+      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
+      await _speak
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {
