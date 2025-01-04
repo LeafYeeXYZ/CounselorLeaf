@@ -123,6 +123,9 @@ const speak_fish = async (text: string, endpoint: string): Promise<void> => {
   }
 }
 const test_fish = async (endpoint: string): Promise<boolean> => {
+  if (sessionStorage.getItem('fish_speech_test') === 'ok') {
+    return true
+  }
   try {
     const url = endpoint + '/v1/tts'
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
@@ -140,6 +143,7 @@ const test_fish = async (endpoint: string): Promise<boolean> => {
       }),
     })
     if (res.status === 200) {
+      sessionStorage.setItem('fish_speech_test', 'ok')
       return true
     } else {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
