@@ -48,7 +48,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         { role: 'assistant', content: result, timestamp: time },
       ]
       await setUsedToken(tokens)
-      const reg = /。|？|！|,|，|;|；|~|～/g
+      const reg = /。|？|！|,|，|;|；|~|～|~/g
       const emoji = emojiReg()
       live2d?.clearTips()
       const _speak = typeof speak === 'function' ? speak(result.replace(emoji, '')) : Promise.resolve()
