@@ -57,7 +57,7 @@ declare type LoadLive2d = (element: HTMLElement) => Live2dApi
 declare type Live2dList = { name: string, api: LoadLive2d }[]
 
 declare type SpeakApiParams = { fishSpeechEndpoint: string, f5TtsEndpoint: string }
-declare type SpeakApi = (text: string) => Promise<void>
+declare type SpeakApi = (text: string) => Promise<{ start: Promise<void>, finish: Promise<void> }>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type LoadSpeakApi = (params: SpeakApiParams) => { api: SpeakApi, test: SpeakApiTest }
 declare type SpeakApiList = ({ name: string, api: LoadSpeakApi } | { name: string, api: null })[]
