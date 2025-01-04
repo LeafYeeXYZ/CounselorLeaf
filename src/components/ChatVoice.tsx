@@ -58,6 +58,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       let staps = ''
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
       await start
+      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
       for (const w of result) {
         current += w
         await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
