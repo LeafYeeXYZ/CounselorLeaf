@@ -42,78 +42,39 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         ...prev,
         { role: 'user', content: text, timestamp: time },
       ]
-      const answer = chatWithMemory(chat, openaiModelName, input, { qWeatherApiKey })
-      let response = ''
-      let tokenSet = false
       await setShortTermMemory(input)
+      const { result, tokens } = await chatWithMemory(chat, openaiModelName, input, { qWeatherApiKey })
+      const output = [
+        ...input,
+        { role: 'assistant', content: result, timestamp: time },
+      ]
+      await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～/g
       const emoji = emojiReg()
-      let current = ''
-      let buffer = ''
       live2d?.clearTips()
-      for await (const chunk of answer) {
-        const text = chunk.response ?? ''
-        buffer += text
-        response += text
-        const splited = buffer.split(reg).filter((s) => s.length !== 0)
-        if (splited.length > 1) {
-          let _speak: Promise<void> = Promise.resolve()
-          for (const s of splited.slice(0, -1)) {
-            if (typeof speak === 'function') {
-              _speak = speak(splited.slice(0, -1).join('').replace(emoji, ''))
-            }
-            let words = ''
-            for (const w of s) {
-              current += w
-              await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-              words += w
-              live2d?.tipsMessage(words, 10000, Date.now())
-              await sleep(30)
-            }
-            const comma = response[current.length]
-            if (comma.match(reg)) {
-              current += comma
-              await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-              await sleep(30)
-            }
-            await sleep(1000) // 每个句子之间的间隔
-          }
-          buffer = splited[splited.length - 1]
-          await _speak
-        }
-        if (chunk.done && chunk.token !== undefined) {
-          tokenSet = true
-          await setUsedToken(chunk.token)
-        }
-      }
-      // 直接开始更新总结
-      const summarize = updateCurrentSummary(chat, openaiModelName)
-      // 等待最后一句话说完
-      if (buffer.length !== 0) {
-        let _speak: Promise<void> = Promise.resolve()
-        if (typeof speak === 'function') {
-          _speak = speak(buffer.replace(emoji, ''))
-        }
+      const _speak = typeof speak === 'function' ? speak(result.replace(emoji, '')) : Promise.resolve()
+      const summary = updateCurrentSummary(chat, openaiModelName, output)
+      const splited = result.split(reg).filter((s) => s.length !== 0)
+      let current = ''
+      for (const s of splited) {
         let words = ''
-        for (const w of buffer) {
+        for (const w of s) {
           current += w
           await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-          if (!w.match(reg)) {
-            words += w
-          }
-          live2d?.tipsMessage(words, 2000, Date.now())
+          words += w
+          live2d?.tipsMessage(words, 10000, Date.now())
           await sleep(30)
         }
-        await _speak
+        const comma = result[words.length]
+        if (comma.match(reg)) {
+          current += comma
+          await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
+          await sleep(30)
+        }
+        await sleep(1000)
       }
-      const output = [...input, { role: 'assistant', content: response, timestamp: time }]
-      if (!tokenSet) {
-        tokenSet = true
-        await setUsedToken(output.map(({ content }) => content).join('').length + prompt.length)
-      }
-      // 等待更新总结
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-      await summarize
+      await Promise.all([_speak, summary])
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {

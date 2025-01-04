@@ -31,8 +31,8 @@ type Memory = {
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
-  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], options?: ChatOptions) => AsyncGenerator<{ response: string, done: false } | { response: string, done: true, token: number }, void, unknown>
-  updateCurrentSummary: (chatApi: ChatApi, model: string) => Promise<void>
+  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], options?: ChatOptions) => Promise<{ result: string, tokens: number }>
+  updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[]) => Promise<void>
 }
 
 type ChatOptions = {
@@ -66,7 +66,7 @@ const UpdateCurrentSummaryResponse = z.object({
 })
 
 export const useMemory = create<Memory>()((setState, getState) => ({
-  chatWithMemory: async function* (chatApi, model, input, options) {
+  chatWithMemory: async (chatApi, model, input, options) => {
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
     const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
@@ -74,25 +74,23 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
     const response = await chatApi.chat.completions.create({
       model,
-      stream: true,
-      stream_options: { include_usage: true },
+      stream: false,
       messages,
     })
-    for await (const chunk of response) {
-      if (chunk.usage) {
-        yield { response: chunk.choices[0]?.delta.content ?? '', done: true, token: chunk.usage.total_tokens }
-      } else {
-        yield { response: chunk.choices[0]?.delta.content ?? '', done: false }
-      }
+    const result = response.choices[0].message?.content
+    if (!result) {
+      throw new Error('模型返回错误, 请重试')
     }
+    const tokens = response.usage?.total_tokens || -1
+    return { result, tokens }
   },
-  updateCurrentSummary: async (chatApi, model) => {
-    const { shortTermMemory, setCurrentSummary, currentSummary } = getState()
-    if (shortTermMemory.length < 2) {
+  updateCurrentSummary: async (chatApi, model, input) => {
+    const { setCurrentSummary, currentSummary } = getState()
+    if (input.length < 2) {
       throw new Error('没有需要总结的对话内容')
     }
-    const oldMessages = shortTermMemory.slice(0, shortTermMemory.length - 2)
-    const newMessages = shortTermMemory.slice(shortTermMemory.length - 2)
+    const oldMessages = input.slice(0, input.length - 2)
+    const newMessages = input.slice(input.length - 2)
     console.warn('Ollama 暂不兼容 OpenAI JS SDK 的 beta 结构化输入, 为了兼容性考虑, 使用 fetch 方式发送请求')
     console.warn('typeof chatApi', typeof chatApi)
     // const response = await chatApi.beta.chat.completions.parse({

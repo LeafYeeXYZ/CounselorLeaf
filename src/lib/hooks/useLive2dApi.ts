@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { set, get, live2dList, type Live2dApi, type LoadLive2d } from '../utils.ts'
+import { set, get, live2dList } from '../utils.ts'
 
 type API = {
   live2d: Live2dApi | null
