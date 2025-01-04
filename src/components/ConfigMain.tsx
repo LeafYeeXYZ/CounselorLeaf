@@ -1,6 +1,6 @@
 import { useChatApi } from '../lib/hooks/useChatApi.ts'
 import { useStates } from '../lib/hooks/useStates.ts'
-import { Form, Button, Space, Input } from 'antd'
+import { Form, Button, Space, Input, Tag } from 'antd'
 import { useState } from 'react'
 
 export function ConfigMain() {
@@ -28,7 +28,7 @@ export function ConfigMain() {
       layout='vertical' 
       className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
     >
-      <Form.Item label='推理服务地址 (OpenAI Endpoint)'>
+      <Form.Item label={<span>推理服务地址<Tag className='ml-[0.3rem]'>OpenAI Endpoint</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiEndpoint' initialValue={openaiEndpoint}>
             <Input onChange={() => setOpenaiEndpointModified(true)} />
@@ -44,7 +44,7 @@ export function ConfigMain() {
           >更新</Button>
         </Space.Compact>
       </Form.Item>
-      <Form.Item label='推理服务密钥 (OpenAI API Key)'>
+      <Form.Item label={<span>推理服务密钥<Tag className='ml-[0.3rem]'>OpenAI API Key</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiApiKey' initialValue={openaiApiKey}>
             <Input onChange={() => setOpenaiApiKeyModified(true)} />
@@ -60,7 +60,7 @@ export function ConfigMain() {
           >更新</Button>
         </Space.Compact>
       </Form.Item>
-      <Form.Item label='推理服务模型 (OpenAI Model Name)'>
+      <Form.Item label={<span>推理服务模型<Tag className='ml-[0.3rem]'>OpenAI Model Name</Tag></span>}>
         <Space.Compact block>
           <Form.Item noStyle name='openaiModelName' initialValue={openaiModelName}>
             <Input onChange={() => setOpenaiModelNameModified(true)} />
