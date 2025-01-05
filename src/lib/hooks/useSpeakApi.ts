@@ -9,14 +9,17 @@ type API = {
   setSpeakApi: (name: string) => Promise<void>
 
   fishSpeechEndpoint: string
-  setFishSpeechEndpoint: (endpoint: string) => Promise<void>
+  setFishSpeechEndpoint: (endpoint?: string) => Promise<void>
   f5TtsEndpoint: string
-  setF5TtsEndpoint: (endpoint: string) => Promise<void>
+  setF5TtsEndpoint: (endpoint?: string) => Promise<void>
 }
 
+const DEFAULT_FISH_SPEECH_ENDPOINT = 'http://127.0.0.1:8080'
+const DEFAULT_F5_TTS_ENDPOINT = 'http://127.0.0.1:5010/api'
+
 const localSpeakApi = await get('default_speak_api')
-const localFishSpeechEndpoint = await get('fish_speech_endpoint') ?? 'http://127.0.0.1:8080'
-const localF5TtsEndpoint = await get('f5_tts_endpoint') ?? 'http://127.0.0.1:5010/api'
+const localFishSpeechEndpoint = await get('fish_speech_endpoint') ?? DEFAULT_FISH_SPEECH_ENDPOINT
+const localF5TtsEndpoint = await get('f5_tts_endpoint') ?? DEFAULT_F5_TTS_ENDPOINT
 const defaultLoad = speakApiList.find(({ name }) => name === localSpeakApi) ?? speakApiList[0]
 const defaultApi = defaultLoad.api && defaultLoad.api({ fishSpeechEndpoint: localFishSpeechEndpoint, f5TtsEndpoint: localF5TtsEndpoint })
 
@@ -42,25 +45,27 @@ export const useSpeakApi = create<API>()((setState, getState) => ({
   fishSpeechEndpoint: localFishSpeechEndpoint,
   setFishSpeechEndpoint: async (endpoint) => {
     const { f5TtsEndpoint, currentSpeakApi } = getState()
+    const v = endpoint || DEFAULT_FISH_SPEECH_ENDPOINT
     const item = speakApiList.find(api => api.name === currentSpeakApi)!
-    const api = item.api && item.api({ fishSpeechEndpoint: endpoint, f5TtsEndpoint })
+    const api = item.api && item.api({ fishSpeechEndpoint: v, f5TtsEndpoint })
     setState({ 
-      fishSpeechEndpoint: endpoint,
+      fishSpeechEndpoint: v,
       speak: api && api.api,
       testSpeak: api && api.test,
     })
-    await set('fish_speech_endpoint', endpoint)
+    await set('fish_speech_endpoint', v)
   },
   f5TtsEndpoint: localF5TtsEndpoint,
   setF5TtsEndpoint: async (endpoint) => {
     const { fishSpeechEndpoint, currentSpeakApi } = getState()
+    const v = endpoint || DEFAULT_F5_TTS_ENDPOINT
     const item = speakApiList.find(api => api.name === currentSpeakApi)!
-    const api = item.api && item.api({ fishSpeechEndpoint, f5TtsEndpoint: endpoint })
+    const api = item.api && item.api({ fishSpeechEndpoint, f5TtsEndpoint: v })
     setState({ 
-      f5TtsEndpoint: endpoint,
+      f5TtsEndpoint: v,
       speak: api && api.api,
       testSpeak: api && api.test,
     })
-    await set('f5_tts_endpoint', endpoint)
+    await set('f5_tts_endpoint', v)
   },
 }))

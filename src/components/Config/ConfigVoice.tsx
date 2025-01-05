@@ -1,8 +1,9 @@
 import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
-import { Form, Select, Space, Input, Button } from 'antd'
-import { useState } from 'react'
+import { Form, Select, Space, Input, Button, Tooltip } from 'antd'
+import { useState, useEffect } from 'react'
+import { SaveOutlined, ReloadOutlined } from '@ant-design/icons'
 
 export function ConfigVoice() {
 
@@ -12,6 +13,8 @@ export function ConfigVoice() {
   const { messageApi } = useStates()
   const [f5TtsEndpointModified, setF5TtsEndpointModified] = useState(false)
   const [fishSpeechEndpointModified, setFishSpeechEndpointModified] = useState(false)
+  useEffect(() => form.setFieldsValue({ f5TtsEndpoint }), [f5TtsEndpoint, form])
+  useEffect(() => form.setFieldsValue({ fishSpeechEndpoint }), [fishSpeechEndpoint, form])
 
   return (
     <Form 
@@ -30,34 +33,64 @@ export function ConfigVoice() {
       </Form.Item>
       <Form.Item label='F5 TTS API Endpoint'>
         <Space.Compact block>
-          <Form.Item noStyle name='f5TtsEndpoint' initialValue={f5TtsEndpoint}>
+          <Tooltip title='恢复默认值' color='blue'>
+            <Button 
+              type='default' 
+              autoInsertSpace={false} 
+              icon={<ReloadOutlined />}
+              onClick={async () => {
+                await setF5TtsEndpoint()
+                setF5TtsEndpointModified(false)
+                messageApi?.success('F5 TTS API Endpoint 已恢复默认值')
+              }}
+            />
+          </Tooltip>
+          <Form.Item noStyle name='f5TtsEndpoint'>
             <Input onChange={() => setF5TtsEndpointModified(true)} />
           </Form.Item>
-          <Button
-            type={f5TtsEndpointModified ? 'primary' : 'default'}
-            autoInsertSpace={false} 
-            onClick={async () => {
-              await setF5TtsEndpoint(form.getFieldValue('f5TtsEndpoint'))
-              setF5TtsEndpointModified(false)
-              messageApi?.success('F5 TTS API Endpoint 已更新')
-            }}
-          >更新</Button>
+          <Tooltip title='保存修改' color='blue'>
+            <Button
+              type={f5TtsEndpointModified ? 'primary' : 'default'}
+              autoInsertSpace={false} 
+              icon={<SaveOutlined />}
+              onClick={async () => {
+                await setF5TtsEndpoint(form.getFieldValue('f5TtsEndpoint'))
+                setF5TtsEndpointModified(false)
+                messageApi?.success('F5 TTS API Endpoint 已更新')
+              }}
+            />
+          </Tooltip>
         </Space.Compact>
       </Form.Item>
       <Form.Item label='Fish Speech API Endpoint'>
         <Space.Compact block>
-          <Form.Item noStyle name='fishSpeechEndpoint' initialValue={fishSpeechEndpoint}>
+          <Tooltip title='恢复默认值' color='blue'>
+            <Button 
+              type='default' 
+              autoInsertSpace={false} 
+              icon={<ReloadOutlined />}
+              onClick={async () => {
+                await setFishSpeechEndpoint()
+                setFishSpeechEndpointModified(false)
+                messageApi?.success('Fish Speech API Endpoint 已恢复默认值')
+              }}
+            />
+          </Tooltip>
+          <Form.Item noStyle name='fishSpeechEndpoint'>
             <Input onChange={() => setFishSpeechEndpointModified(true)} />
           </Form.Item>
-          <Button
-            type={fishSpeechEndpointModified ? 'primary' : 'default'}
-            autoInsertSpace={false} 
-            onClick={async () => {
-              await setFishSpeechEndpoint(form.getFieldValue('fishSpeechEndpoint'))
-              setFishSpeechEndpointModified(false)
-              messageApi?.success('Fish Speech API Endpoint 已更新')
-            }}
-          >更新</Button>
+          <Tooltip title='保存修改' color='blue'>
+            <Button
+              type={fishSpeechEndpointModified ? 'primary' : 'default'}
+              autoInsertSpace={false} 
+              icon={<SaveOutlined />}
+              onClick={async () => {
+                await setFishSpeechEndpoint(form.getFieldValue('fishSpeechEndpoint'))
+                setFishSpeechEndpointModified(false)
+                messageApi?.success('Fish Speech API Endpoint 已更新')
+              }}
+            />
+          </Tooltip>
         </Space.Compact>
       </Form.Item>
       <hr className='border-t border-blue-900 mb-4' />

@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import { get, set as _set } from '../utils.ts'
 
 const DAFAULT_BACKGROUND = '/back.png'
+
 const background = await get('background_image') || DAFAULT_BACKGROUND
 const qWeatherApiKey = await get('qweather_api_key') || ''
 
@@ -17,7 +18,7 @@ type GlobalState = {
   background: string
   setBackground: (background?: string) => Promise<void>
   qWeatherApiKey: string
-  setQWeatherApiKey: (apiKey: string) => Promise<void>
+  setQWeatherApiKey: (apiKey?: string) => Promise<void>
 }
 
 export const useStates = create<GlobalState>()((set) => ({
@@ -34,7 +35,7 @@ export const useStates = create<GlobalState>()((set) => ({
   },
   qWeatherApiKey,
   setQWeatherApiKey: async (apiKey) => {
-    set({ qWeatherApiKey: apiKey })
+    set({ qWeatherApiKey: apiKey || '' })
     await _set('qweather_api_key', apiKey || '')
   },
 }))

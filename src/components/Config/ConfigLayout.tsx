@@ -31,23 +31,34 @@ export function ConfigLayout() {
         />
       </Form.Item>
       <Form.Item label='背景图片'>
-        <div className='flex justify-between flex-nowrap gap-3'>
-          <Upload
-            accept='.jpg,.jpeg,.png'
+        <div className='flex justify-between flex-col items-center gap-4'>
+          <Upload.Dragger
             showUploadList={false}
+            className='w-full'
+            accept='.jpg,.jpeg,.png'
             beforeUpload={async (file) => {
-              const base64 = toBase64(await file.arrayBuffer())
-              await setBackground(`data:${file.type};base64,${base64}`)
-              messageApi?.success('背景设置成功')
+              try {
+                const base64 = toBase64(await file.arrayBuffer())
+                await setBackground(`data:${file.type};base64,${base64}`)
+                messageApi?.success('背景设置成功')
+              } catch (e) {
+                messageApi?.error(`背景设置失败: ${e instanceof Error ? e.message : e}`)
+              }
               return false
             }}
           >
-            <Button icon={<FileImageOutlined />}>
-              点击上传
+            <Button
+              type='text'
+              block
+              icon={<FileImageOutlined />}
+            >
+              上传背景
             </Button>
-          </Upload>
+            <p className='text-xs mt-[0.3rem]'>可点击上传或直接拖拽文件到此处</p>
+          </Upload.Dragger>
           <Button 
             className='w-full' 
+            block
             icon={<UndoOutlined />}
             onClick={async () => {
               await setBackground()
