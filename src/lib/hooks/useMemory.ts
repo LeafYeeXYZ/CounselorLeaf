@@ -14,8 +14,8 @@ type Memory = {
   shortTermMemory: ShortTermMemory[]
   archivedMemory: ArchivedMemory[]
   // 设置相关记忆信息
-  setSelfName: (name: string) => Promise<void>
-  setUserName: (name: string) => Promise<void>
+  setSelfName: (name?: string) => Promise<void>
+  setUserName: (name?: string) => Promise<void>
   setMemoryAboutSelf: (content: string) => Promise<void>
   setMemoryAboutUser: (content: string) => Promise<void>
   setLongTermMemory: (memory: LongTermMemory[]) => Promise<void>
@@ -266,15 +266,15 @@ export const useMemory = create<Memory>()((setState, getState) => ({
   shortTermMemory: localShortTermMemory || [],
   archivedMemory: localArchivedMemory || [],
   setSelfName: async (name) => {
-    name = name || DEFAULT_SELF_NAME
-    setState({ selfName: name })
-    await set('self_name', name)
+    const v = name || DEFAULT_SELF_NAME
+    setState({ selfName: v })
+    await set('self_name', v)
     return
   },
   setUserName: async (name) => {
-    name = name || DEFAULT_USER_NAME
-    setState({ userName: name })
-    await set('user_name', name)
+    const v = name || DEFAULT_USER_NAME
+    setState({ userName: v })
+    await set('user_name', v)
     return
   },
   setMemoryAboutSelf: async (content) => {
