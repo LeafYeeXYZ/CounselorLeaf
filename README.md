@@ -2,18 +2,23 @@
 
 创造一个有自我概念、长时记忆的"数字生命". 同时支持 Web 和桌面端、支持多种推理、TTS、STT 服务
 
-如果您想快速体验本项目, 可访问 <https://being.leafyee.xyz>, 安装 `ollama`, 运行 `ollama pull qwen2.5:7b` 下载模型, 运行 `OLLAMA_ORIGINS="*" ollama serve` 启动服务, 并用 `Chrome` 浏览器访问 <https://being.leafyee.xyz> (详见[2 开发和部署](#2-开发和部署))
+如果您想快速体验本项目, 可在 <https://deepseek.com> 等注册一个免费账号, 获取 `API Key`, 并访问 <https://being.leafyee.xyz>, 在应用内设置 `Endpoint`、`API Key`、`Model Name` 即可使用 (也可直接本地运行 `ollama`, 见[2.1 环境变量](#21-环境变量))
 
 ![示意图](./readme/intro.png)
 
-> 聊天界面示意图
+| 记忆界面 | 聊天界面 | 设置界面 |
+| :---: | :---: | :---: |
+| ![](./readme/intro-memo-1.png) | ![](./readme/intro-chat-1.png) | ![](./readme/intro-config-1.png) |
+| ![](./readme/intro-memo-2.png) | ![](./readme/intro-chat-2.png) | ![](./readme/intro-config-2.png) |
+| ![](./readme/intro-memo-3.png) | - | ![](./readme/intro-config-3.png) |
+| - | - | ![](./readme/intro-config-4.png) |
 
 - [Digital Life / 数字生命](#digital-life--数字生命)
   - [1 项目说明](#1-项目说明)
   - [2 开发和部署](#2-开发和部署)
-    - [2.1 环境变量](#21-环境变量)
-    - [2.2 桌面端](#22-桌面端)
-    - [2.3 Web 端](#23-web-端)
+    - [2.1 桌面端](#21-桌面端)
+    - [2.2 Web 端](#22-web-端)
+    - [2.3 环境变量](#23-环境变量)
   - [3 待办事项](#3-待办事项)
   - [4 长时记忆](#4-长时记忆)
     - [4.1 现有做法](#41-现有做法)
@@ -31,21 +36,19 @@
 
 | 模块 | 可选项 | 说明 |
 | :---: | :---: | :---: |
-| 推理 | `ollama` | 默认即使用 `ollama` 服务, 无需额外设置 |
-| | 任意 `OpenAI` 兼容服务 | 在应用内设置 `Endpoint` 和 `API Key` 即可 |
-| 语音生成 `TTS` | 关闭 | 默认关闭 `TTS` 功能 |
-| | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `TTS` 功能 |
+| 推理 | 任意兼容 `OpenAI` 规范的服务 | 默认使用 `ollama`, 可在应用内修改 `Endpoint`、`API Key`、`Model Name` 等 |
+| 语音生成 `TTS` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `TTS` 功能 |
 | | [本地 `F5 TTS` 服务](https://github.com/jianchang512/f5-tts-api) | 默认服务地址为 `'http://127.0.0.1:5010/api'`, 可在应用内修改 |
 | | [本地 `Fish Speech` 服务](https://speech.fish.audio/zh/inference/#http-api) | 默认服务地址为 `'http://127.0.0.1:8080'`, 可在应用内修改 |
-| 语音输入 `STT` | 关闭 | 默认关闭 `STT` 功能 |
-| | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
+| 语音输入 `STT` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
 | `Live2d` | - | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
 | 其他 | 天气信息 | 默认关闭, 可在应用内设置[和风天气 API Key](https://dev.qweather.com/)开启 |
-| | 时间信息 | 默认开启, 为当前设备时间 |
-| | 新闻信息 | 🚧 WIP |
+| | 时间信息 | 模型可获知当前设备时间和对话开始时间 |
 | | 图片输入 | 🚧 WIP |
 | | 图片输出 | 🚧 WIP |
 | | 文件输入 | 🚧 WIP, 可能会使用 <https://github.com/microsoft/markitdown> |
+
+> `TTS` 和 `STT` 服务默认关闭, 可在应用内的设置中开启
 
 ## 2 开发和部署
 
@@ -55,13 +58,7 @@ LLM 推理使用 `OpenAI SDK` 实现, 您可以使用任何兼容的服务, 如 
 
 > 如果使用 `ollama`, 在 Web 端时, 您可能需要手动设置 `ollama` 的 `CORS` 策略以避免请求被浏览器拦截: 首先设置本地的 `OLLAMA_ORIGINS` 环境变量为 `"*"`、在终端中运行 `echo $OLLAMA_ORIGINS` 确认设置成功、在终端中运行 `ollama serve` 启动服务 (即使进行了上述设置, 仍然可能会在 `Safari` 中遇到 `CORS` 问题, 请尝试使用 `Chrome` 浏览器)
 
-### 2.1 环境变量
-
-| 环境变量名 | 默认值 | 说明 |
-| :---: | :---: | :---: |
-| `VITE_DEBUG_COMPONENT` | `'off'` | 仅当设为 `'on'` 时, 会显示调试组件 |
-
-### 2.2 桌面端
+### 2.1 桌面端
 
 ```bash
 # 克隆项目
@@ -75,7 +72,7 @@ bun dev:tauri
 bun build:tauri
 ```
 
-### 2.3 Web 端
+### 2.2 Web 端
 
 请注意 Web 端构建后的输出目录为 `/dist-web` 而非 `/dist`
 
@@ -91,6 +88,12 @@ bun dev:web
 bun build:web
 ```
 
+### 2.3 环境变量
+
+| 环境变量名 | 默认值 | 说明 |
+| :---: | :---: | :---: |
+| `VITE_DEBUG_COMPONENT` | `'off'` | 仅当设为 `'on'` 时, 会显示调试组件 |
+
 ## 3 待办事项
 
 - [ ] 软件图标
@@ -100,14 +103,7 @@ bun build:web
   - [x] 当前对话递归总结
   - [x] 保存为长时记忆
   - [ ] 可以自行提取记忆
-- [x] 连续对话功能
-- 外部信息
-  - [x] 对话开始时间
-  - [x] 当前时间
-  - [x] 天气
-  - [ ] 新闻 
 - [ ] 自主行动和迭代
-- [x] 导入记忆
 
 ## 4 长时记忆
 
