@@ -62,10 +62,10 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       for (const w of result) {
         current += w
         await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
-        await sleep(40)
+        await sleep(30)
         if (w.match(reg)) {
           staps = ''
-          await sleep(1000)
+          await sleep(1200)
         } else {
           staps += w
           live2d?.tipsMessage(staps, 10000, Date.now())
