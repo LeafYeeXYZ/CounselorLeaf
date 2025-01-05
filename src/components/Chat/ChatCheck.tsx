@@ -9,7 +9,7 @@ import { Button } from 'antd'
 
 export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) {
 
-  const { setDisabled, disabled, qWeatherApiKey } = useStates()
+  const { setDisabled, disabled, qWeatherApiKey, setForceAllowNav } = useStates()
   const { testChat, chat, openaiModelName, setUsedToken } = useChatApi()
   const { testListen } = useListenApi()
   const { testSpeak } = useSpeakApi()
@@ -22,6 +22,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
     if (statusText !== '加载中') {
       return
     }
+    setForceAllowNav(false)
     // 加载服务
     Promise.all([
       testChat(),
@@ -44,8 +45,9 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       setStatusError(true)
       setStatusText(e.message)
       setDisabled('加载出错')
+      setForceAllowNav(true)
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav])
   
   return (
     <div 

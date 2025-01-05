@@ -35,7 +35,7 @@ const PAGES: Record<string, ReactNode> = {
 export default function App() {
 
   const [messageApi, messageElement] = message.useMessage()
-  const { setMessageApi, disabled, background } = useStates()
+  const { setMessageApi, disabled, background, forceAllowNav } = useStates()
   const { loadLive2d, setLive2dApi } = useLive2dApi()
   const { selfName } = useMemory()
   const [current, setCurrent] = useState<string>(DEFAULT_PAGE)
@@ -62,9 +62,31 @@ export default function App() {
     element.src = background
   }, [background])
 
+  // 可调整大小
+  const LEFT_GAP = 450
+  const RIGHT_GAP = 350
+  const [x, setX] = useState<number>(LEFT_GAP)
+  useEffect(() => { document.getElementById('back-container')!.style.width = `calc(100dvw - ${x}px)` }, [x])
+
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
-      <div className='w-[450px] h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r'>
+      <div 
+        className='fixed top-1/2 left-0 w-[0.4rem] h-12 z-50 cursor-ew-resize border border-blue-900 rounded-full bg-blue-50' 
+        style={{ marginLeft: `calc(${x}px - 0.25rem)` }} 
+        draggable
+        // @ts-expect-error 类型提示错误, 运行无问题
+        onDragStart={(e) => { e.target.style.opacity = '0' }}
+        // @ts-expect-error 类型提示错误, 运行无问题
+        onDragEnd={(e) => { e.target.style.opacity = '1' }}
+        onDrag={(e) => {
+          if (e.clientX < LEFT_GAP || e.clientX > window.innerWidth - RIGHT_GAP) {
+            return
+          } else {
+            setX(e.clientX)
+          }
+        }}
+      />
+      <div className='h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r' style={{ width: x }}>
         <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
           {/* Page */}
           <div className='w-full h-full overflow-hidden flex flex-col justify-center items-center p-[1.8rem]'>
@@ -80,7 +102,7 @@ export default function App() {
                 mode='horizontal'
                 selectedKeys={[current]}
                 onClick={({ key }) => setCurrent(key)}
-                disabled={disabled !== false}
+                disabled={disabled !== false && !forceAllowNav}
                 items={[
                   { 
                     key: 'memory', label: '记忆', icon: <BookOutlined />,

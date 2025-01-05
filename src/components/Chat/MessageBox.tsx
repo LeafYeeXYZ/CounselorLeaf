@@ -22,7 +22,7 @@ export function MessageBox() {
   }, [shortTermMemory])
 
   return (
-    <div className='w-full flex flex-col gap-4 pr-[0.2rem] py-1'>
+    <div className='w-full flex flex-col gap-3 pr-[0.2rem] py-1' ref={memoContainerRef}>
       {memoryList.map(({ role, content }, index) => (
         <Bubble
           header={role === 'user' ? userName : selfName}

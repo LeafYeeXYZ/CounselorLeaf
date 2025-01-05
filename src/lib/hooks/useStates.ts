@@ -10,6 +10,8 @@ const qWeatherApiKey = await get('qweather_api_key') || ''
 type GlobalState = {
   disabled: false | string | ReactNode
   setDisabled: (disabled: false | string | ReactNode) => void
+  forceAllowNav: boolean
+  setForceAllowNav: (forceAllowNav: boolean) => void
   messageApi: MessageInstance | null
   setMessageApi: (messageApi: MessageInstance | null) => void
   background: string
@@ -23,6 +25,8 @@ export const useStates = create<GlobalState>()((set) => ({
   setDisabled: (disabled) => set({ disabled }),
   messageApi: null,
   setMessageApi: (messageApi) => set({ messageApi }),
+  forceAllowNav: false,
+  setForceAllowNav: (forceAllowNav) => set({ forceAllowNav }),
   background,
   setBackground: async (background) => {
     set({ background: background || DAFAULT_BACKGROUND })
