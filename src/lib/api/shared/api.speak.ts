@@ -72,14 +72,27 @@ const speak_f5tts = async (text: string, endpoint: string): Promise<{ start: Pro
   }
 }
 const test_f5tts = async (endpoint: string): Promise<boolean> => {
+  if (sessionStorage.getItem('f5_tts_test') === 'ok') {
+    return true
+  }
   try {
-    const url = endpoint.replace('/api', '/test')
-    const res = await fetch(url)
-    if (res.status === 404) {
+    const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
+    const refAudio: Uint8Array = new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
+    const formData = new FormData()
+    formData.append('ref_text', refText)
+    formData.append('gen_text', '你好')
+    formData.append('model', 'f5-tts')
+    formData.append('audio', new Blob([refAudio], { type: 'audio/wav' }))
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      body: formData,
+    })
+    if (res.status === 200) {
+      sessionStorage.setItem('f5_tts_test', 'ok')
       return true
     } else {
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
-    } 
+    }
   } catch (e) {
     throw new Error(`F5 TTS API 测试失败: ${e instanceof Error ? e.message : e}`)
   }

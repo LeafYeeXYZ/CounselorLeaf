@@ -10,6 +10,7 @@ import { useChatApi } from '../../lib/hooks/useChatApi.ts'
 import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
+import { MessageBox } from './MessageBox.tsx'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 2000
 
@@ -20,7 +21,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
   const { speak } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
-  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, userName, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
+  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
   
   const [canSpeak, setCanSpeak] = useState<boolean>(false)
   const [textBuffer, setTextBuffer] = useState<string>('')
@@ -263,18 +264,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       </Form.Item>
       <Form.Item label='短时记忆'>
         <div className='w-full max-h-[calc(100dvh-31.75rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
-          <div className='w-full flex flex-col gap-3'>
-            {shortTermMemory.map(({ role, content }, index) => (
-              <div key={index} className='flex flex-col gap-1' style={{ textAlign: role === 'user' ? 'right' : 'left' }}>
-                <div className='w-full text-sm font-bold'>
-                  {role === 'user' ? userName : selfName}
-                </div>
-                <div className='w-full text-sm'>
-                  {content}
-                </div>
-              </div>
-            ))}
-          </div>
+          <MessageBox />
         </div>
       </Form.Item>
     </Form>
