@@ -231,7 +231,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         </div>
       </Form.Item>
       <Form.Item label='短时记忆'>
-        <div className='w-full max-h-[calc(100dvh-33.25rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+        <div className='w-full max-h-[calc(100dvh-26.8rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
           <MessageBox />
         </div>
       </Form.Item>
