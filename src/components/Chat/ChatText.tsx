@@ -50,7 +50,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         { role: 'assistant', content: result, timestamp: time },
       ]
       await setUsedToken(tokens)
-      const reg = /。|？|！|,|，|;|；|~|～|~/g
+      const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
       const summary = updateCurrentSummary(chat, openaiModelName, output)
       const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
