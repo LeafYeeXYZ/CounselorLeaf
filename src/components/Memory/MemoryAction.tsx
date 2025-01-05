@@ -1,5 +1,5 @@
-import { useStates } from '../lib/hooks/useStates.ts'
-import { useMemory } from '../lib/hooks/useMemory.ts'
+import { useStates } from '../../lib/hooks/useStates.ts'
+import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { Form, Button, Popover, Input, Upload } from 'antd'
 import { ExportOutlined, DeleteOutlined, ImportOutlined } from '@ant-design/icons'
 import { useState, useRef } from 'react'
@@ -21,7 +21,7 @@ export function MemoryAction() {
     <Form 
       form={form}
       layout='vertical' 
-      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
+      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-9.6rem)]'
     >
       <Form.Item label='导出记忆'>
         <Button 

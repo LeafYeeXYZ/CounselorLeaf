@@ -1,6 +1,6 @@
-import { useChatApi } from '../lib/hooks/useChatApi.ts'
-import { useStates } from '../lib/hooks/useStates.ts'
-import { useMemory } from '../lib/hooks/useMemory.ts'
+import { useChatApi } from '../../lib/hooks/useChatApi.ts'
+import { useStates } from '../../lib/hooks/useStates.ts'
+import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { Form, Button, Space, Input, Tag, InputNumber, Select } from 'antd'
 import { useState } from 'react'
 
@@ -31,7 +31,7 @@ export function ConfigMain() {
     <Form 
       form={form}
       layout='vertical' 
-      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
+      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-9.6rem)]'
     >
       <Form.Item label={<span>推理服务地址<Tag className='ml-[0.3rem]'>OpenAI Endpoint</Tag></span>}>
         <Space.Compact block>

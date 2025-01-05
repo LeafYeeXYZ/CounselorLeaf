@@ -16,8 +16,6 @@ type GlobalState = {
   setBackground: (background?: string) => Promise<void>
   qWeatherApiKey: string
   setQWeatherApiKey: (apiKey: string) => Promise<void>
-  chatMode: 'text' | 'voice' | 'none' | 'error'
-  setChatMode: (mode: 'text' | 'voice' | 'none' | 'error') => void
 }
 
 export const useStates = create<GlobalState>()((set) => ({
@@ -35,6 +33,4 @@ export const useStates = create<GlobalState>()((set) => ({
     set({ qWeatherApiKey: apiKey })
     await _set('qweather_api_key', apiKey || '')
   },
-  chatMode: 'none',
-  setChatMode: (mode) => set({ chatMode: mode }),
 }))

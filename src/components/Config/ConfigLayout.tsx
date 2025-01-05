@@ -1,8 +1,8 @@
-import { useStates } from '../lib/hooks/useStates.ts'
-import { toBase64 } from '../lib/utils.ts'
+import { useStates } from '../../lib/hooks/useStates.ts'
+import { toBase64 } from '../../lib/utils.ts'
 import { Form, Select, Upload, Button } from 'antd'
 import { FileImageOutlined, UndoOutlined } from '@ant-design/icons'
-import { useLive2dApi } from '../lib/hooks/useLive2dApi.ts'
+import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
 
 export function ConfigLayout() {
 
@@ -19,7 +19,7 @@ export function ConfigLayout() {
   return (
     <Form 
       layout='vertical' 
-      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
+      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-9.6rem)]'
     >
       <Form.Item label='聊天形象'>
         <Select 

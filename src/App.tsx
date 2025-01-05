@@ -1,27 +1,44 @@
+import { env } from './lib/env.ts'
+import { openLink } from './lib/utils.ts'
+import { version } from '../package.json'
+
 import { useState, useEffect, type ReactNode } from 'react'
-import { Chat } from './components/Chat.tsx'
-import { Memory } from './components/Memory.tsx'
-import { Config } from './components/Config'
-import { Debug } from './components/Debug.tsx'
 import { useStates } from './lib/hooks/useStates.ts'
 import { useLive2dApi } from './lib/hooks/useLive2dApi.ts'
-import { env } from './lib/env.ts'
-import { Segmented, message } from 'antd'
-import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, GithubOutlined } from '@ant-design/icons'
-import { openLink } from './lib/utils.ts'
+import { useMemory } from './lib/hooks/useMemory.ts'
 
-const PAGES: { label: string, element: ReactNode, icon: ReactNode, isDefault?: boolean }[] = [
-  { label: '记忆', element: <Memory />, icon: <BookOutlined /> },
-  { label: '聊天', element: <Chat />, icon: <CommentOutlined />, isDefault: true },
-  { label: '设置', element: <Config />, icon: <SettingOutlined /> },
-]
+import { message, Menu } from 'antd'
+import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined } from '@ant-design/icons'
+import { MemoryAction } from './components/Memory/MemoryAction.tsx'
+import { MemoryDiary } from './components/Memory/MemoryDiary.tsx'
+import { MemoryMain } from './components/Memory/MemoryMain.tsx'
+import { ConfigMain } from './components/Config/ConfigMain.tsx'
+import { ConfigVoice } from './components/Config/ConfigVoice.tsx'
+import { ConfigLayout } from './components/Config/ConfigLayout.tsx'
+import { ConfigOthers } from './components/Config/ConfigOthers.tsx'
+import { ChatIndex } from './components/Chat/ChatIndex.tsx'
+import { Debug } from './components/Debug.tsx'
+
+const DEFAULT_PAGE = 'chat-text'
+const PAGES: Record<string, ReactNode> = {
+  'memory-main': <MemoryMain />,
+  'memory-diary': <MemoryDiary />,
+  'memory-action': <MemoryAction />,
+  'config-main': <ConfigMain />,
+  'config-service': <ConfigVoice />,
+  'config-layout': <ConfigLayout />,
+  'config-others': <ConfigOthers />,
+  'chat-text': <ChatIndex to='text' />,
+  'chat-voice': <ChatIndex to='voice' />,
+}
 
 export default function App() {
 
-  const { setMessageApi, disabled, background, chatMode } = useStates()
-  const { loadLive2d, setLive2dApi } = useLive2dApi()
-  const [page, setPage] = useState<ReactNode>(PAGES.find(({ isDefault }) => isDefault)!.element)
   const [messageApi, messageElement] = message.useMessage()
+  const { setMessageApi, disabled, background } = useStates()
+  const { loadLive2d, setLive2dApi } = useLive2dApi()
+  const { selfName } = useMemory()
+  const [current, setCurrent] = useState<string>(DEFAULT_PAGE)
 
   // 加载消息通知
   useEffect(() => {
@@ -47,43 +64,83 @@ export default function App() {
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
-      <div className='w-[450px] h-dvh overflow-hidden float-left bg-gray-50 shadow-sm border-r'>
-        <div className='w-full h-full overflow-hidden flex flex-col justify-center items-center relative p-8'>
-          <div className='w-full overflow-hidden flex flex-col justify-center items-center bg-white'>
-            {page}
+      <div className='w-[450px] h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r'>
+        <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
+          {/* Page */}
+          <div className='w-full h-full overflow-hidden flex flex-col justify-center items-center p-[1.8rem]'>
+            <div className='w-full bg-white overflow-hidden'>
+              {PAGES[current]}
+            </div>
           </div>
-          <nav className='absolute bottom-6'>
-            <Segmented
-              disabled={disabled !== false && chatMode !== 'error'}
-              className='border border-blue-900 p-1'
-              defaultValue={PAGES.find(({ isDefault }) => isDefault)!.label}
-              options={PAGES.map(({ label, icon }) => ({ label, icon, value: label }))}
-              onChange={(value) => setPage(PAGES.find(({ label }) => label === value)!.element)}
-            />
-          </nav>
-          <div className='absolute top-6'>
-            <div className='border border-blue-900 rounded-md py-[0.3rem] px-[0.6rem] bg-white text-sm flex justify-center items-center'>
-              <div className='mr-1'>
-                当前状态:
+          {/* Nav */}
+          <div className='w-full h-full flex justify-center items-center'>
+            <div className='flex justify-center items-center bg-white border border-blue-900 rounded-md'>
+              <Menu
+                className='border-none justify-center bg-transparent'
+                mode='horizontal'
+                selectedKeys={[current]}
+                onClick={({ key }) => setCurrent(key)}
+                disabled={disabled !== false}
+                items={[
+                  { 
+                    key: 'memory', label: '记忆', icon: <BookOutlined />,
+                    children: [
+                      { key: 'memory-main', label: '名字和自我', icon: <IdcardOutlined /> },
+                      { key: 'memory-diary', label: `${selfName}的日记本`, icon: <ReadOutlined /> },
+                      { key: 'memory-action', label: '导入和导出', icon: <CloudSyncOutlined /> },
+                    ],
+                  },
+                  { 
+                    key: 'chat', label: '聊天', icon: <CommentOutlined />,
+                    children: [
+                      { key: 'chat-text', label: '文字语音聊天', icon: <FontSizeOutlined /> },
+                      { key: 'chat-voice', label: '连续语音对话', icon: <AudioOutlined /> },
+                    ],
+                  },
+                  { 
+                    key: 'config', label: '设置', icon: <SettingOutlined />,
+                    children: [
+                      { key: 'config-main', label: '推理服务设置', icon: <BlockOutlined /> },
+                      { key: 'config-service', label: '语音服务设置', icon: <ApiOutlined /> },
+                      { key: 'config-layout', label: '自定义设置', icon: <LayoutOutlined /> },
+                      { key: 'config-others', label: '其他设置', icon: <BorderlessTableOutlined /> },
+                    ],
+                  },
+                ]}
+              />
+            </div>
+          </div>
+          {/* Footer */}
+          <div className='w-full h-full flex items-center justify-center text-xs'>
+            <div className='grid grid-cols-[5.8rem,1fr,5.8rem] gap-3'>
+              <div className='flex justify-center items-center border border-blue-900 rounded-md py-[0.1rem] bg-white'>
+                <div className='mr-1'>数字生命</div>
+                <div>{version}</div>
               </div>
-              <div className='flex justify-center items-center'>
-                {disabled === false ? '空闲' : disabled === true ? <div className='flex justify-center items-center gap-[0.3rem]'>
-                  <div>加载中</div>
-                  <div className='flex items-center justify-center'><LoadingOutlined /></div>
-                </div> : disabled}
+              <div className='flex justify-center items-center border border-blue-900 rounded-md px-[0.4rem] py-[0.1rem] bg-white'>
+                <div className='mr-1'>当前状态:</div>
+                <div className='flex justify-center items-center'>
+                  {disabled === false ? '空闲' : disabled === true ? <div className='flex justify-center items-center gap-[0.3rem]'>
+                    <div>加载中</div>
+                    <div className='flex items-center justify-center'><LoadingOutlined /></div>
+                  </div> : disabled}
+                </div>
+              </div>
+              <div 
+                className='cursor-pointer flex justify-center items-center border border-blue-900 rounded-md py-[0.1rem] bg-white'
+                onClick={() => openLink('https://github.com/LeafYeeXYZ/DigitalLife')}
+              >
+                <div className='mr-1'>GitHub</div>
+                <ExportOutlined />
               </div>
             </div>
           </div>
         </div>
       </div>
-      {messageElement}
+      {/* Widget */}
       {env.VITE_DEBUG_COMPONENT ? <Debug /> : undefined}
-      <div 
-        className='fixed top-2 right-2 cursor-pointer bg-white px-2 py-1 rounded-md border border-blue-900'
-        onClick={() => openLink('https://github.com/LeafYeeXYZ/DigitalLife')}
-      >
-        <GithubOutlined className='m-0' />
-      </div>
+      {/* Context Holder */}
+      {messageElement}
       <div id='live2d' className='-z-50 w-0 h-0 fixed top-0 left-0'></div>
     </main>
   )

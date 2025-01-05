@@ -1,6 +1,6 @@
-import { useMemory } from '../lib/hooks/useMemory.ts'
+import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { Collapse, Tag } from 'antd'
-import { getTime } from '../lib/utils.ts'
+import { getTime } from '../../lib/utils.ts'
 
 export function MemoryDiary() {
 
@@ -9,7 +9,7 @@ export function MemoryDiary() {
   } = useMemory()
 
   return (
-    <div className='w-full max-h-[calc(100dvh-16rem)] border border-blue-900 rounded-md overflow-auto transition-all'>
+    <div className='w-full max-h-[calc(100dvh-9.6rem)] border border-blue-900 rounded-md overflow-auto transition-all'>
       <Collapse
         className='border-none'
         size='small'

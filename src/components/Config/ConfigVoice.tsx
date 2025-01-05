@@ -1,10 +1,10 @@
-import { useListenApi } from '../lib/hooks/useListenApi.ts'
-import { useSpeakApi } from '../lib/hooks/useSpeakApi.ts'
-import { useStates } from '../lib/hooks/useStates.ts'
+import { useListenApi } from '../../lib/hooks/useListenApi.ts'
+import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
+import { useStates } from '../../lib/hooks/useStates.ts'
 import { Form, Select, Space, Input, Button } from 'antd'
 import { useState } from 'react'
 
-export function ConfigService() {
+export function ConfigVoice() {
 
   const { setSpeakApi, speakApiList, currentSpeakApi, f5TtsEndpoint, fishSpeechEndpoint, setF5TtsEndpoint, setFishSpeechEndpoint } = useSpeakApi()
   const { setListenApi, listenApiList, currentListenApi } = useListenApi()
@@ -17,7 +17,7 @@ export function ConfigService() {
     <Form 
       form={form}
       layout='vertical' 
-      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-16rem)]'
+      className='w-full border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-9.6rem)]'
     >
       <Form.Item label='语音合成服务'>
         <Select 
