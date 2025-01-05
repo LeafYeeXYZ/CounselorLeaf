@@ -1,7 +1,7 @@
 {
-  "name": "cyber-leaf",
+  "name": "digital-life",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "tauri": "tauri",
+    "release:create": "commit-and-tag-version",
+    "release:push": "git push --follow-tags",
     "switch:tauri": "bun run ./scripts/switch-to-tauri.ts",
     "switch:web": "bun run ./scripts/switch-to-web.ts",
     "d:tauri": "bun run dev:tauri",
@@ -21,6 +23,26 @@
     "dev:web": "bun run switch:web && vite",
     "build:web": "bun run switch:web && vite build --outDir ./dist-web",
     "preview:web": "vite preview --outDir ./dist-web"
+  },
+  "commit-and-tag-version": {
+    "types": [
+      {
+        "type": "feat",
+        "section": "Features"
+      },
+      {
+        "type": "fix",
+        "section": "Bug Fixes"
+      },
+      {
+        "type": "refactor",
+        "section": "Refactoring"
+      },
+      {
+        "type": "perf",
+        "section": "Improvements"
+      }
+    ]
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
@@ -47,6 +69,7 @@
     "@types/react-dom": "^19.0.2",
     "@vitejs/plugin-react-swc": "^3.7.2",
     "autoprefixer": "^10.4.20",
+    "commit-and-tag-version": "^12.5.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.16",
