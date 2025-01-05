@@ -2,7 +2,7 @@
 
 创造一个有自我概念、长时记忆的"数字生命". 同时支持 Web 和桌面端、支持多种推理、TTS、STT 服务
 
-如果您想快速体验本项目, 可在 <https://deepseek.com> 等注册一个免费账号, 获取 `API Key`, 并访问 <https://being.leafyee.xyz>, 在应用内设置 `Endpoint`、`API Key`、`Model Name` 即可使用 (也可直接本地运行 `ollama`, 见[2.1 环境变量](#21-环境变量))
+如果您想快速体验本项目, 可在 <https://deepseek.com> 等平台注册一个免费账号, 获取 `API Key`, 并访问 <https://being.leafyee.xyz>, 在应用内设置 `Endpoint`、`API Key`、`Model Name` 即可使用 (也可直接本地运行 `ollama`, 见[2 开发和部署](#2-开发和部署))
 
 ![示意图](./readme/intro.png)
 
