@@ -36,7 +36,7 @@
 | 语音输入 `STT` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
 | `Live2d` | - | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
 | 其他 | 天气信息 | 默认关闭, 可在应用内设置[和风天气 API Key](https://dev.qweather.com/)开启 |
-| | 时间信息 | 模型可获知当前设备时间和对话开始时间 |
+| | 时间信息 | 模型可获知当前设备时间、对话开始时间、首次相遇时间 |
 | | 图片输入 | 🚧 WIP |
 | | 图片输出 | 🚧 WIP |
 | | 文件输入 | 🚧 WIP, 可能会使用 <https://github.com/microsoft/markitdown> |

@@ -60,6 +60,8 @@ const localArchivedMemory = await get('archived_memory')
 const localCurrentSummary = await get('current_summary')
 const localUseStructuredOutputs = await get('use_structured_outputs')
 
+const firstEncounterTime = localArchivedMemory?.length ? Math.min(...localArchivedMemory.map((item) => item.timestamp)) : Date.now()
+
 const UpdateMemoryResponse = z.object({
   updatedMemoryAboutSelf: z.string(),
   updatedMemoryAboutUser: z.string(),
@@ -80,7 +82,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
     const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
-    messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前时间: ${getTime(Date.now())}\n- 对话开始时间: ${getTime(input[0].timestamp)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
+    messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(input[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
     messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
     const response = await chatApi.chat.completions.create({
       model,
