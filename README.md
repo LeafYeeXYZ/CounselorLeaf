@@ -40,6 +40,7 @@
 | | 图片输入 | 🚧 WIP |
 | | 图片输出 | 🚧 WIP |
 | | 文件输入 | 🚧 WIP, 可能会使用 <https://github.com/microsoft/markitdown> |
+| 记忆云备份 | S3 | 在记忆备份界面填写相关信息即可使用 |
 
 > `TTS` 和 `STT` 服务默认关闭, 可在应用内的设置中开启
 
