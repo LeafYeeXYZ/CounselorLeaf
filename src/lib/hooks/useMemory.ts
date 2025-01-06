@@ -39,7 +39,7 @@ type Memory = {
   setUseStructuredOutputs: (value: boolean) => Promise<void>
 }
 
-const UPDATE_MEMORY_AFTER_HOURS = 6
+const UPDATE_MEMORY_AFTER_HOURS = 8
 const DEFAULT_SELF_NAME = '小叶子'
 const DEFAULT_USER_NAME = '旅行者'
 const DEFAULT_MEMORY_ABOUT_SELF = '我是一个在大学学习心理学的男孩子'
