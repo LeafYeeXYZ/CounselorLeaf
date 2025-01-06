@@ -98,7 +98,7 @@ export default function App() {
         }}
       />}
       <div 
-        className='h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r' 
+        className='h-dvh overflow-hidden float-left shadow-md border-r' 
         style={{ width: isMobile ? '100dvw' : `${x}px`}}
       >
         <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
