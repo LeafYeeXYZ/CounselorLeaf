@@ -10,9 +10,9 @@ export function ConfigLayout() {
     setLoadLive2d,
     live2dList,
     currentLive2d,
+    setBackground, 
   } = useLive2dApi()
   const { 
-    setBackground, 
     messageApi 
   } = useStates()
 

@@ -86,7 +86,7 @@ export function ConfigMain() {
             />
           </Tooltip>
           <Form.Item noStyle name='openaiApiKey'>
-            <Input className='w-full' onChange={() => setOpenaiApiKeyModified(true)} />
+            <Input.Password className='w-full' onChange={() => setOpenaiApiKeyModified(true)} />
           </Form.Item>
           <Tooltip title='保存修改' color='blue'>
             <Button

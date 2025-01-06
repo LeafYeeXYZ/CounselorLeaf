@@ -47,11 +47,10 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
     "@ant-design/x": "^1.0.4",
-    "@gradio/client": "^1.8.0",
     "@tauri-apps/plugin-dialog": "~2.2.0",
     "@tauri-apps/plugin-shell": "~2.2.0",
     "@tauri-apps/plugin-store": "~2.2.0",
-    "antd": "^5.22.7",
+    "antd": "^5.23.0",
     "emoji-regex": "^10.4.0",
     "idb-keyval": "^6.2.1",
     "oh-my-live2d": "^0.19.3",

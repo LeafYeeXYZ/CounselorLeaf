@@ -8,8 +8,14 @@ type API = {
   currentLive2d: string
   setLoadLive2d: (name: string) => Promise<void>
   setLive2dApi: (api: Live2dApi | null) => Promise<void>
+
+  background: string
+  setBackground: (background?: string) => Promise<void>
 }
 
+const DAFAULT_BACKGROUND = '/back.png'
+
+const background = await get('background_image') || DAFAULT_BACKGROUND
 const localLive2d = await get('default_live2d')
 const defaultLive2d = live2dList.find(({ name }) => name === localLive2d) ?? live2dList[0]
 
@@ -29,5 +35,10 @@ export const useLive2dApi = create<API>()((setState) => ({
       await set('default_live2d', name)
     }
     return
+  },
+  background,
+  setBackground: async (background) => {
+    setState({ background: background || DAFAULT_BACKGROUND })
+    await set('background_image', background || DAFAULT_BACKGROUND)
   },
 }))

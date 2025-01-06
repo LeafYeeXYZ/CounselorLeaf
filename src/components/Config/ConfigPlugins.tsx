@@ -36,7 +36,7 @@ export function ConfigPlugins() {
             />
           </Tooltip>
           <Form.Item noStyle name='qWeatherApiKey'>
-            <Input className='w-full' onChange={() => setQWeatherApiKeyModified(true)} placeholder={`设置后, ${selfName}将联网获取天气信息`} />
+            <Input.Password className='w-full' onChange={() => setQWeatherApiKeyModified(true)} placeholder={`设置后, ${selfName}将联网获取天气信息`} />
           </Form.Item>
           <Tooltip title='保存修改' color='blue'>
             <Button

@@ -28,6 +28,7 @@ type Memory = {
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
   importAllMemory: (memory: string) => Promise<void>
+  exportAllMemory: (pretty?: boolean) => Promise<string>
   // 当前上下文总结 (递归更新)
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
@@ -229,6 +230,9 @@ export const useMemory = create<Memory>()((setState, getState) => ({
   },
   importAllMemory: async (memory) => {
     const { setSelfName, setUserName, setMemoryAboutSelf, setMemoryAboutUser, setLongTermMemory, setShortTermMemory, setArchivedMemory, setCurrentSummary } = getState()
+    if (!memory) {
+      throw new Error('没有记忆数据')
+    }
     const data = JSON.parse(memory)
     if (
       typeof data !== 'object' ||
@@ -255,6 +259,29 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     await setShortTermMemory(data.shortTermMemory)
     await setArchivedMemory(data.archivedMemory)
     return
+  },
+  exportAllMemory: async (pretty = false) => {
+    const { selfName, userName, memoryAboutSelf, memoryAboutUser, longTermMemory, shortTermMemory, archivedMemory, currentSummary } = getState()
+    const data = pretty ? JSON.stringify({
+      selfName,
+      userName,
+      memoryAboutSelf,
+      memoryAboutUser,
+      longTermMemory,
+      shortTermMemory,
+      archivedMemory,
+      currentSummary,
+    }, null, 2) : JSON.stringify({
+      selfName,
+      userName,
+      memoryAboutSelf,
+      memoryAboutUser,
+      longTermMemory,
+      shortTermMemory,
+      archivedMemory,
+      currentSummary,
+    })
+    return data
   },
   selfName: localSelfName || DEFAULT_SELF_NAME,
   userName: localUserName || DEFAULT_USER_NAME,

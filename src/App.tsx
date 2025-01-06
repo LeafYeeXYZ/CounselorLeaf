@@ -9,10 +9,11 @@ import { useMemory } from './lib/hooks/useMemory.ts'
 import { useIsMobile } from './lib/hooks/useIsMobile.ts'
 
 import { message, Menu } from 'antd'
-import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined } from '@ant-design/icons'
+import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined, CloudOutlined } from '@ant-design/icons'
 import { MemoryAction } from './components/Memory/MemoryAction.tsx'
 import { MemoryDiary } from './components/Memory/MemoryDiary.tsx'
 import { MemoryMain } from './components/Memory/MemoryMain.tsx'
+import { MemoryCloud } from './components/Memory/MemoryCloud.tsx'
 import { ConfigMain } from './components/Config/ConfigMain.tsx'
 import { ConfigVoice } from './components/Config/ConfigVoice.tsx'
 import { ConfigLayout } from './components/Config/ConfigLayout.tsx'
@@ -25,6 +26,7 @@ const PAGES: Record<string, ReactNode> = {
   'memory-main': <MemoryMain />,
   'memory-diary': <MemoryDiary />,
   'memory-action': <MemoryAction />,
+  'memory-cloud': <MemoryCloud />,
   'config-main': <ConfigMain />,
   'config-service': <ConfigVoice />,
   'config-layout': <ConfigLayout />,
@@ -36,8 +38,8 @@ const PAGES: Record<string, ReactNode> = {
 export default function App() {
 
   const [messageApi, messageElement] = message.useMessage()
-  const { setMessageApi, disabled, background, forceAllowNav } = useStates()
-  const { loadLive2d, setLive2dApi } = useLive2dApi()
+  const { setMessageApi, disabled, forceAllowNav } = useStates()
+  const { loadLive2d, setLive2dApi, background } = useLive2dApi()
   const { selfName } = useMemory()
   const [current, setCurrent] = useState<string>(DEFAULT_PAGE)
   const isMobile = useIsMobile()
@@ -127,6 +129,7 @@ export default function App() {
                       { key: 'memory-main', label: '名字和自我', icon: <IdcardOutlined /> },
                       { key: 'memory-diary', label: `${selfName}的日记本`, icon: <ReadOutlined /> },
                       { key: 'memory-action', label: '导入和导出', icon: <CloudSyncOutlined /> },
+                      { key: 'memory-cloud', label: '云备份和恢复', icon: <CloudOutlined /> },
                     ],
                   },
                   { 

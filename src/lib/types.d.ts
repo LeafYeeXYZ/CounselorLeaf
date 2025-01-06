@@ -36,7 +36,10 @@ declare type ConfigKeys =
   'openai_api_key' |
   'openai_endpoint' |
   'openai_model_name' |
-  'use_structured_outputs'
+  'use_structured_outputs' |
+  'cloudflare_api_token' |
+  'cloudflare_account_id' |
+  'cloudflare_kv_namespace_id'
 
 declare type MemoryKeys =
   'self_name' |
@@ -52,6 +55,9 @@ declare type StoreKeys = ConfigKeys | MemoryKeys
 
 declare type Plugins = {
   qWeatherApiKey: string
+  cloudflareApiToken: string
+  cloudflareAccountId: string
+  cloudflareKVNamespaceId: string
 }
 
 declare type ChatApi = import('openai').OpenAI
