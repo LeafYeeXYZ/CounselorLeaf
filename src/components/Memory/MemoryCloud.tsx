@@ -1,7 +1,7 @@
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { usePlugins } from '../../lib/hooks/usePlugins.ts'
-import { Form, Button, Input, Space, Tooltip } from 'antd'
+import { Form, Button, Input, Space, Tooltip, Popconfirm } from 'antd'
 import { useState } from 'react'
 import { flushSync } from 'react-dom'
 import { DeleteOutlined, SaveOutlined } from '@ant-design/icons'
@@ -136,11 +136,9 @@ export function MemoryCloud() {
       </Form.Item>
       <Form.Item>
         <div className='flex justify-between items-center gap-4'>
-          <Button 
-            block
-            disabled={!cloudflareAccountId || !cloudflareApiToken || !cloudflareKVNamespaceId || disabled !== false}
-            loading={disabled === '上传记忆中'}
-            onClick={async () => {
+          <Popconfirm
+            title='此操作将覆盖云端记忆，确定要继续吗？'
+            onConfirm={async () => {
               try {
                 flushSync(() => setDisabled('上传记忆中'))
                 const memory = await exportAllMemory()
@@ -152,14 +150,20 @@ export function MemoryCloud() {
                 setDisabled(false)
               }
             }}
+            okText='确定'
+            cancelText='取消'
           >
-            导出并上传记忆
-          </Button>
-          <Button 
-            block
-            disabled={!cloudflareAccountId || !cloudflareApiToken || !cloudflareKVNamespaceId || disabled !== false}
-            loading={disabled === '下载记忆中'}
-            onClick={async () => {
+            <Button 
+              block
+              disabled={!cloudflareAccountId || !cloudflareApiToken || !cloudflareKVNamespaceId || disabled !== false}
+              loading={disabled === '上传记忆中'}
+            >
+              导出并上传记忆
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title='此操作将覆盖本地记忆，确定要继续吗？'
+            onConfirm={async () => {
               try {
                 flushSync(() => setDisabled('下载记忆中'))
                 const memory = await getFromCloudflareKV('memory')
@@ -171,9 +175,17 @@ export function MemoryCloud() {
                 setDisabled(false)
               }
             }}
+            okText='确定'
+            cancelText='取消'
           >
-            下载并导入记忆
-          </Button>
+            <Button 
+              block
+              disabled={!cloudflareAccountId || !cloudflareApiToken || !cloudflareKVNamespaceId || disabled !== false}
+              loading={disabled === '下载记忆中'}
+            >
+              下载并导入记忆
+            </Button>
+          </Popconfirm>
         </div>
       </Form.Item>
     </Form>
