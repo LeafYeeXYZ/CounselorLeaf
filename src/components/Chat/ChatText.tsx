@@ -1,24 +1,22 @@
 import { flushSync } from 'react-dom'
-import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
-import { Button, Form, Input, Tag, Popover, Popconfirm } from 'antd'
-import { MessageOutlined, ClearOutlined, LoadingOutlined, NotificationOutlined, BarsOutlined, RestOutlined } from '@ant-design/icons'
-import { useStates } from '../../lib/hooks/useStates.ts'
-import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { sleep } from '../../lib/utils.ts'
 import emojiReg from 'emoji-regex'
+
+import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
+import { useStates } from '../../lib/hooks/useStates.ts'
+import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useChatApi } from '../../lib/hooks/useChatApi.ts'
 import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
-import { MessageBox } from './MessageBox.tsx'
 
-interface FormValues {
-  text: string
-}
+import { MessageBox } from './MessageBox.tsx'
+import { Button, Form, Popover, Popconfirm } from 'antd'
+import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
+import { Sender } from '@ant-design/x'
 
 export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
-  const [form] = Form.useForm<FormValues>()
   const memoContainerRef = useRef<HTMLDivElement>(null)
   const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
@@ -83,157 +81,135 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
     }
   }
 
+  const [inputValue, setInputValue] = useState<string>('')
+
   return (
     <Form
-      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-auto p-6 pb-2 rounded-md border border-blue-900'
+      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-auto p-5 pb-0 rounded-md border border-blue-900'
       layout='vertical'
-      form={form}
-      onFinish={async (values: FormValues) => {
-        if (usedToken && usedToken >= maxToken) {
-          messageApi?.error('记忆负荷过大, 请先更新记忆')
-          return
-        }
-        flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>对话中 <LoadingOutlined /></p>))
-        form.setFieldValue('text', '')
-        await onChat(values.text)
-        flushSync(() => setDisabled(false))
-      }}
-      initialValues={{
-        text: '你好!',
-      }}
-      disabled={disabled !== false}
     >
-      <Form.Item
-        label={<span>
-          消息{(typeof usedToken === 'number' && usedToken > 0) && (
-            <Popover 
-              content={`${usedToken} / ${maxToken}`}
-            >
-              <Tag 
-                color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
-                className='ml-[0.35rem]'
-              >记忆负荷: {(memoryPressure! * 100).toFixed(0)}%</Tag>
-            </Popover>
-          )}
-        </span>}
-        name='text'
-        rules={[{ required: true, message: '请输入消息' }]}
-      >
-        <Input.TextArea 
-          disabled={false}
-          autoSize={{ minRows: 3, maxRows: 3 }}
-        />
+      <Form.Item>
+        <div className='w-full max-h-[calc(100dvh-19.5rem)] overflow-auto border rounded-lg p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+          {shortTermMemory.length ? <MessageBox /> : <span className='text-gray-400'>无对话内容</span>}
+        </div>
       </Form.Item>
       <Form.Item>
-        <div className='w-full flex justify-between items-center gap-3'>
-          <Popover
-            title='语音输入'
-            content='点击按钮开始, 再次点击结束'
-            trigger={['hover', 'click']}
-          >
-            <Button
-              disabled={disabled !== false || listen === null}
-              onClick={recognition !== null ? async () => {
+        <Sender
+          header={<div className='w-full flex justify-start items-center gap-2 p-2 pb-0'>
+            <Popconfirm
+              title={<span>系统会根据时间自动更新记忆<br />但您也可以通过本功能手动更新<br />您确定要立即更新记忆吗?</span>}
+              onConfirm={async () => {
                 try {
-                  recognition.stop()
-                  const text = await recognition.result
-                  form.setFieldsValue({ text })
-                  messageApi?.success('语音识别成功')
-                } catch (e) {
-                  messageApi?.warning(e instanceof Error ? e.message : typeof e === 'string' ? e : '未知错误')
+                  flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
+                  await updateMemory(chat, openaiModelName)
+                  await setUsedToken(undefined)
+                  shortTermMemoryRef.current = []
+                  messageApi?.success('记忆更新成功')
+                  setInputValue('')
+                } catch (error) {
+                  messageApi?.error(error instanceof Error ? error.message : '未知错误')
                 } finally {
-                  setRecognition(null)
+                  setDisabled(false)
                 }
-              } : () => {
+              }}
+              okText='确定'
+              cancelText='取消'
+            >
+              <Button 
+                size='small'
+                className='rounded-lg text-xs'
+                icon={<ClearOutlined />} 
+                disabled={disabled !== false || shortTermMemory.length === 0}
+              >
+                更新记忆
+              </Button>
+            </Popconfirm>
+            <Popconfirm
+              title={<span>本操作将直接清除当前对话内容<br />不会更新记忆和自我概念<br />您确定要清除当前对话吗?</span>}
+              onConfirm={async () => {
+                try {
+                  flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>清除对话中 <LoadingOutlined /></p>))
+                  await setShortTermMemory([])
+                  await setCurrentSummary('')
+                  await setUsedToken(undefined)
+                  shortTermMemoryRef.current = []
+                  messageApi?.success('对话已清除')
+                  setInputValue('')
+                } catch (error) {
+                  messageApi?.error(error instanceof Error ? error.message : '未知错误')
+                } finally {
+                  setDisabled(false)
+                }
+              }}
+              okText='确定'
+              cancelText='取消'
+            >
+              <Button 
+                size='small'
+                className='rounded-lg text-xs'
+                icon={<RestOutlined />}
+                disabled={disabled !== false || shortTermMemory.length === 0}
+              >
+                清除当前对话
+              </Button>
+            </Popconfirm>
+            {(typeof usedToken === 'number' && usedToken > 0) && (
+              <Popover content={`${usedToken} / ${maxToken}`}>
+                <div
+                  color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
+                  className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9]'
+                >
+                  记忆负荷: {(memoryPressure! * 100).toFixed(0)}%
+                </div>
+              </Popover>
+            )}
+          </div>}
+          onSubmit={async () => {
+            if (usedToken && usedToken >= maxToken) {
+              messageApi?.error('记忆负荷过大, 请先更新记忆')
+              return
+            }
+            const text = inputValue.trim()
+            if (!text) {
+              messageApi?.warning('请输入内容')
+              return
+            }
+            flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>对话中 <LoadingOutlined /></p>))
+            setInputValue('')
+            await onChat(text).catch(() => setInputValue(text))
+            flushSync(() => setDisabled(false))
+          }}
+          disabled={disabled !== false}
+          loading={disabled !== false}
+          value={inputValue}
+          onChange={setInputValue}
+          submitType='shiftEnter'
+          placeholder='按 Shift + Enter 发送消息'
+          allowSpeech={listen ? {
+            recording: recognition !== null,
+            onRecordingChange: async (recording) => {
+              if (recording) {
                 messageApi?.info('再次点击按钮结束说话')
                 const recognition = listen!()
                 setRecognition(recognition)
                 recognition.start()
-              }}
-            >
-              {recognition !== null ? <LoadingOutlined /> : <NotificationOutlined />}
-            </Button>
-          </Popover>
-          <Button 
-            htmlType='submit' 
-            className='w-full'
-            icon={<MessageOutlined />}
-          >
-            发送
-          </Button>
-          <Popover
-            title='更多'
-            trigger={(disabled !== false || shortTermMemory.length === 0) ? 'click' : ['hover', 'click']}
-            content={<div className='flex flex-col gap-2'>
-              <Popconfirm
-                title={<span>系统会根据时间自动更新记忆<br />但您也可以通过本功能手动更新<br />您确定要立即更新记忆吗?</span>}
-                onConfirm={async () => {
-                  try {
-                    flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-                    await updateMemory(chat, openaiModelName)
-                    await setUsedToken(undefined)
-                    shortTermMemoryRef.current = []
-                    messageApi?.success('记忆更新成功')
-                    form.resetFields()
-                  } catch (error) {
-                    messageApi?.error(error instanceof Error ? error.message : '未知错误')
-                  } finally {
-                    setDisabled(false)
-                  }
-                }}
-                okText='确定'
-                cancelText='取消'
-              >
-                <Button 
-                  className='w-full' 
-                  icon={<ClearOutlined />} 
-                  disabled={disabled !== false || shortTermMemory.length === 0}
-                >
-                  更新记忆
-                </Button>
-              </Popconfirm>
-              <Popconfirm
-                title={<span>本操作将直接清除当前对话内容<br />不会更新记忆和自我概念<br />您确定要清楚当前对话吗?</span>}
-                onConfirm={async () => {
-                  try {
-                    flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>清除对话中 <LoadingOutlined /></p>))
-                    await setShortTermMemory([])
-                    await setCurrentSummary('')
-                    await setUsedToken(undefined)
-                    shortTermMemoryRef.current = []
-                    messageApi?.success('对话已清除')
-                    form.resetFields()
-                  } catch (error) {
-                    messageApi?.error(error instanceof Error ? error.message : '未知错误')
-                  } finally {
-                    setDisabled(false)
-                  }
-                }}
-                okText='确定'
-                cancelText='取消'
-              >
-                <Button 
-                  className='w-full' 
-                  icon={<RestOutlined />}
-                  disabled={disabled !== false || shortTermMemory.length === 0}
-                >
-                  清除当前对话
-                </Button>
-              </Popconfirm>
-            </div>}
-          >
-            <Button
-              disabled={disabled !== false || shortTermMemory.length === 0}
-            >
-              <BarsOutlined />
-            </Button>
-          </Popover>
-        </div>
-      </Form.Item>
-      <Form.Item label='短时记忆'>
-        <div className='w-full max-h-[calc(100dvh-26.8rem)] overflow-auto border rounded-md p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
-          <MessageBox />
-        </div>
+                return
+              }
+              // else
+              try {
+                recognition!.stop()
+                const text = await recognition!.result
+                if (!text) {
+                  throw new Error('未识别到任何文字')
+                }
+                setInputValue(text)
+              } catch (e) {
+                messageApi?.warning(e instanceof Error ? e.message : typeof e === 'string' ? e : '未知错误')
+              } finally {
+                setRecognition(null)
+              }
+            }} : undefined}
+        />
       </Form.Item>
     </Form>
   )

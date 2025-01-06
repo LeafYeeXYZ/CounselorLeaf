@@ -6,13 +6,6 @@
 
 ![示意图](./readme/intro.png)
 
-| 记忆界面 | 聊天界面 | 设置界面 |
-| :---: | :---: | :---: |
-| ![](./readme/intro-memo-1.png) | ![](./readme/intro-chat-1.png) | ![](./readme/intro-config-1.png) |
-| ![](./readme/intro-memo-2.png) | ![](./readme/intro-chat-2.png) | ![](./readme/intro-config-2.png) |
-| ![](./readme/intro-memo-3.png) | - | ![](./readme/intro-config-3.png) |
-| - | - | ![](./readme/intro-config-4.png) |
-
 - [Digital Life / 数字生命](#digital-life--数字生命)
   - [1 项目说明](#1-项目说明)
   - [2 开发和部署](#2-开发和部署)
