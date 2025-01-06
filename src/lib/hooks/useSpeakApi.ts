@@ -54,6 +54,7 @@ export const useSpeakApi = create<API>()((setState, getState) => ({
       testSpeak: api && api.test,
     })
     await set('fish_speech_endpoint', v)
+    sessionStorage.removeItem('fish_speech_test')
   },
   f5TtsEndpoint: localF5TtsEndpoint,
   setF5TtsEndpoint: async (endpoint) => {
@@ -67,5 +68,6 @@ export const useSpeakApi = create<API>()((setState, getState) => ({
       testSpeak: api && api.test,
     })
     await set('f5_tts_endpoint', v)
+    sessionStorage.removeItem('f5_tts_test')
   },
 }))
