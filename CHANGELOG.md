@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.1.0](https://github.com/LeafYeeXYZ/CyberLeaf/compare/v1.0.0...v1.1.0) (2025-01-06)
+
+
+### Features
+
+* 现在可以一键将特定设置恢复为默认值 ([4982bc9](https://github.com/LeafYeeXYZ/CyberLeaf/commit/4982bc974f9f2807c1f7c760c2d3e7bfc0b2c16e))
+* 支持调整窗口相对大小 ([3fce95d](https://github.com/LeafYeeXYZ/CyberLeaf/commit/3fce95d3ec9672dcbf950f3db69cfd8c51f7e1a5))
+* 支持手机等小屏幕设备使用 ([78a2109](https://github.com/LeafYeeXYZ/CyberLeaf/commit/78a2109e702265dd8b64109aa3f49ec921f350c2))
+
+
+### Bug Fixes
+
+* 修复了修改 TTS 地址时未清除测试缓存的潜在问题 ([e15dbaa](https://github.com/LeafYeeXYZ/CyberLeaf/commit/e15dbaaf84b8c0f233d8d5db4f4c781c8c15b7da))
+
+
+### Refactoring
+
+* 重构前端页面导航 UI ([d494624](https://github.com/LeafYeeXYZ/CyberLeaf/commit/d4946244fd400f1d3c192e753d66ebe35ae1e932))
+* 重构优化消息显示的 UI (使用 @ant-design/x) ([fe44b2c](https://github.com/LeafYeeXYZ/CyberLeaf/commit/fe44b2c03e1ee802291f2be7fb0e6a2303e3b328))
+* 重做说话聊天界面, 大幅优化交互效果 ([e6aac6f](https://github.com/LeafYeeXYZ/CyberLeaf/commit/e6aac6ff9afafaac27b43e14487712ea28949ac2))
+* 重做文字聊天界面, 大幅优化交互效果 ([f592562](https://github.com/LeafYeeXYZ/CyberLeaf/commit/f5925624bef7b431986d36ae0624b4f8ec40cfaa))
+
+
+### Improvements
+
+* 使用缓存减少推理模型 API 测试频率 ([135a7da](https://github.com/LeafYeeXYZ/CyberLeaf/commit/135a7dabd08ff26ed29cc08962098a915670f981))
+* 使用结果缓存优化 F5 TTS 测试效率 ([c3bdf51](https://github.com/LeafYeeXYZ/CyberLeaf/commit/c3bdf51288d3b6138f3ef88ccc0016db8022f7f8))
+* 优化拆分句子的正则 ([dd1799f](https://github.com/LeafYeeXYZ/CyberLeaf/commit/dd1799f7ad10c68171060e8de1bb3d8b9fd236ba))
+* 优化记忆界面的描述 ([054aa21](https://github.com/LeafYeeXYZ/CyberLeaf/commit/054aa2119a72ebbb2307393ebf2749523ac4f012))
+* 优化移动端显示效果 ([e6b0cdb](https://github.com/LeafYeeXYZ/CyberLeaf/commit/e6b0cdb6760041800ec2469c495288e9e18d6227))
+
 ## 1.0.0 (2025-01-05)
 
 
