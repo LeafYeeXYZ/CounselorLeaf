@@ -9,6 +9,7 @@ import { useChatApi } from '../../lib/hooks/useChatApi.ts'
 import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
+import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 
 import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
 import { Button, Form, Popover, Popconfirm } from 'antd'
@@ -19,7 +20,8 @@ const DELAY_MS_BEFORE_START_RESPONSE = 2000
 
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
-  const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
+  const { disabled, setDisabled, messageApi } = useStates()
+  const { qWeatherApiKey } = usePlugins()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
   const { speak } = useSpeakApi()
   const { listen } = useListenApi()

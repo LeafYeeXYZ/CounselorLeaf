@@ -9,6 +9,7 @@ import { useChatApi } from '../../lib/hooks/useChatApi.ts'
 import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
+import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 
 import { MessageBox } from './MessageBox.tsx'
 import { Button, Form, Popover, Popconfirm } from 'antd'
@@ -18,7 +19,8 @@ import { Sender } from '@ant-design/x'
 export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const memoContainerRef = useRef<HTMLDivElement>(null)
-  const { disabled, setDisabled, messageApi, qWeatherApiKey } = useStates()
+  const { disabled, setDisabled, messageApi } = useStates()
+  const { qWeatherApiKey } = usePlugins()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
   const { speak } = useSpeakApi()
   const { listen } = useListenApi()

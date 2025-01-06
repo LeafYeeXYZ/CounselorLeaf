@@ -16,7 +16,7 @@ import { MemoryMain } from './components/Memory/MemoryMain.tsx'
 import { ConfigMain } from './components/Config/ConfigMain.tsx'
 import { ConfigVoice } from './components/Config/ConfigVoice.tsx'
 import { ConfigLayout } from './components/Config/ConfigLayout.tsx'
-import { ConfigOthers } from './components/Config/ConfigOthers.tsx'
+import { ConfigPlugins } from './components/Config/ConfigPlugins.tsx'
 import { ChatIndex } from './components/Chat/ChatIndex.tsx'
 import { Debug } from './components/Debug.tsx'
 
@@ -28,7 +28,7 @@ const PAGES: Record<string, ReactNode> = {
   'config-main': <ConfigMain />,
   'config-service': <ConfigVoice />,
   'config-layout': <ConfigLayout />,
-  'config-others': <ConfigOthers />,
+  'config-plugins': <ConfigPlugins />,
   'chat-text': <ChatIndex to='text' />,
   'chat-voice': <ChatIndex to='voice' />,
 }
@@ -142,7 +142,7 @@ export default function App() {
                       { key: 'config-main', label: '推理服务设置', icon: <BlockOutlined /> },
                       { key: 'config-service', label: '语音服务设置', icon: <ApiOutlined /> },
                       { key: 'config-layout', label: '自定义设置', icon: <LayoutOutlined /> },
-                      { key: 'config-others', label: '其他设置', icon: <BorderlessTableOutlined /> },
+                      { key: 'config-plugins', label: '插件设置', icon: <BorderlessTableOutlined /> },
                     ],
                   },
                 ]}

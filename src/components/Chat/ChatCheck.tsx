@@ -4,12 +4,15 @@ import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useState, useEffect } from 'react'
+import { usePlugins } from '../../lib/hooks/usePlugins.ts'
+
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
 
 export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) {
 
-  const { setDisabled, disabled, qWeatherApiKey, setForceAllowNav } = useStates()
+  const { setDisabled, disabled, setForceAllowNav } = useStates()
+  const { qWeatherApiKey, testQWeatherApiKey } = usePlugins()
   const { testChat, chat, openaiModelName, setUsedToken } = useChatApi()
   const { testListen } = useListenApi()
   const { testSpeak } = useSpeakApi()
@@ -29,7 +32,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true),
       typeof testListen === 'function' ? testListen() : Promise.resolve(true),
       typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => stream.getTracks().forEach((track) => track.stop())) : Promise.resolve(true),
-      qWeatherApiKey ? new Promise<void>((resolve, reject) => { navigator.geolocation.getCurrentPosition(() => resolve(), reject) }) : Promise.resolve(),
+      qWeatherApiKey ? testQWeatherApiKey() : Promise.resolve(true),
     ]).then(async () => {
       if (shouldUpdateMemory()) {
         setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>)
@@ -47,7 +50,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       setDisabled('加载出错')
       setForceAllowNav(true)
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav, testQWeatherApiKey])
   
   return (
     <div 

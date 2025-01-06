@@ -1,19 +1,16 @@
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
-import { Form, Input, Space, Button, Tooltip } from 'antd'
+import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 import { useState, useEffect } from 'react'
+
+import { Form, Input, Space, Button, Tooltip } from 'antd'
 import { SaveOutlined, DeleteOutlined } from '@ant-design/icons'
 
-export function ConfigOthers() {
+export function ConfigPlugins() {
 
-  const { 
-    qWeatherApiKey,
-    setQWeatherApiKey,
-    messageApi,
-  } = useStates()
-  const {
-    selfName,
-  } = useMemory()
+  const { messageApi } = useStates()
+  const { selfName } = useMemory()
+  const { qWeatherApiKey, setQWeatherApiKey } = usePlugins()
   const [form] = Form.useForm()
   const [qWeatherApiKeyModified, setQWeatherApiKeyModified] = useState(false)
   useEffect(() => form.setFieldsValue({ qWeatherApiKey }), [qWeatherApiKey, form])

@@ -50,6 +50,10 @@ declare type MemoryKeys =
 
 declare type StoreKeys = ConfigKeys | MemoryKeys
 
+declare type Plugins = {
+  qWeatherApiKey: string
+}
+
 declare type ChatApi = import('openai').OpenAI
 declare type ChatApiTest = () => Promise<boolean>
 

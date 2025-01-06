@@ -32,15 +32,11 @@ type Memory = {
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
-  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], options?: ChatOptions) => Promise<{ result: string, tokens: number }>
+  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ result: string, tokens: number }>
   updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[]) => Promise<void>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
   setUseStructuredOutputs: (value: boolean) => Promise<void>
-}
-
-type ChatOptions = {
-  qWeatherApiKey?: string
 }
 
 const UPDATE_MEMORY_AFTER_HOURS = 6
@@ -78,9 +74,9 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     setState({ useStructuredOutputs: value })
     await set('use_structured_outputs', value.toString())
   },
-  chatWithMemory: async (chatApi, model, input, options) => {
+  chatWithMemory: async (chatApi, model, input, plugins) => {
     const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
-    const weather = options?.qWeatherApiKey ? await getWeather(options.qWeatherApiKey) : ''
+    const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
     messages.push({ role: 'system', content: `你是一个虚拟人类, 下面是你的记忆、对你的要求、对已有对话的总结、外部世界信息:\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || '(无其他记忆)'}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || '(无其他记忆)'}\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 对已有对话的总结\n\n${currentSummary}\n\n# 外部世界信息\n\n- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(input[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
     messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
