@@ -59,12 +59,12 @@ export function MemoryMain() {
         </Space.Compact>
       </Form.Item>
       <Form.Item label={`${selfName}关于自己的记忆`}>
-        <div className='w-full max-h-32 overflow-auto border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
+        <div className='w-full border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
           {memoryAboutSelf || '没有记忆'}
         </div>
       </Form.Item>
       <Form.Item label={`${selfName}关于你的记忆`}>
-        <div className='w-full max-h-32 overflow-auto border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
+        <div className='w-full border rounded-md p-2 border-[#d9d9d9] hover:border-[#5794f7] transition-all'>
           {memoryAboutUser || '没有记忆'}
         </div>
       </Form.Item>
