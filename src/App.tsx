@@ -103,7 +103,10 @@ export default function App() {
       >
         <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
           {/* Page */}
-          <div className='w-full h-full overflow-hidden flex flex-col justify-center items-center p-[1.8rem]'>
+          <div 
+            className='w-full h-full overflow-hidden flex flex-col justify-center items-center'
+            style={{ padding: isMobile ? '1rem' : '1.8rem'}}
+          >
             <div className='w-full bg-white overflow-hidden'>
               {PAGES[current]}
             </div>
