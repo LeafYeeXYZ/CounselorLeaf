@@ -6,6 +6,7 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { useStates } from './lib/hooks/useStates.ts'
 import { useLive2dApi } from './lib/hooks/useLive2dApi.ts'
 import { useMemory } from './lib/hooks/useMemory.ts'
+import { useIsMobile } from './lib/hooks/useIsMobile.ts'
 
 import { message, Menu } from 'antd'
 import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined } from '@ant-design/icons'
@@ -39,6 +40,7 @@ export default function App() {
   const { loadLive2d, setLive2dApi } = useLive2dApi()
   const { selfName } = useMemory()
   const [current, setCurrent] = useState<string>(DEFAULT_PAGE)
+  const isMobile = useIsMobile()
 
   // 加载消息通知
   useEffect(() => {
@@ -47,6 +49,7 @@ export default function App() {
 
   // 加载看板娘
   useEffect(() => {
+    if (isMobile) return
     const live2d = loadLive2d(document.getElementById('live2d')!)
     live2d.stageSlideIn()
     setLive2dApi(live2d)
@@ -54,7 +57,7 @@ export default function App() {
       document.getElementById('live2d')!.innerHTML = ''
       setLive2dApi(null)
     }
-  }, [loadLive2d, setLive2dApi])
+  }, [loadLive2d, setLive2dApi, isMobile])
 
   // 加载背景
   useEffect(() => {
@@ -66,13 +69,21 @@ export default function App() {
   const LEFT_GAP = 450
   const RIGHT_GAP = 350
   const [x, setX] = useState<number>(LEFT_GAP)
-  useEffect(() => { document.getElementById('back-container')!.style.width = `calc(100dvw - ${x}px)` }, [x])
+  useEffect(() => { 
+    if (isMobile) return
+    document.getElementById('back-container')!.style.width = `calc(100dvw - ${x}px)` 
+  }, [x, isMobile])
+
+  // 切换移动模式时发送提示
+  useEffect(() => {
+    isMobile && messageApi.info('当前为屏幕宽度较小, 将不会显示 Live2D 模型')
+  }, [isMobile, messageApi])
 
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
-      <div 
+      {!isMobile && <div 
         className='fixed top-1/2 left-0 w-[0.4rem] h-12 z-50 cursor-ew-resize border border-blue-900 rounded-full bg-blue-50' 
-        style={{ marginLeft: `calc(${x}px - 0.25rem)` }} 
+        style={{ marginLeft: `calc(${x}px - 0.25rem)`}} 
         draggable
         // @ts-expect-error 类型提示错误, 运行无问题
         onDragStart={(e) => { e.target.style.opacity = '0' }}
@@ -85,8 +96,11 @@ export default function App() {
             setX(e.clientX)
           }
         }}
-      />
-      <div className='h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r' style={{ width: x }}>
+      />}
+      <div 
+        className='h-dvh overflow-hidden float-left bg-gray-50 shadow-md border-r' 
+        style={{ width: isMobile ? '100dvw' : `${x}px`}}
+      >
         <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
           {/* Page */}
           <div className='w-full h-full overflow-hidden flex flex-col justify-center items-center p-[1.8rem]'>
