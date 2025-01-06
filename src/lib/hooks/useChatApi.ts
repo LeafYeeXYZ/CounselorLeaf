@@ -45,6 +45,7 @@ export const useChatApi = create<API>()((setState, getState) => ({
     const v = url || DEFAULT_OPENAI_ENDPOINT
     setState({ openaiEndpoint: v, chat: new OpenAI({ baseURL: v, apiKey: openaiApiKey, dangerouslyAllowBrowser: true }) })
     await set('openai_endpoint', v)
+    sessionStorage.removeItem('openai_chat_test')
     return
   },
   openaiApiKey: defaultOpenaiApiKey,
@@ -53,6 +54,7 @@ export const useChatApi = create<API>()((setState, getState) => ({
     const v = key || DEFAULT_OPENAI_API_KEY
     setState({ openaiApiKey: v, chat: new OpenAI({ baseURL: openaiEndpoint, apiKey: v, dangerouslyAllowBrowser: true }) })
     await set('openai_api_key', v)
+    sessionStorage.removeItem('openai_chat_test')
     return
   },
   openaiModelName: defaultOpenaiModelName,
@@ -60,9 +62,13 @@ export const useChatApi = create<API>()((setState, getState) => ({
     const v = name || DEFAULT_OPENAI_MODEL_NAME
     setState({ openaiModelName: v })
     await set('openai_model_name', v)
+    sessionStorage.removeItem('openai_chat_test')
     return
   },
   testChat: async () => {
+    if (sessionStorage.getItem('openai_chat_test') === 'ok') {
+      return true
+    }
     const { chat, openaiModelName } = getState()
     const { data } = await chat.models.list().catch((err) => {
       if (err.message === 'Connection error.') {
@@ -74,6 +80,7 @@ export const useChatApi = create<API>()((setState, getState) => ({
     if (data.every(({ id }) => id !== openaiModelName)) {
       throw new Error(`当前服务缺少模型 ${openaiModelName}`)
     }
+    sessionStorage.setItem('openai_chat_test', 'ok')
     return true
   },
   maxToken: defaultMaxToken,
