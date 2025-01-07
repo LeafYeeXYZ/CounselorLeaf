@@ -1,14 +1,25 @@
 <mxfile host="65bd71144e">
     <diagram id="7fxDRhzaZWtfy4DjNToR" name="第 1 页">
-        <mxGraphModel dx="1526" dy="1206" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1114" dy="670" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="171" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="180" y="2290" width="670" height="600" as="geometry"/>
-                </mxCell>
-                <mxCell id="139" value="" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="139" value="" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="130" y="1450" width="1170" height="710" as="geometry"/>
+                </mxCell>
+                <mxCell id="173" style="edgeStyle=none;html=1;dashed=1;curved=1;" edge="1" parent="1" source="98">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="890" y="1834" as="targetPoint"/>
+                        <Array as="points">
+                            <mxPoint x="640" y="1920"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="132" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="109" target="130" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="171" value="" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
+                    <mxGeometry x="180" y="2290" width="670" height="600" as="geometry"/>
                 </mxCell>
                 <mxCell id="113" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="101" target="105" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -205,8 +216,10 @@
                 <mxCell id="92" value="长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="1110" y="1360" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="116" style="edgeStyle=none;html=1;entryX=0.16;entryY=0.55;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;" parent="1" source="98" target="105" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="116" style="edgeStyle=none;html=1;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="98" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="470" y="1840" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="98" value="长时记忆" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="1800" width="120" height="60" as="geometry"/>
@@ -265,13 +278,10 @@
                 <mxCell id="108" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="1640" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="132" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="109" target="130" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
                 <mxCell id="109" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="1560" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="136" style="edgeStyle=none;html=1;entryX=0.13;entryY=0.77;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="110" target="130">
+                <mxCell id="136" style="edgeStyle=none;html=1;entryX=0.13;entryY=0.77;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="110" target="130" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="110" value="真实世界信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -313,93 +323,93 @@
                 <mxCell id="129" value="当前对话内容" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="1080" y="2040" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="137" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="130" target="128">
+                <mxCell id="137" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="130" target="128" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="130" value="模型" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="890" y="1790" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="138" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="138" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="990" y="1930" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="140" value="&lt;b&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;一轮对话内, 一次用户输入的过程&lt;/font&gt;&lt;/b&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="140" value="&lt;b&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;一轮对话内, 一次用户输入的过程&lt;/font&gt;&lt;/b&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="473.75" y="1490" width="512.5" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="142" value="长时记忆" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="142" value="长时记忆" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2620" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="158" style="edgeStyle=none;html=1;entryX=0.07;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" edge="1" parent="1" source="143" target="149">
+                <mxCell id="158" style="edgeStyle=none;html=1;entryX=0.07;entryY=0.4;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" parent="1" source="143" target="149" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="143" value="固定要求" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="143" value="固定要求" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2543.5" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="157" style="edgeStyle=none;html=1;entryX=0.25;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" edge="1" parent="1" source="144" target="149">
+                <mxCell id="157" style="edgeStyle=none;html=1;entryX=0.25;entryY=0.25;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" parent="1" source="144" target="149" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="144" value="用户画像" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="144" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2460" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="156" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" edge="1" parent="1" source="145" target="149">
+                <mxCell id="156" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" parent="1" source="145" target="149" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="145" value="自我概念" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="145" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2380" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="160" style="edgeStyle=none;html=1;entryX=0.13;entryY=0.77;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" edge="1" parent="1" source="146" target="149">
+                <mxCell id="160" style="edgeStyle=none;html=1;entryX=0.13;entryY=0.77;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=24;" parent="1" source="146" target="149" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="146" value="真实世界信息" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="146" value="真实世界信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2700" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="169" style="edgeStyle=none;html=1;fontSize=24;entryX=0.31;entryY=0.8;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="147" target="149">
+                <mxCell id="169" style="edgeStyle=none;html=1;fontSize=24;entryX=0.31;entryY=0.8;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="147" target="149" edge="1">
                     <mxGeometry relative="1" as="geometry">
                         <mxPoint x="536" y="2646" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="147" value="一轮对话" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="147" value="一轮对话" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="240" y="2780" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="162" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" edge="1" parent="1" source="149" target="153">
+                <mxCell id="162" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" parent="1" source="149" target="153" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="163" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" edge="1" parent="1" source="149" target="152">
+                <mxCell id="163" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" parent="1" source="149" target="152" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="164" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" edge="1" parent="1" source="149" target="150">
+                <mxCell id="164" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=24;" parent="1" source="149" target="150" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="149" value="模型" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="149" value="模型" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="470" y="2570" width="120" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="150" value="长时记忆" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="150" value="长时记忆" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2620" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="151" value="固定要求" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="151" value="固定要求" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2543.5" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="152" value="用户画像" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="152" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2460" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="153" value="自我概念" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="153" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2380" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="154" value="真实世界信息" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="154" value="真实世界信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2700" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="166" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="166" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="610" y="2530" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="167" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="167" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="577.5" y="2448" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="168" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="168" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="590" y="2635" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="170" value="新一轮对话" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="170" value="新一轮对话" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="670" y="2780" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="172" value="&lt;b&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;一轮对话结束后的过程&lt;/font&gt;&lt;/b&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+                <mxCell id="172" value="&lt;b&gt;&lt;font style=&quot;font-size: 24px;&quot;&gt;一轮对话结束后的过程&lt;/font&gt;&lt;/b&gt;" style="text;strokeColor=none;align=center;fillColor=none;html=1;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="273.75" y="2320" width="512.5" height="30" as="geometry"/>
                 </mxCell>
             </root>
