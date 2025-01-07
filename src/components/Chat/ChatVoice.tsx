@@ -12,7 +12,7 @@ import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
 import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 
 import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
-import { Button, Form, Popover, Popconfirm } from 'antd'
+import { Button, Form, Popover, Popconfirm, type GetRef } from 'antd'
 import { MessageBox } from './MessageBox.tsx'
 import { Sender } from '@ant-design/x'
 
@@ -34,9 +34,13 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
   const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
 
   const memoContainerRef = useRef<HTMLDivElement>(null)
+  const senderRef = useRef<GetRef<typeof Sender>>(null)
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
+    }
+    if (shortTermMemory.length === 0) {
+      senderRef.current?.focus()
     }
   }, [shortTermMemory])
 
@@ -140,6 +144,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       </Form.Item>
       <Form.Item>
         <Sender
+          ref={senderRef}
           readOnly
           header={<div className='w-full flex justify-start items-center gap-2 p-2 pb-0'>
             <Popconfirm

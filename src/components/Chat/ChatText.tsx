@@ -13,13 +13,14 @@ import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 import { useIsMobile } from '../../lib/hooks/useIsMobile.ts'
 
 import { MessageBox } from './MessageBox.tsx'
-import { Button, Form, Popover, Popconfirm } from 'antd'
+import { Button, Form, Popover, Popconfirm, type GetRef } from 'antd'
 import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
 
 export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const memoContainerRef = useRef<HTMLDivElement>(null)
+  const senderRef = useRef<GetRef<typeof Sender>>(null)
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
@@ -31,6 +32,9 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
+    }
+    if (shortTermMemory.length === 0) {
+      senderRef.current?.focus()
     }
   }, [shortTermMemory])
   const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
@@ -99,6 +103,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       </Form.Item>
       <Form.Item>
         <Sender
+          ref={senderRef}
           header={<div className='w-full flex justify-start items-center gap-2 p-2 pb-0'>
             <Popconfirm
               title={<span>系统会根据时间自动更新记忆<br />但您也可以通过本功能手动更新<br />您确定要立即更新记忆吗?</span>}

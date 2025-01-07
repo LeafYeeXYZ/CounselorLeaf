@@ -55,11 +55,11 @@ declare type MemoryKeys =
 declare type StoreKeys = ConfigKeys | MemoryKeys
 
 declare type Plugins = {
-  qWeatherApiKey: string
-  s3Endpoint: string
-  s3AccessKey: string
-  s3SecretKey: string
-  s3BucketName: string
+  qWeatherApiKey?: string
+  s3Endpoint?: string
+  s3AccessKey?: string
+  s3SecretKey?: string
+  s3BucketName?: string
 }
 
 declare type ChatApi = import('openai').OpenAI
