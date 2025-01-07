@@ -82,7 +82,8 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         }
       }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-      await summary
+      const { tokens: _tokens } = await summary
+      await setUsedToken(Math.max(tokens, _tokens))
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
       await finish
       await setShortTermMemory(output)
@@ -152,8 +153,8 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
               onConfirm={async () => {
                 try {
                   flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-                  await updateMemory(chat, openaiModelName)
-                  await setUsedToken(undefined)
+                  const { tokens } = await updateMemory(chat, openaiModelName)
+                  await setUsedToken(Math.max(usedToken, tokens))
                   shortTermMemoryRef.current = []
                   messageApi?.success('记忆更新成功')
                 } catch (error) {

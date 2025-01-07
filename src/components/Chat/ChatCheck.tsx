@@ -37,8 +37,8 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
       if (shouldUpdateMemory()) {
         setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>)
         setStatusText('更新记忆中')
-        await updateMemory(chat, openaiModelName)
-        setUsedToken(undefined)
+        const { tokens } = await updateMemory(chat, openaiModelName)
+        await setUsedToken(tokens)
       }
       return
     }).then(() => {

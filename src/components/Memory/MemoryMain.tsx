@@ -1,6 +1,6 @@
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
-import { Form, Button, Input, Space } from 'antd'
+import { Form, Button, Input, Space, Popconfirm } from 'antd'
 import { useState } from 'react'
 
 export function MemoryMain() {
@@ -44,18 +44,24 @@ export function MemoryMain() {
               onChange={() => setNameModified(true)}
             />
           </Form.Item>
-          <Button
-            type={nameModified ? 'primary' : 'default'}
-            onClick={async () => {
+          <Popconfirm
+            title={<span>名字是你们之间的重要记忆<br />强烈建议不要中途轻易修改<br />您确定要修改吗？</span>}
+            onConfirm={async () => {
               await setUserName(form.getFieldValue('userName'))
               await setSelfName(form.getFieldValue('selfName'))
               setNameModified(false)
               messageApi?.success('更新姓名成功')
             }}
-            autoInsertSpace={false}
+            okText='确定'
+            cancelText='取消'
           >
-            保存
-          </Button>
+            <Button
+              type={nameModified ? 'primary' : 'default'}
+              autoInsertSpace={false}
+            >
+              保存
+            </Button>
+          </Popconfirm>
         </Space.Compact>
       </Form.Item>
       <Form.Item label={`${selfName}关于自己的记忆`}>
