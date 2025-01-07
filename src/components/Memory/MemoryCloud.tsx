@@ -4,7 +4,7 @@ import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 import { Form, Button, Input, Space, Tooltip, Popconfirm } from 'antd'
 import { useState } from 'react'
 import { flushSync } from 'react-dom'
-import { DeleteOutlined, SaveOutlined } from '@ant-design/icons'
+import { DeleteOutlined, SaveOutlined, CloudUploadOutlined, CloudDownloadOutlined } from '@ant-design/icons'
 
 export function MemoryCloud() {
 
@@ -191,6 +191,7 @@ export function MemoryCloud() {
               block
               disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || disabled !== false}
               loading={disabled === '上传记忆中'}
+              icon={<CloudUploadOutlined />}
             >
               导出并上传记忆
             </Button>
@@ -216,6 +217,7 @@ export function MemoryCloud() {
               block
               disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || disabled !== false}
               loading={disabled === '下载记忆中'}
+              icon={<CloudDownloadOutlined />}
             >
               下载并导入记忆
             </Button>
