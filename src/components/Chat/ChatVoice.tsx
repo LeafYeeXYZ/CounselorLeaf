@@ -16,7 +16,7 @@ import { Button, Form, Popover, Popconfirm, type GetRef } from 'antd'
 import { MessageBox } from './MessageBox.tsx'
 import { Sender } from '@ant-design/x'
 
-const DELAY_MS_BEFORE_START_RESPONSE = 2000
+const DELAY_MS_BEFORE_START_RESPONSE = 1500
 
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
