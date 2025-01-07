@@ -62,7 +62,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
-      const summary = updateCurrentSummary(chat, openaiModelName, output)
+      const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
       const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
       await start
@@ -153,7 +153,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
               onConfirm={async () => {
                 try {
                   flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-                  const { tokens } = await updateMemory(chat, openaiModelName)
+                  const { tokens } = await updateMemory(chat, openaiModelName, { qWeatherApiKey })
                   await setUsedToken(Math.max(usedToken, tokens))
                   shortTermMemoryRef.current = []
                   messageApi?.success('记忆更新成功')

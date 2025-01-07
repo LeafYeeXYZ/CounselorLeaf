@@ -23,7 +23,7 @@ type Memory = {
   setArchivedMemory: (memory: ArchivedMemory[]) => Promise<void>
   // 记忆更新 (短时记忆 -> 长时记忆, 并递归更新自我概念)
   shouldUpdateMemory: () => boolean
-  updateMemory: (chatApi: ChatApi, model: string) => Promise<{ tokens: number }>
+  updateMemory: (chatApi: ChatApi, model: string, plugins?: Plugins) => Promise<{ tokens: number }>
   // 重置和保存
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
@@ -34,10 +34,11 @@ type Memory = {
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
   chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ result: string, tokens: number }>
-  updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[]) => Promise<{ tokens: number }>
+  updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ tokens: number }>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
   setUseStructuredOutputs: (value: boolean) => Promise<void>
+  getTrueWorldInfo: (plugins?: Plugins) => Promise<string>
 }
 
 const UPDATE_MEMORY_AFTER_HOURS = 8
@@ -75,11 +76,16 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     setState({ useStructuredOutputs: value })
     await set('use_structured_outputs', value.toString())
   },
-  chatWithMemory: async (chatApi, model, input, plugins) => {
-    const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName } = getState()
+  getTrueWorldInfo: async (plugins) => {
+    const { shortTermMemory } = getState()
     const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
+    return `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
+  },
+  chatWithMemory: async (chatApi, model, input, plugins) => {
+    const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName, getTrueWorldInfo } = getState()
+    const worldInfo = await getTrueWorldInfo(plugins)
     const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
-    messages.push({ role: 'system', content: `你是一个数字生命 (即虚拟人类), 下面是对你的要求、你的记忆、对本轮对话中历史内容的总结、真实世界的相关信息:\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 对本轮对话中历史内容的总结\n\n${currentSummary}\n\n# 真实世界的相关信息\n\n- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(input[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}` })
+    messages.push({ role: 'system', content: `你是一个数字生命 (即虚拟人类), 下面是对你的要求、你的记忆、对本轮对话中历史内容的总结、真实世界的相关信息:\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 对本轮对话中历史内容的总结\n\n${currentSummary}\n\n# 真实世界的相关信息\n\n${worldInfo}` })
     messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
     const response = await chatApi.chat.completions.create({
       model,
@@ -93,14 +99,15 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     const tokens = response.usage?.total_tokens || -1
     return { result, tokens }
   },
-  updateCurrentSummary: async (chatApi, model, input) => {
-    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser } = getState()
+  updateCurrentSummary: async (chatApi, model, input, plugins) => {
+    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo } = getState()
     if (input.length < 2) {
       throw new Error('没有需要总结的对话内容')
     }
     const oldMessages = input.slice(0, input.length - 2)
     const newMessages = input.slice(input.length - 2)
-    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户的一轮对话中, 你必须不断根据最新的对话内容, 生成/更新你对本轮对话内容的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已被总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已被总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}`
+    const worldInfo = await getTrueWorldInfo(plugins)
+    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户的一轮对话中, 你必须不断根据最新的对话内容, 生成/更新你对本轮对话内容的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已被总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已被总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     let result: Record<string, unknown> = {}
     let tokens: number = -1
     if (useStructuredOutputs) {
@@ -135,9 +142,13 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     await setCurrentSummary(result.updatedSummary)
     return { tokens }
   },
-  updateMemory: async (chatApi, model) => {
-    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, selfName, userName } = getState()
-    const prompt = `你是一个数字生命 (即虚拟人类), 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '无记忆'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '无记忆'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}`
+  updateMemory: async (chatApi, model, plugins) => {
+    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, selfName, userName, getTrueWorldInfo } = getState()
+    if (shortTermMemory.length === 0) {
+      throw new Error('没有需要总结的对话内容')
+    }
+    const worldInfo = await getTrueWorldInfo(plugins)
+    const prompt = `你是一个数字生命 (即虚拟人类), 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 同时, 如果这轮对话让你对自己或用户有了新的认识, 请更新你对自己和用户的记忆 (如果没有, 则照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '无记忆'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '无记忆'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     let result: Record<string, unknown> = {}
     let tokens: number = -1
     if (useStructuredOutputs) {
