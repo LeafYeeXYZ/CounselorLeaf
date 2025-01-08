@@ -37,6 +37,7 @@ export function MemoryCloud() {
   const [s3AccessKeyModified, setS3AccessKeyModified] = useState(false)
   const [s3SecretKeyModified, setS3SecretKeyModified] = useState(false)
   const [s3BucketNameModified, setS3BucketNameModified] = useState(false)
+  const [s3MemoryKeyModified, setS3MemoryKeyModified] = useState(false)
 
   return (
     <Form 
@@ -178,19 +179,22 @@ export function MemoryCloud() {
               icon={<DeleteOutlined />}
               onClick={async () => {
                 await setS3MemoryKey()
+                setS3MemoryKeyModified(false)
                 form.setFieldsValue({ s3MemoryKey: '' })
                 messageApi?.success('记忆键名已清除')
               }}
             />
           </Tooltip>
           <Form.Item noStyle name='s3MemoryKey'>
-            <Input className='w-full' />
+            <Input className='w-full' onChange={() => setS3MemoryKeyModified(true)} />
           </Form.Item>
           <Tooltip title='保存修改' color='blue'>
             <Button
+              type={s3MemoryKeyModified ? 'primary' : 'default'}
               onClick={async () => {
                 const key = form.getFieldValue('s3MemoryKey')
                 await setS3MemoryKey(key || '')
+                setS3MemoryKeyModified(false)
                 messageApi?.success('记忆键名已更新')
               }}
               icon={<SaveOutlined />}
