@@ -30,9 +30,8 @@
 | 模块 | 可选项 | 说明 |
 | :---: | :---: | :---: |
 | 推理 | 任意兼容 `OpenAI` 规范的服务 | 默认使用 `ollama`, 可在应用内修改 `Endpoint`、`API Key`、`Model Name` 等 |
-| 语音生成 `TTS` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `TTS` 功能 |
-| | [本地 `F5 TTS` 服务](https://github.com/jianchang512/f5-tts-api) | 默认服务地址为 `'http://127.0.0.1:5010/api'`, 可在应用内修改 |
-| | [本地 `Fish Speech` 服务](https://speech.fish.audio/zh/inference/#http-api) | 默认服务地址为 `'http://127.0.0.1:8080'`, 可在应用内修改 |
+| 语音生成 `TTS` | [`F5 TTS` 服务](https://github.com/jianchang512/f5-tts-api) | 默认服务地址为 `'http://127.0.0.1:5010/api'`, 可在应用内修改 |
+| | [`Fish Speech` 服务](https://speech.fish.audio/zh/inference/#http-api) | 默认服务地址为 `'http://127.0.0.1:8080'`, 可在应用内修改 |
 | 语音输入 `STT` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
 | `Live2d` | - | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
 | 其他 | 天气信息 | 默认关闭, 可在应用内设置[和风天气 API Key](https://dev.qweather.com/)开启 |
