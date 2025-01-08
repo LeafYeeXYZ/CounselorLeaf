@@ -109,14 +109,11 @@ export default function App() {
         className='h-dvh overflow-hidden float-left' 
         style={{ width: isMobile ? '100dvw' : `${x}px`}}
       >
-        <div 
-          className='w-full h-full overflow-hidden grid'
-          style={{ gridTemplateRows: isMobile ? '1fr 3.2rem 2rem' : '1fr 3.2rem 2.8rem'}}
-        >
+        <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
           {/* Page */}
           <div 
-            className='w-full h-full overflow-hidden flex flex-col justify-center items-center'
-            style={{ padding: isMobile ? '1rem' : '1.5rem'}}
+            className='w-full h-full overflow-hidden flex flex-col justify-center items-center py-4'
+            style={{ paddingLeft: isMobile ? '1rem' : '1.5rem', paddingRight: isMobile ? '1rem' : '1.5rem'}}
           >
             <div className='w-full overflow-hidden'>
               {PAGES[current]}
