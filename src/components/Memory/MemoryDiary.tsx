@@ -9,7 +9,7 @@ export function MemoryDiary() {
   } = useMemory()
 
   return (
-    <div className='w-full bg-white max-h-[calc(100dvh-9.6rem)] border border-blue-900 rounded-md overflow-auto transition-all'>
+    <div className='w-full bg-white max-h-full border border-blue-900 rounded-md overflow-auto transition-all'>
       <Collapse
         className='border-none'
         size='small'

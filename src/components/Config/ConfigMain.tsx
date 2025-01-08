@@ -36,7 +36,7 @@ export function ConfigMain() {
     <Form 
       form={form}
       layout='vertical' 
-      className='w-full bg-white border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-[calc(100dvh-9.6rem)]'
+      className='w-full bg-white border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-full'
     >
       <Form.Item label={<span>推理服务地址<Tag className='ml-[0.3rem]'>OpenAI Endpoint</Tag></span>}>
         <Space.Compact block>

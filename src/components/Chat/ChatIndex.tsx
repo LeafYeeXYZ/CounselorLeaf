@@ -17,7 +17,7 @@ export function ChatIndex({ to }: { to: 'text' | 'voice' }) {
         (to === 'text' ? 
         <ChatText shortTermMemoryRef={shortTermMemoryRef} /> : 
         <ChatVoice shortTermMemoryRef={shortTermMemoryRef} />) :
-        <ChatCheck setReady={setReady} />
+        <ChatCheck setReady={setReady} shortTermMemoryRef={shortTermMemoryRef} />
       }
     </section>
   )

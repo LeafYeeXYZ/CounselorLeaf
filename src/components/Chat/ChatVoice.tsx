@@ -135,11 +135,11 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
 
   return (
     <Form
-      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-hidden bg-white p-5 pb-0 rounded-md border border-blue-900'
+      className='w-full max-h-full relative overflow-hidden bg-white p-5 pb-0 rounded-md border border-blue-900'
       layout='vertical'
     >
       <Form.Item>
-        <div className='w-full max-h-[calc(100dvh-19.5rem)] overflow-auto border rounded-lg p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+        <div className='w-full max-h-[calc(100dvh-19rem)] overflow-auto border rounded-lg p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
           {shortTermMemory.length ? <MessageBox /> : <span className='text-gray-400'>无对话内容</span>}
         </div>
       </Form.Item>
@@ -207,7 +207,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
               <Popover content={`${usedToken} / ${maxToken}`}>
                 <div
                   color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
-                  className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9]'
+                  className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9] text-ellipsis text-nowrap overflow-hidden'
                 >
                   记忆负荷: {(memoryPressure! * 100).toFixed(0)}%
                 </div>
@@ -232,39 +232,6 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
           value={recognition === null ? '点击右侧按钮开始对话' : canSpeak ? textBuffer ? textBuffer : `${selfName}在听...` : '请稍等...'}
         />
       </Form.Item>
-      {/* <Form.Item>
-        <div className='w-full flex justify-between items-center gap-3'>
-          {recognition ? (
-            <Button 
-              disabled={canSpeak === false}
-              className='w-full'
-              icon={<PauseOutlined />}
-              onClick={stopCallback}
-            >
-              停止对话
-            </Button>
-          ) : (
-            <Button 
-              className='w-full'
-              icon={<SoundOutlined />}
-              onClick={async () => {
-                if (usedToken && usedToken >= maxToken) {
-                  messageApi?.error('记忆负荷过大, 请先更新记忆')
-                  return
-                }
-                if (!listen) {
-                  messageApi?.error('请先启用语音识别服务')
-                  return
-                }
-                startCallback()
-                messageApi?.info('再次点击按钮可暂停对话')
-              }}
-            >
-              开始对话
-            </Button>
-          )}
-        </div>
-      </Form.Item> */}
     </Form>
   )
 }

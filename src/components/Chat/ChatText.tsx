@@ -10,7 +10,6 @@ import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
 import { usePlugins } from '../../lib/hooks/usePlugins.ts'
-import { useIsMobile } from '../../lib/hooks/useIsMobile.ts'
 
 import { MessageBox } from './MessageBox.tsx'
 import { Button, Form, Popover, Popconfirm, type GetRef } from 'antd'
@@ -28,7 +27,6 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
-  const isMobile = useIsMobile()
   useEffect(() => {
     if (memoContainerRef.current) {
       memoContainerRef.current.scrollTop = memoContainerRef.current.scrollHeight
@@ -94,11 +92,11 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
 
   return (
     <Form
-      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-hidden p-5 pb-0 bg-white rounded-md border border-blue-900'
+      className='w-full max-h-full relative overflow-hidden p-5 pb-0 bg-white rounded-md border border-blue-900'
       layout='vertical'
     >
       <Form.Item>
-        <div className='w-full max-h-[calc(100dvh-19.5rem)] overflow-auto border rounded-lg p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
+        <div className='w-full max-h-[calc(100dvh-19rem)] overflow-auto border rounded-lg p-3 border-[#d9d9d9] hover:border-[#5794f7] transition-all' ref={memoContainerRef}>
           {shortTermMemory.length ? <MessageBox /> : <span className='text-gray-400'>无对话内容</span>}
         </div>
       </Form.Item>
@@ -167,9 +165,9 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
               <Popover content={`${usedToken} / ${maxToken}`}>
                 <div
                   color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
-                  className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9]'
+                  className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9] text-ellipsis text-nowrap overflow-hidden'
                 >
-                  {isMobile ? <span>记忆负荷 {(memoryPressure! * 100).toFixed(0)}</span> : <span>记忆负荷: {(memoryPressure! * 100).toFixed(0)}%</span>}
+                  记忆负荷: {(memoryPressure! * 100).toFixed(0)}%
                 </div>
               </Popover>
             )}
