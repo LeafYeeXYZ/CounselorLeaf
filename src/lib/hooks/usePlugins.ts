@@ -10,6 +10,7 @@ type API = {
   setS3AccessKey: (accessKey?: string) => Promise<void>
   setS3SecretKey: (secretKey?: string) => Promise<void>
   setS3BucketName: (bucketName?: string) => Promise<void>
+  setS3MemoryKey: (key?: string) => Promise<void>
   getFromS3: (key: string) => Promise<string>
   putToS3: (key: string, value: string) => Promise<void>
 } & Plugins
@@ -19,12 +20,19 @@ const s3Endpoint = await get('s3_endpoint') || ''
 const s3AccessKey = await get('s3_access_key') || ''
 const s3SecretKey = await get('s3_secret_key') || ''
 const s3BucketName = await get('s3_bucket_name') || ''
+const s3MemoryKey = await get('s3_memory_key') || ''
 
 export const usePlugins = create<API>()((setState, getState) => ({
   s3Endpoint,
   s3AccessKey,
   s3SecretKey,
   s3BucketName,
+  s3MemoryKey,
+  setS3MemoryKey: async (key) => {
+    setState({ s3MemoryKey: key || '' })
+    await set('s3_memory_key', key || '')
+    return
+  },
   setS3Endpoint: async (endpoint) => {
     setState({ s3Endpoint: endpoint || '' })
     await set('s3_endpoint', endpoint || '')
@@ -93,7 +101,7 @@ export const usePlugins = create<API>()((setState, getState) => ({
       return true
     }
     const { qWeatherApiKey } = getState()
-    await getWeather(qWeatherApiKey)
+    await getWeather(qWeatherApiKey!)
     sessionStorage.setItem('qweather_tested', 'pass')
     return true
   },

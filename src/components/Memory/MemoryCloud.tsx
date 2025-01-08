@@ -22,10 +22,12 @@ export function MemoryCloud() {
     s3AccessKey,
     s3SecretKey,
     s3BucketName,
+    s3MemoryKey,
     setS3Endpoint,
     setS3AccessKey,
     setS3SecretKey,
     setS3BucketName,
+    setS3MemoryKey,
     putToS3,
     getFromS3,
   } = usePlugins()
@@ -46,6 +48,7 @@ export function MemoryCloud() {
         s3AccessKey,
         s3SecretKey,
         s3BucketName,
+        s3MemoryKey,
       }}
     >
       <Form.Item label='S3 Endpoint'>
@@ -168,16 +171,47 @@ export function MemoryCloud() {
           </Tooltip>
         </Space.Compact>
       </Form.Item>
+      <Form.Item label='用于存储记忆的键名'>
+        <Space.Compact block>
+          <Tooltip title='清除已保存的值' color='blue'>
+            <Button 
+              icon={<DeleteOutlined />}
+              onClick={async () => {
+                await setS3MemoryKey()
+                form.setFieldsValue({ s3MemoryKey: '' })
+                messageApi?.success('记忆键名已清除')
+              }}
+            />
+          </Tooltip>
+          <Form.Item noStyle name='s3MemoryKey'>
+            <Input className='w-full' />
+          </Form.Item>
+          <Tooltip title='保存修改' color='blue'>
+            <Button
+              onClick={async () => {
+                const key = form.getFieldValue('s3MemoryKey')
+                await setS3MemoryKey(key || '')
+                messageApi?.success('记忆键名已更新')
+              }}
+              icon={<SaveOutlined />}
+            />
+          </Tooltip>
+        </Space.Compact>
+      </Form.Item>
       <Form.Item>
         <div className='flex justify-between items-center gap-4'>
           <Popconfirm
             title='此操作将覆盖云端记忆，确定要继续吗？'
             onConfirm={async () => {
+              if (!s3MemoryKey) {
+                messageApi?.error('请先设置用于存储记忆的键名')
+                return
+              }
               try {
                 flushSync(() => setDisabled('上传记忆中'))
                 const memory = await exportAllMemory()
-                await putToS3('memory', memory)
-                messageApi?.success('记忆已上传')
+                await putToS3(s3MemoryKey, memory)
+                messageApi?.success(`记忆已上传至 ${s3BucketName}/${s3MemoryKey}`)
               } catch (e) {
                 messageApi?.error(`记忆上传失败: ${e instanceof Error ? e.message : e}`)
               } finally {
@@ -199,11 +233,15 @@ export function MemoryCloud() {
           <Popconfirm
             title='此操作将覆盖本地记忆，确定要继续吗？'
             onConfirm={async () => {
+              if (!s3MemoryKey) {
+                messageApi?.error('请先设置用于存储记忆的键名')
+                return
+              }
               try {
                 flushSync(() => setDisabled('下载记忆中'))
-                const memory = await getFromS3('memory')
+                const memory = await getFromS3(s3MemoryKey)
                 await importAllMemory(memory || '')
-                messageApi?.success('记忆已导入')
+                messageApi?.success(`已从 ${s3BucketName}/${s3MemoryKey} 导入记忆`)
               } catch (e) {
                 messageApi?.error(`记忆下载失败: ${e instanceof Error ? e.message : e}`)
               } finally {

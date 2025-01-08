@@ -41,7 +41,8 @@ declare type ConfigKeys =
   's3_access_key' |
   's3_secret_key' |
   's3_bucket_name' |
-  'is_full_screen'
+  'is_full_screen' |
+  's3_memory_key'
 
 declare type MemoryKeys =
   'self_name' |
@@ -61,6 +62,7 @@ declare type Plugins = {
   s3AccessKey?: string
   s3SecretKey?: string
   s3BucketName?: string
+  s3MemoryKey?: string
 }
 
 declare type ChatApi = import('openai').OpenAI
