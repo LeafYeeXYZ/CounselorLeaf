@@ -29,23 +29,23 @@ export async function getWeather(apiKey: string): Promise<string> {
 }
 
 /**
- * 获取时间: XXXX年X月X日X时X分X秒
+ * 获取时间: XXXX年X月X日X时X分X秒星期X
  * @param timestamp 时间戳, 默认为当前时间
  * @returns 时间字符串
  */
 export function getTime(timestamp?: number) {
   const date = new Date(timestamp ?? Date.now())
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒`
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日${date.getHours()}时${date.getMinutes()}分${date.getSeconds()}秒星期${'日一二三四五六'[date.getDay()]}`
 }
 
 /**
- * 获取日期: XXXX年X月X日
+ * 获取日期: XXXX年X月X日星期X
  * @param timestamp 时间戳, 默认为当前时间
  * @returns 日期字符串
  */
 export function getDate(timestamp?: number) {
   const date = new Date(timestamp ?? Date.now())
-  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日`
+  return `${date.getFullYear()}年${date.getMonth() + 1}月${date.getDate()}日星期${'日一二三四五六'[date.getDay()]}`
 }
 
 export function toBase64(buffer: ArrayBuffer) {
