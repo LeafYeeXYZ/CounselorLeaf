@@ -67,7 +67,9 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
       const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
-      const tts = typeof speak === 'function' ? speak(result.replace(emoji, '')) : Promise.resolve({ audio: null })
+      const tts = typeof speak === 'function' ? 
+        speak(result.replace(emoji, '')).then(({ audio }) => addAudioCache({ timestamp: time, audio })) :
+        Promise.resolve({ audio: null })
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
       let current = ''
       let staps = ''
@@ -87,8 +89,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       const { tokens: _tokens } = await summary
       await setUsedToken(Math.max(tokens, _tokens))
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成结束 <LoadingOutlined /></p>))
-      const { audio } = await tts
-      audio && await addAudioCache({ timestamp: time, audio })
+      await tts
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {
