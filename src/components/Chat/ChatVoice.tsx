@@ -18,20 +18,17 @@ import { Sender } from '@ant-design/x'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 1500
 
-function play(audio: Uint8Array): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const audioUrl = URL.createObjectURL(new Blob([audio], { type: 'audio/wav' }))
-    const audioElement = new Audio(audioUrl)
-    audioElement.onended = () => {
-      URL.revokeObjectURL(audioUrl)
-      resolve()
-    }
-    audioElement.onerror = (e) => {
-      URL.revokeObjectURL(audioUrl)
-      reject(e)
-    }
-    audioElement.play()
-  })
+async function play(audio: Uint8Array): Promise<void> {
+  const audioUrl = URL.createObjectURL(new Blob([audio], { type: 'audio/wav' }))
+  const audioElement = new Audio(audioUrl)
+  const { promise, resolve } = Promise.withResolvers<void>()
+  audioElement.onended = () => {
+    URL.revokeObjectURL(audioUrl)
+    resolve()
+  }
+  await audioElement.play()
+  await promise
+  return
 }
 
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
