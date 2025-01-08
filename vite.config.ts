@@ -10,6 +10,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           'live2d': ['oh-my-live2d'],
+          'antd': ['antd', '@ant-design/x', '@ant-design/icons'],
         },
       },
     },
