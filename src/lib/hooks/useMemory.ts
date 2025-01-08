@@ -179,15 +179,19 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       typeof result.updatedMemoryAboutSelf !== 'string' || 
       typeof result.updatedMemoryAboutUser !== 'string' ||
       typeof result.summaryOfMessages !== 'string' ||
-      typeof result.titleOfMessages !== 'string'
+      typeof result.titleOfMessages !== 'string' ||
+      result.updatedMemoryAboutSelf === '' ||
+      result.updatedMemoryAboutUser === '' ||
+      result.summaryOfMessages === '' ||
+      result.titleOfMessages === ''
     ) {
       throw new Error('模型返回错误, 请重试')
     }
     const prev = clone(shortTermMemory)
     const _uuid = uuid()
     const timestamps = prev.map((item) => item.timestamp)
-    result.updatedMemoryAboutSelf && await setMemoryAboutSelf(result.updatedMemoryAboutSelf)
-    result.updatedMemoryAboutUser && await setMemoryAboutUser(result.updatedMemoryAboutUser)
+    await setMemoryAboutSelf(result.updatedMemoryAboutSelf)
+    await setMemoryAboutUser(result.updatedMemoryAboutUser)
     await setCurrentSummary('')
     await setShortTermMemory([])
     await setLongTermMemory([
