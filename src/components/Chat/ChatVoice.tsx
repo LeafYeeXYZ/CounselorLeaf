@@ -18,12 +18,28 @@ import { Sender } from '@ant-design/x'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 1500
 
+function play(audio: Uint8Array): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const audioUrl = URL.createObjectURL(new Blob([audio], { type: 'audio/wav' }))
+    const audioElement = new Audio(audioUrl)
+    audioElement.onended = () => {
+      URL.revokeObjectURL(audioUrl)
+      resolve()
+    }
+    audioElement.onerror = (e) => {
+      URL.revokeObjectURL(audioUrl)
+      reject(e)
+    }
+    audioElement.play()
+  })
+}
+
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
-  const { speak } = useSpeakApi()
+  const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
@@ -53,7 +69,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
     setMemoMaxHeight(`calc(100dvh - ${initSenderHeight}px - 11rem)`)
   }, [])
 
-  const onChat = async (text: string) => {
+  const onChat = async (text: string) => { // 注意: 和 ChatText 的 onChat 的语音播放逻辑不同
     const prev = shortTermMemoryRef.current
     const time = Date.now()
     try {
@@ -72,9 +88,9 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
       const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
-      const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
-      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
-      await start
+      const { audio } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { audio: null }
+      audio && await addAudioCache({ timestamp: time, audio })
+      const say = audio ? play(audio) : Promise.resolve()
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
       let current = ''
       let staps = ''
@@ -94,7 +110,11 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       const { tokens: _tokens } = await summary
       await setUsedToken(Math.max(tokens, _tokens))
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
-      await finish
+      try {
+        await say
+      } catch (e) {
+        messageApi?.error(`语音播放失败: ${e instanceof Error ? e.message : e}`)
+      }
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {

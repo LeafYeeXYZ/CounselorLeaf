@@ -21,7 +21,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
   const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
-  const { speak } = useSpeakApi()
+  const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
@@ -67,9 +67,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
       const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
-      const { start, finish } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { start: Promise.resolve(), finish: Promise.resolve() }
-      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成 <LoadingOutlined /></p>))
-      await start
+      const tts = typeof speak === 'function' ? speak(result.replace(emoji, '')) : Promise.resolve({ audio: null })
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
       let current = ''
       let staps = ''
@@ -88,8 +86,9 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
       const { tokens: _tokens } = await summary
       await setUsedToken(Math.max(tokens, _tokens))
-      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
-      await finish
+      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成结束 <LoadingOutlined /></p>))
+      const { audio } = await tts
+      audio && await addAudioCache({ timestamp: time, audio })
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {

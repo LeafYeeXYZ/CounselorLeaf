@@ -42,7 +42,8 @@ declare type ConfigKeys =
   's3_secret_key' |
   's3_bucket_name' |
   'is_full_screen' |
-  's3_memory_key'
+  's3_memory_key' |
+  'audios_cache'
 
 declare type MemoryKeys =
   'self_name' |
@@ -73,7 +74,7 @@ declare type LoadLive2d = (element: HTMLElement) => Live2dApi
 declare type Live2dList = { name: string, api: LoadLive2d }[]
 
 declare type SpeakApiParams = { fishSpeechEndpoint: string, f5TtsEndpoint: string }
-declare type SpeakApi = (text: string) => Promise<{ start: Promise<void>, finish: Promise<void> }>
+declare type SpeakApi = (text: string) => Promise<{ audio: Uint8Array }>
 declare type SpeakApiTest = () => Promise<boolean>
 declare type LoadSpeakApi = (params: SpeakApiParams) => { api: SpeakApi, test: SpeakApiTest }
 declare type SpeakApiList = ({ name: string, api: LoadSpeakApi } | { name: string, api: null })[]

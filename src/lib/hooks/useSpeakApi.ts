@@ -8,6 +8,10 @@ type API = {
   currentSpeakApi: string
   setSpeakApi: (name: string) => Promise<void>
 
+  audiosCache: { timestamp: number, audio: Uint8Array }[]
+  setAudiosCache: (value: { timestamp: number, audio: Uint8Array }[]) => Promise<void>
+  addAudioCache: (value: { timestamp: number, audio: Uint8Array }) => Promise<void>
+
   fishSpeechEndpoint: string
   setFishSpeechEndpoint: (endpoint?: string) => Promise<void>
   f5TtsEndpoint: string
@@ -20,10 +24,23 @@ const DEFAULT_F5_TTS_ENDPOINT = 'http://127.0.0.1:5010/api'
 const localSpeakApi = await get('default_speak_api')
 const localFishSpeechEndpoint = await get('fish_speech_endpoint') ?? DEFAULT_FISH_SPEECH_ENDPOINT
 const localF5TtsEndpoint = await get('f5_tts_endpoint') ?? DEFAULT_F5_TTS_ENDPOINT
+const localAudiosCache = await get('audios_cache') ?? []
+
 const defaultLoad = speakApiList.find(({ name }) => name === localSpeakApi) ?? speakApiList[0]
 const defaultApi = defaultLoad.api && defaultLoad.api({ fishSpeechEndpoint: localFishSpeechEndpoint, f5TtsEndpoint: localF5TtsEndpoint })
 
 export const useSpeakApi = create<API>()((setState, getState) => ({
+  audiosCache: localAudiosCache,
+  setAudiosCache: async (value) => {
+    setState({ audiosCache: value })
+    await set('audios_cache', value)
+  },
+  addAudioCache: async (value) => {
+    const { audiosCache } = getState()
+    const newCache = [value, ...audiosCache]
+    setState({ audiosCache: newCache })
+    await set('audios_cache', newCache)
+  },
   speak: defaultApi && defaultApi.api,
   testSpeak: defaultApi && defaultApi.test,
   speakApiList: speakApiList.map(({ name }) => name),

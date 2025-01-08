@@ -1,45 +1,12 @@
+import { toBase64 } from '../../utils.ts'
 import emojiRegex from 'emoji-regex'
 const emoji = emojiRegex()
-import { toBase64 } from '../../utils.ts'
 
-let voices: SpeechSynthesisVoice[] = []
-while (voices.length === 0) {
-  await new Promise(resolve => setTimeout(resolve, 50))
-  voices = speechSynthesis.getVoices()
-}
-
-const WEB_SPEECH_API_VOICE = voices.find(v => v.lang === 'zh-CN' && v.name === 'Tingting') ?? voices.find(v => v.lang === 'zh-CN')
-const WEB_SPEECH_API_PITCH = 0.85 // 音高
-const WEB_SPEECH_API_RATE = 1.15 // 语速
-
-const speak_browser: SpeakApi = async (text) => {
-  const utterance = new SpeechSynthesisUtterance(text)
-  if (WEB_SPEECH_API_VOICE) {
-    utterance.voice = WEB_SPEECH_API_VOICE
-  } else {
-    throw new Error('No Chinese voice found')
-  }
-  utterance.pitch = WEB_SPEECH_API_PITCH
-  utterance.rate = WEB_SPEECH_API_RATE
-  const finish = new Promise<void>(resolve => {
-    utterance.onend = () => resolve()
-  })
-  const start = Promise.resolve(speechSynthesis.speak(utterance))
-  return { start, finish }
-}
-const test_browser: SpeakApiTest = async () => {
-  if ('speechSynthesis' in window) {
-    return true
-  } else {
-    throw new Error('Web Speech API 不可用')
-  }
-}
-
-const speak_f5tts = async (text: string, endpoint: string): Promise<{ start: Promise<void>, finish: Promise<void> }> => {
+const speak_f5tts = async (text: string, endpoint: string): Promise<{ audio: Uint8Array }> => {
   try {
     text = text.replace(new RegExp(emoji, 'g'), '')
     if (text.length === 0) {
-      return { start: Promise.resolve(), finish: Promise.resolve() }
+      throw new Error('文本为空')
     }
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
     const refAudio: Uint8Array = new Uint8Array(await (await fetch('/tts/luoshaoye.wav')).arrayBuffer())
@@ -56,17 +23,7 @@ const speak_f5tts = async (text: string, endpoint: string): Promise<{ start: Pro
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
     }
     const audio = new Uint8Array(await res.arrayBuffer())
-    const blob = new Blob([audio], { type: 'audio/wav' })
-    const audioUrl = URL.createObjectURL(blob)
-    const audioElement = new Audio(audioUrl)
-    const finish = new Promise<void>(resolve => {
-      audioElement.onended = () => {
-        URL.revokeObjectURL(audioUrl)
-        resolve()
-      }
-    })
-    const start = audioElement.play()
-    return { start, finish }
+    return { audio }
   } catch (e) {
     throw new Error(`F5 TTS API 错误: ${e instanceof Error ? e.message : e}`)
   }
@@ -98,11 +55,11 @@ const test_f5tts = async (endpoint: string): Promise<boolean> => {
   }
 }
 
-const speak_fish = async (text: string, endpoint: string): Promise<{ start: Promise<void>, finish: Promise<void> }> => {
+const speak_fish = async (text: string, endpoint: string): Promise<{ audio: Uint8Array }> => {
   try {
     text = text.replace(new RegExp(emoji, 'g'), '')
     if (text.length === 0) {
-      return { start: Promise.resolve(), finish: Promise.resolve() }
+      throw new Error('文本为空')
     }
     const url = endpoint + '/v1/tts'
     const refText: string = await (await fetch('/tts/luoshaoye.txt')).text()
@@ -123,17 +80,7 @@ const speak_fish = async (text: string, endpoint: string): Promise<{ start: Prom
       throw new Error(`HTTP ${res.status} ${res.statusText}`)
     }
     const audio = new Uint8Array(await res.arrayBuffer())
-    const blob = new Blob([audio], { type: 'audio/wav' })
-    const audioUrl = URL.createObjectURL(blob)
-    const audioElement = new Audio(audioUrl)
-    const finish = new Promise<void>(resolve => {
-      audioElement.onended = () => {
-        URL.revokeObjectURL(audioUrl)
-        resolve()
-      }
-    })
-    const start = audioElement.play()
-    return { start, finish }
+    return { audio }
   } catch (e) {
     throw new Error(`Fish Speech API 错误: ${e instanceof Error ? e.message : e}`)
   }
@@ -171,7 +118,6 @@ const test_fish = async (endpoint: string): Promise<boolean> => {
 
 export const speakApiList: SpeakApiList = [
   { name: '关闭', api: null },
-  { name: 'Web Speech API', api: () => ({ api: speak_browser, test: test_browser }) },
   { name: 'F5 TTS API', api: ({ f5TtsEndpoint }) => ({ api: (text: string) => speak_f5tts(text, f5TtsEndpoint), test: () => test_f5tts(f5TtsEndpoint) }) },
   { name: 'Fish Speech API', api: ({ fishSpeechEndpoint }) => ({ api: (text: string) => speak_fish(text, fishSpeechEndpoint), test: () => test_fish(fishSpeechEndpoint) }) },
 ]

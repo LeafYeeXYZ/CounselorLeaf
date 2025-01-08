@@ -25,7 +25,7 @@ export function ConfigVoice() {
       <Form.Item 
         label={<div className='flex gap-1'>
           <div>语音合成服务</div>
-          <Tooltip color='blue' title='Safari 浏览器可能会阻止应用直接播放音频, 建议使用 Chrome、Edge 或 Firefox 浏览器'>
+          <Tooltip color='blue' title='在连续语音对话时, Safari 浏览器可能会阻止应用直接播放音频, 建议使用 Chrome、Edge 或 Firefox 浏览器'>
             <InfoCircleOutlined />
           </Tooltip>
         </div>}
