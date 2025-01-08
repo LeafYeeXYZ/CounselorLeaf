@@ -94,7 +94,7 @@ bun build:web
 - 记忆功能
   - [x] 当前对话递归总结
   - [x] 保存为长时记忆
-  - [ ] 可以自行提取记忆
+  - [ ] 可以自行提取记忆, 可能使用 <https://github.com/chroma-core/chroma> 来实现
 - [ ] 自主行动和迭代
 
 ## 4 长时记忆
