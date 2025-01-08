@@ -39,7 +39,7 @@ export default function App() {
 
   const [messageApi, messageElement] = message.useMessage()
   const { setMessageApi, disabled, forceAllowNav } = useStates()
-  const { loadLive2d, setLive2dApi, background } = useLive2dApi()
+  const { loadLive2d, setLive2dApi, background, isFullScreen } = useLive2dApi()
   const { selfName } = useMemory()
   const [current, setCurrent] = useState<string>(DEFAULT_PAGE)
   const isMobile = useIsMobile()
@@ -72,9 +72,15 @@ export default function App() {
   const RIGHT_GAP = 350
   const [x, setX] = useState<number>(LEFT_GAP)
   useEffect(() => { 
-    if (isMobile) return
-    document.getElementById('back-container')!.style.width = `calc(100dvw - ${x}px)` 
-  }, [x, isMobile])
+    const bg = document.getElementById('back-container')!
+    if (isFullScreen) {
+      bg.style.width = '100dvw'
+    } else if (isMobile) {
+      bg.style.width = '0'
+    } else {
+      bg.style.width = `calc(100dvw - ${x}px)` 
+    }
+  }, [x, isMobile, isFullScreen])
 
   // 切换移动模式时发送提示
   useEffect(() => {
@@ -84,7 +90,7 @@ export default function App() {
   return (
     <main className='w-dvw h-dvh overflow-hidden'>
       {!isMobile && <div 
-        className='fixed top-1/2 left-0 w-[0.4rem] h-12 z-50 cursor-ew-resize border border-blue-900 rounded-full bg-blue-50' 
+        className='fixed top-1/2 left-0 w-[0.4rem] h-12 z-50 cursor-ew-resize border border-blue-900 rounded-full bg-blue-50 opacity-50 hover:opacity-100' 
         style={{ marginLeft: `calc(${x}px - 0.25rem)`}} 
         draggable
         // @ts-expect-error 类型提示错误, 运行无问题
@@ -100,7 +106,7 @@ export default function App() {
         }}
       />}
       <div 
-        className='h-dvh overflow-hidden float-left shadow-md border-r' 
+        className='h-dvh overflow-hidden float-left' 
         style={{ width: isMobile ? '100dvw' : `${x}px`}}
       >
         <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
@@ -109,7 +115,7 @@ export default function App() {
             className='w-full h-full overflow-hidden flex flex-col justify-center items-center'
             style={{ padding: isMobile ? '1rem' : '1.8rem'}}
           >
-            <div className='w-full bg-white overflow-hidden'>
+            <div className='w-full overflow-hidden'>
               {PAGES[current]}
             </div>
           </div>

@@ -11,11 +11,11 @@ type GlobalState = {
   setMessageApi: (messageApi: MessageInstance | null) => void
 }
 
-export const useStates = create<GlobalState>()((set) => ({
+export const useStates = create<GlobalState>()((setState) => ({
   disabled: true,
-  setDisabled: (disabled) => set({ disabled }),
+  setDisabled: (disabled) => setState({ disabled }),
   messageApi: null,
-  setMessageApi: (messageApi) => set({ messageApi }),
+  setMessageApi: (messageApi) => setState({ messageApi }),
   forceAllowNav: false,
-  setForceAllowNav: (forceAllowNav) => set({ forceAllowNav }),
+  setForceAllowNav: (forceAllowNav) => setState({ forceAllowNav }),
 }))

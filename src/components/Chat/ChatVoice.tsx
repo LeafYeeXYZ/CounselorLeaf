@@ -135,7 +135,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
 
   return (
     <Form
-      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-hidden p-5 pb-0 rounded-md border border-blue-900'
+      className='w-full max-h-[calc(100dvh-9.6rem)] relative overflow-hidden bg-white p-5 pb-0 rounded-md border border-blue-900'
       layout='vertical'
     >
       <Form.Item>

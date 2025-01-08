@@ -40,7 +40,8 @@ declare type ConfigKeys =
   's3_endpoint' |
   's3_access_key' |
   's3_secret_key' |
-  's3_bucket_name'
+  's3_bucket_name' |
+  'is_full_screen'
 
 declare type MemoryKeys =
   'self_name' |

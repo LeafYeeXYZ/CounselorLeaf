@@ -55,7 +55,7 @@ export function ChatCheck({ setReady }: { setReady: (ready: boolean) => void }) 
   return (
     <div 
       style={(disabled === true || disabled === '加载出错') ? {} : { animation: 'hideStart 1s forwards' }}
-      className='flex gap-[0.3rem] justify-center items-center flex-col w-full max-h-[calc(100dvh-9.6rem)] p-4 rounded-md border border-blue-900'>
+      className='flex bg-white gap-[0.3rem] justify-center items-center flex-col w-full max-h-[calc(100dvh-9.6rem)] p-4 rounded-md border border-blue-900'>
       {statusError ? (<>
         <div>加载出错:</div>
         <div className='text-center'>{statusText}</div>
