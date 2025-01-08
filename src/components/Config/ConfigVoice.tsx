@@ -3,7 +3,7 @@ import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { Form, Select, Space, Input, Button, Tooltip } from 'antd'
 import { useState, useEffect } from 'react'
-import { SaveOutlined, ReloadOutlined } from '@ant-design/icons'
+import { SaveOutlined, ReloadOutlined, InfoCircleOutlined } from '@ant-design/icons'
 
 export function ConfigVoice() {
 
@@ -30,6 +30,16 @@ export function ConfigVoice() {
             await setSpeakApi(value)
           }}
         />
+      </Form.Item>
+      <Form.Item 
+        label={<div className='flex gap-1'>
+          <div>播放测试音频</div>
+          <Tooltip color='blue' title='Safari 浏览器可能会阻止应用直接播放音频, 在此处手动播放一次有助于解决在聊天中的相关错误'>
+            <InfoCircleOutlined />
+          </Tooltip>
+        </div>}
+      >
+        <audio className='w-full' controls src='/tts/luoshaoye.wav' />
       </Form.Item>
       <Form.Item label='F5 TTS API Endpoint'>
         <Space.Compact block>
