@@ -2,6 +2,51 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.0](https://github.com/LeafYeeXYZ/DigitalLife/compare/v1.1.0...v1.2.0) (2025-01-08)
+
+
+### Features
+
+* 对话上下文中包含与用户首次相遇的时间 ([40223be](https://github.com/LeafYeeXYZ/DigitalLife/commit/40223bef02bcdd769352f679bc6fdae987a8e446))
+* 记忆总结和更新中可以获取真实世界信息 ([a8321fd](https://github.com/LeafYeeXYZ/DigitalLife/commit/a8321fd7eae56c19c3556b623f7423db9d9987fe))
+* 上传和下载记忆时新增确认步骤 ([f74ce88](https://github.com/LeafYeeXYZ/DigitalLife/commit/f74ce88de52341872f0b6e55f87f4860525f5628))
+* 时间信息现在包括星期几 ([eb7d7ea](https://github.com/LeafYeeXYZ/DigitalLife/commit/eb7d7eaa5f6acd55fc9b968e020fa7c9bb3b734f))
+* 添加测试音频以减少 Safari 中可能出现的拒绝播放音频问题 ([39ee8fd](https://github.com/LeafYeeXYZ/DigitalLife/commit/39ee8fda598dbce4946883718516664654e1ce56))
+* 为云备份按钮添加图标 ([b0651b4](https://github.com/LeafYeeXYZ/DigitalLife/commit/b0651b4cbb5f5dc974322deed8f37468b6f4736b))
+* 新增记忆云备份功能 ([6dec7c6](https://github.com/LeafYeeXYZ/DigitalLife/commit/6dec7c6c697767c22529f30a5dc8beabcb7c2cb1))
+* 语音现在可以多次播放且新增语音错误提示 ([c0034cc](https://github.com/LeafYeeXYZ/DigitalLife/commit/c0034ccf1a81a573058202e3730aeeb455137fb4))
+* 云存储允许自定义存储键 ([34449ca](https://github.com/LeafYeeXYZ/DigitalLife/commit/34449cae606cd4b208607fd372f5798ca960a8c6))
+* 允许全屏背景 ([91495d2](https://github.com/LeafYeeXYZ/DigitalLife/commit/91495d29c2a14050adf932d113aae15427367fee))
+* 支持使用通用的 S3 服务进行云备份 ([a1bc7aa](https://github.com/LeafYeeXYZ/DigitalLife/commit/a1bc7aaeccfecf3c62f31c094b3376e37c5bdcd4))
+
+
+### Bug Fixes
+
+* 修复 Safari 浏览器语音对话卡死的问题 ([b91f506](https://github.com/LeafYeeXYZ/DigitalLife/commit/b91f506e6b75faed3c7528f93ea38949a972f76d))
+* 修复 Safari 浏览器语音对话卡死的问题 ([26c5681](https://github.com/LeafYeeXYZ/DigitalLife/commit/26c56819d263942ac0a27fd4b2f455cabf63938a))
+* 修复按钮未正确变色的问题 ([2dc80e8](https://github.com/LeafYeeXYZ/DigitalLife/commit/2dc80e88da7756af8e41f82bc8a8f2dc6bfb90de))
+* 修复记忆更新时, 短时记忆缓存未清除的问题 ([5d6920a](https://github.com/LeafYeeXYZ/DigitalLife/commit/5d6920a09fb79113dadd52be2fe59ad387964196))
+* 修复聊天界面输入框遮挡问题 ([1d9306c](https://github.com/LeafYeeXYZ/DigitalLife/commit/1d9306c4f4f68cad306f743f91aef3157e034d8a))
+* 修复移动端屏幕过窄时的显示异常 ([20bfe96](https://github.com/LeafYeeXYZ/DigitalLife/commit/20bfe96569d206977cfc99a77220fcaf5c46c80e))
+
+
+### Refactoring
+
+* 全面重构提示词, 并优化 Tokens 统计 ([79f2c78](https://github.com/LeafYeeXYZ/DigitalLife/commit/79f2c78790fb6ac5871c8b77c0aceb35faf23645))
+* 重构包括天气在内的外部信息加载方式 ([09a494c](https://github.com/LeafYeeXYZ/DigitalLife/commit/09a494c1595777123f489e349ad9f084f6426fd1))
+
+
+### Improvements
+
+* 添加语音播放的浏览器兼容提示 ([f706fa5](https://github.com/LeafYeeXYZ/DigitalLife/commit/f706fa506068ac3e6473977e13621deaba54293f))
+* 优化 UI 的滚动布局 ([182327a](https://github.com/LeafYeeXYZ/DigitalLife/commit/182327a98cc403571879e2347ac1de61a9570938))
+* 优化代码分块, 减少网页加载时间 ([b32af58](https://github.com/LeafYeeXYZ/DigitalLife/commit/b32af58f3e47197ebc1ac0e9bc9eddb82b505b64))
+* 优化更新记忆时的提示词 ([3ebe05f](https://github.com/LeafYeeXYZ/DigitalLife/commit/3ebe05fc1ec231fac3081dfb5d6998217f0f0c8a))
+* 优化记忆更新参数验证方式 ([e2b1009](https://github.com/LeafYeeXYZ/DigitalLife/commit/e2b10099e0e281640032911547ed71e734384ebe))
+* 优化语音对话的识别延时 ([e8bf29e](https://github.com/LeafYeeXYZ/DigitalLife/commit/e8bf29e88bc8e2a75a17a4cb1221fe2f8eeab28c))
+* 优化在 IOS 端 Safari 浏览器的背景颜色 ([9583b26](https://github.com/LeafYeeXYZ/DigitalLife/commit/9583b260a571e1db8c37b4c51da7b488dedfca84))
+* 在没有记忆时自动聚焦输入框 ([23d7a7b](https://github.com/LeafYeeXYZ/DigitalLife/commit/23d7a7beaa7a54072d9835b9b8ba39cc22a6b3c9))
+
 ## [1.1.0](https://github.com/LeafYeeXYZ/CyberLeaf/compare/v1.0.0...v1.1.0) (2025-01-06)
 
 
