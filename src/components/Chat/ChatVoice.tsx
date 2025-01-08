@@ -18,19 +18,6 @@ import { Sender } from '@ant-design/x'
 
 const DELAY_MS_BEFORE_START_RESPONSE = 1500
 
-async function play(audio: Uint8Array): Promise<void> {
-  const audioUrl = URL.createObjectURL(new Blob([audio], { type: 'audio/wav' }))
-  const audioElement = new Audio(audioUrl)
-  const { promise, resolve } = Promise.withResolvers<void>()
-  audioElement.onended = () => {
-    URL.revokeObjectURL(audioUrl)
-    resolve()
-  }
-  await audioElement.play()
-  await promise
-  return
-}
-
 export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
   const { disabled, setDisabled, messageApi } = useStates()
@@ -87,7 +74,12 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
       const { audio } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { audio: null }
       audio && await addAudioCache({ timestamp: time, audio })
-      const say = audio ? play(audio) : Promise.resolve()
+      const say = audio ? new Promise((resolve, reject) => {
+        const v = new Audio(URL.createObjectURL(new Blob([audio], { type: 'audio/wav' })))
+        v.onended = resolve
+        v.onerror = reject
+        v.play().catch(reject)
+      }) : Promise.resolve()
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>{selfName}回应中 <LoadingOutlined /></p>))
       let current = ''
       let staps = ''
@@ -107,11 +99,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       const { tokens: _tokens } = await summary
       await setUsedToken(Math.max(tokens, _tokens))
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
-      try {
-        await say
-      } catch (e) {
-        messageApi?.error(`语音播放失败: ${e instanceof Error ? e.message : e}`)
-      }
+      await say.catch((e) => messageApi?.error(`语音播放失败: ${e instanceof Error ? e.message : e}`))
       await setShortTermMemory(output)
       shortTermMemoryRef.current = output
     } catch (error) {
