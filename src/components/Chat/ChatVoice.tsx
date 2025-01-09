@@ -26,7 +26,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
   const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
-  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, updateCurrentSummary, setCurrentSummary } = useMemory()
+  const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, setCurrentSummary } = useMemory()
   const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
   const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
   
@@ -71,7 +71,6 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
-      const summary = updateCurrentSummary(chat, openaiModelName, output, { qWeatherApiKey })
       const { audio } = typeof speak === 'function' ? await speak(result.replace(emoji, '')) : { audio: null }
       audio && await addAudioCache({ timestamp: time, audio })
       const say = audio ? new Promise((resolve, reject) => {
@@ -95,9 +94,6 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
           live2d?.tipsMessage(staps, 10000, Date.now())
         }
       }
-      flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-      const { tokens: _tokens } = await summary
-      await setUsedToken(Math.max(tokens, _tokens))
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
       await say.catch((e) => messageApi?.error(`语音播放失败: ${e instanceof Error ? e.message : e}`))
       await setShortTermMemory(output)

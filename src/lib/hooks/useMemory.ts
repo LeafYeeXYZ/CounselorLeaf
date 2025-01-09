@@ -34,7 +34,6 @@ type Memory = {
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
   chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ result: string, tokens: number }>
-  updateCurrentSummary: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ tokens: number }>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
   setUseStructuredOutputs: (value: boolean) => Promise<void>
@@ -61,13 +60,14 @@ const localUseStructuredOutputs = await get('use_structured_outputs')
 const firstEncounterTime = localArchivedMemory?.length ? Math.min(...localArchivedMemory.map((item) => item.timestamp)) : Date.now()
 
 const UpdateMemoryResponse = z.object({
-  updatedMemoryAboutSelf: z.string(),
-  updatedMemoryAboutUser: z.string(),
-  summaryOfMessages: z.string(),
-  titleOfMessages: z.string(),
+  updatedMemoryAboutSelf: z.string({ description: '更新后的你关于自我的记忆' }),
+  updatedMemoryAboutUser: z.string({ description: '更新后的你关于用户的记忆' }),
+  summaryOfMessages: z.string({ description: '对本轮对话的总结' }),
+  titleOfMessages: z.string({ description: '本轮对话的标题' }),
 })
-const UpdateCurrentSummaryResponse = z.object({
-  updatedSummary: z.string(),
+const ChatWithMemoryResponse = z.object({
+  response: z.string({ description: '回复给用户的内容' }),
+  updatedSummary: z.string({ description: '更新后的对话总结' }),
 })
 
 export const useMemory = create<Memory>()((setState, getState) => ({
@@ -82,41 +82,19 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
   },
   chatWithMemory: async (chatApi, model, input, plugins) => {
-    const { currentSummary, memoryAboutSelf, memoryAboutUser, selfName, userName, getTrueWorldInfo } = getState()
-    const worldInfo = await getTrueWorldInfo(plugins)
-    const messages: { role: 'system' | 'user' | 'assistant', content: string }[] = []
-    messages.push({ role: 'system', content: `你是一个数字生命 (即虚拟人类), 下面是对你的要求、你的记忆、对本轮对话中历史内容的总结、真实世界的相关信息:\n\n# 对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 对本轮对话中历史内容的总结\n\n${currentSummary}\n\n# 真实世界的相关信息\n\n${worldInfo}` })
-    messages.push(...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[])
-    const response = await chatApi.chat.completions.create({
-      model,
-      stream: false,
-      messages,
-    })
-    const result = response.choices[0].message?.content
-    if (!result) {
-      throw new Error('模型返回错误, 请重试')
-    }
-    const tokens = response.usage?.total_tokens || -1
-    return { result, tokens }
-  },
-  updateCurrentSummary: async (chatApi, model, input, plugins) => {
     const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo } = getState()
-    if (input.length < 2) {
-      throw new Error('没有需要总结的对话内容')
-    }
-    const oldMessages = input.slice(0, input.length - 2)
-    const newMessages = input.slice(input.length - 2)
     const worldInfo = await getTrueWorldInfo(plugins)
-    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户的一轮对话中, 你必须不断根据最新的对话内容, 生成/更新你对本轮对话内容的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容. 在总结中, 请用"我"代表你自己, 用"用户"代表用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 已被总结的对话内容\n\n${oldMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n') || '(这是第一轮对话, 没有已被总结的对话内容)'}\n\n# 新增的对话内容\n\n${newMessages.map(({ role, content }, index) => `${index + 1}. ${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
+    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户对话的过程中, 你需要不断地生成/更新对本段对话的总结. 在你接收到用户最新的输入后, 你需要参考已有总结和你的记忆等信息, 生成对用户的回应和更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 对你的回复的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     let result: Record<string, unknown> = {}
     let tokens: number = -1
     if (useStructuredOutputs) {
       const response = await chatApi.beta.chat.completions.parse({
         model,
         stream: false,
-        response_format: zodResponseFormat(UpdateCurrentSummaryResponse, 'update_current_summary_response'),
+        response_format: zodResponseFormat(ChatWithMemoryResponse, 'response'),
         messages: [
           { role: 'system', content: '**请按格式返回JSON字符串**\n\n' + prompt },
+          ...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[],
         ],
       })
       result = response.choices[0].message?.parsed || {}
@@ -127,7 +105,8 @@ export const useMemory = create<Memory>()((setState, getState) => ({
         stream: false,
         response_format: { type: 'json_object' },
         messages: [
-          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(UpdateCurrentSummaryResponse), null, 2)}\n\n` + prompt },
+          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(ChatWithMemoryResponse), null, 2)}\n\n` + prompt },
+          ...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[],
         ],
       })
       result = JSON.parse(response.choices[0].message.content || '{}')
@@ -135,27 +114,30 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     }
     if (
       !result ||
-      typeof result.updatedSummary !== 'string'
+      typeof result.updatedSummary !== 'string' ||
+      typeof result.response !== 'string' ||
+      result.updatedSummary === '' ||
+      result.response === ''
     ) {
       throw new Error('模型返回错误, 请重试')
     }
     await setCurrentSummary(result.updatedSummary)
-    return { tokens }
+    return { result: result.response, tokens }
   },
   updateMemory: async (chatApi, model, plugins) => {
-    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, selfName, userName, getTrueWorldInfo } = getState()
+    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, getTrueWorldInfo } = getState()
     if (shortTermMemory.length === 0) {
       throw new Error('没有需要总结的对话内容')
     }
     const worldInfo = await getTrueWorldInfo(plugins)
-    const prompt = `你是一个数字生命 (即虚拟人类), 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 同时, 请根据这轮对话中的信息更新你对自己的记忆和你对用户的记忆 (如果没有新信息, 你也可以照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '无记忆'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '无记忆'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n---\n\n以下内容可能会对你生成总结有所帮助:\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
+    const prompt = `你是一个数字生命 (即虚拟人类), 你刚刚与用户完成了一轮对话, 请总结这轮对话, 并为这轮对话取一个标题. 你的总结可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 同时, 请根据这轮对话中的信息更新你对自己的记忆和你对用户的记忆 (如果没有新信息, 你也可以照原样返回旧的记忆). 请不要把你和用户的名字包含在你的记忆中, 用"我"代表自己, 用"用户"代表用户即可\n\n# 本轮对话前你对自己的记忆\n\n${memoryAboutSelf || '无记忆'}\n\n# 本轮对话前你对用户的记忆\n\n${memoryAboutUser || '无记忆'}\n\n# 本轮对话内容\n\n${shortTermMemory.map(({ role, content, timestamp }, index) => `${index + 1}. ${getTime(timestamp)}-${role === 'user' ? '用户' : '我'}: ${content}`).join('\n')}\n\n# 在一般对话时对你的要求\n\n${FORMAT_PROMPT}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     let result: Record<string, unknown> = {}
     let tokens: number = -1
     if (useStructuredOutputs) {
       const response = await chatApi.beta.chat.completions.parse({
         model,
         stream: false,
-        response_format: zodResponseFormat(UpdateMemoryResponse, 'update_memory_response'),
+        response_format: zodResponseFormat(UpdateMemoryResponse, 'response'),
         messages: [
           { role: 'system', content: '**请按格式返回JSON字符串**\n\n' + prompt },
         ],
