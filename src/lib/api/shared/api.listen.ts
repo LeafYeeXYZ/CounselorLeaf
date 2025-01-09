@@ -30,10 +30,19 @@ const listen_browser: ListenApi = (callback) => {
   }
 }
 const test_browser: ListenApiTest = async () => {
-  if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+  try {
+    if (!SpeechRecognition) {
+      throw new Error('Web Speech API 不可用')
+    }
+    if (sessionStorage.getItem('microphone_tested') === 'pass') {
+      return true
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+    stream.getTracks().forEach((track) => track.stop())
+    sessionStorage.setItem('microphone_tested', 'pass')
     return true
-  } else {
-    throw new Error('Web Speech API 不可用')
+  } catch (e) {
+    throw new Error(`语音识别测试失败: ${e instanceof Error ? e.message : e}`)
   }
 }
 
