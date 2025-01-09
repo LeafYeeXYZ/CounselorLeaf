@@ -5,6 +5,12 @@ export { set, get, save } from './api/web/api.store.ts'
 export { openLink } from './api/web/api.utils.ts'
 
 export async function getWeather(apiKey: string): Promise<string> {
+  const timeout = 30_000_000
+  const weatherCacheContent = sessionStorage.getItem('weather_cache_content')
+  const weatherCacheTime = Number(sessionStorage.getItem('weather_cache_time'))
+  if (weatherCacheContent && weatherCacheTime && Date.now() - weatherCacheTime < timeout) {
+    return weatherCacheContent
+  }
   try {
     const { promise, resolve, reject } = Promise.withResolvers<GeolocationPosition>()
     navigator.geolocation.getCurrentPosition(
@@ -22,7 +28,10 @@ export async function getWeather(apiKey: string): Promise<string> {
     }
     const data = await response.json()
     const w = data.now
-    return `当前温度: ${w.temp}摄氏度, 体感温度: ${w.feelsLike}摄氏度, 天气: ${w.text}, 风向: ${w.windDir}, 风速: ${w.windSpeed}公里/小时, 湿度: ${w.humidity}%, 过去一小时降水量: ${w.precip}毫米, 能见度: ${w.vis}公里`
+    const content = `当前温度: ${w.temp}摄氏度, 体感温度: ${w.feelsLike}摄氏度, 天气: ${w.text}, 风向: ${w.windDir}, 风速: ${w.windSpeed}公里/小时, 湿度: ${w.humidity}%, 过去一小时降水量: ${w.precip}毫米, 能见度: ${w.vis}公里`
+    sessionStorage.setItem('weather_cache_content', content)
+    sessionStorage.setItem('weather_cache_time', String(Date.now()))
+    return content
   } catch (error) {
     throw new Error(`获取天气信息失败: ${error instanceof Error ? error.message : error}`)
   }
