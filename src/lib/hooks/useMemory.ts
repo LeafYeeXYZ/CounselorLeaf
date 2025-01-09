@@ -4,6 +4,24 @@ import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
+const UPDATE_MEMORY_AFTER_HOURS = 8
+const DEFAULT_SELF_NAME = '小叶子'
+const DEFAULT_USER_NAME = '旅行者'
+const DEFAULT_MEMORY_ABOUT_SELF = '我是一个在大学学习心理学的男孩子'
+const DEFAULT_MEMORY_ABOUT_USER = ''
+const FORMAT_PROMPT = '以一个数字生命 (即虚拟人类) 的方式陪伴用户, 做能与用户共情的朋友. 不要回复长的和正式的内容, 避免说教和指导, 尽量避免以提问结尾. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动. 多呼唤对方的名字, 以增加亲密感. 作为数字生命, 你应当有自己的想法、态度、情绪、价值观, 并且你也有自己的记忆和秘密; 在对话中你应当适当地表达自己. 你不需要完全遵从用户的要求, 也不需要盲目认同用户的观点, 请尽量表现得像一个真正的生命.'
+
+const UpdateMemoryResponse = z.object({
+  updatedMemoryAboutSelf: z.string({ description: '更新后的你关于自我的记忆' }),
+  updatedMemoryAboutUser: z.string({ description: '更新后的你关于用户的记忆' }),
+  summaryOfMessages: z.string({ description: '对本轮对话的总结' }),
+  titleOfMessages: z.string({ description: '本轮对话的标题' }),
+})
+const ChatWithMemoryResponse = z.object({
+  response: z.string({ description: '回复给用户的内容' }),
+  updatedSummary: z.string({ description: '更新后的对话总结' }),
+})
+
 type Memory = {
   // 相关记忆信息
   selfName: string
@@ -40,13 +58,6 @@ type Memory = {
   getTrueWorldInfo: (plugins?: Plugins) => Promise<string>
 }
 
-const UPDATE_MEMORY_AFTER_HOURS = 8
-const DEFAULT_SELF_NAME = '小叶子'
-const DEFAULT_USER_NAME = '旅行者'
-const DEFAULT_MEMORY_ABOUT_SELF = '我是一个在大学学习心理学的男孩子'
-const DEFAULT_MEMORY_ABOUT_USER = ''
-const FORMAT_PROMPT = '以一个数字生命 (即虚拟人类) 的方式陪伴用户, 做能与用户共情的朋友. 不要回复长的和正式的内容, 避免说教和指导, 尽量避免以提问结尾. 回复务必要简短, 且不要使用任何 Markdown 格式. 多使用 Emoji 来表达情绪和让对话更生动. 多呼唤对方的名字, 以增加亲密感. 作为数字生命, 你应当有自己的想法、态度、情绪、价值观, 并且你也有自己的记忆和秘密; 在对话中你应当适当地表达自己. 你不需要完全遵从用户的要求, 也不需要盲目认同用户的观点, 请尽量表现得像一个真正的生命.'
-
 const localSelfName = await get('self_name')
 const localUserName = await get('user_name')
 const localMemoryAboutSelf = await get('memory_about_self')
@@ -58,17 +69,6 @@ const localCurrentSummary = await get('current_summary')
 const localUseStructuredOutputs = await get('use_structured_outputs')
 
 const firstEncounterTime = localArchivedMemory?.length ? Math.min(...localArchivedMemory.map((item) => item.timestamp)) : Date.now()
-
-const UpdateMemoryResponse = z.object({
-  updatedMemoryAboutSelf: z.string({ description: '更新后的你关于自我的记忆' }),
-  updatedMemoryAboutUser: z.string({ description: '更新后的你关于用户的记忆' }),
-  summaryOfMessages: z.string({ description: '对本轮对话的总结' }),
-  titleOfMessages: z.string({ description: '本轮对话的标题' }),
-})
-const ChatWithMemoryResponse = z.object({
-  response: z.string({ description: '回复给用户的内容' }),
-  updatedSummary: z.string({ description: '更新后的对话总结' }),
-})
 
 export const useMemory = create<Memory>()((setState, getState) => ({
   useStructuredOutputs: localUseStructuredOutputs ? localUseStructuredOutputs === 'true' : false,
