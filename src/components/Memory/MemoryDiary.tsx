@@ -1,4 +1,5 @@
 import { useMemory } from '../../lib/hooks/useMemory.ts'
+import { useVectorApi } from '../../lib/hooks/useVectorApi.ts'
 import { Collapse, Tag, Tooltip } from 'antd'
 import { getTime } from '../../lib/utils.ts'
 
@@ -8,6 +9,9 @@ export function MemoryDiary() {
     longTermMemory,
     selfName,
   } = useMemory()
+  const {
+    vectorDimension,
+  } = useVectorApi()
 
   return (
     <div className='w-full bg-white max-h-full border border-blue-900 rounded-md overflow-auto transition-all'>
@@ -20,7 +24,7 @@ export function MemoryDiary() {
             label: <div className='flex items-center justify-between'>
               <div>{item.title}</div>
               <div><Tooltip color='blue' title={`只有经过索引的记忆才能被${selfName}回忆. 在设置->嵌入服务设置中设置相关内容后, 记忆更新时会自动索引`}>
-                {item.vector ? <Tag color='blue' className='m-0'>已索引</Tag> : <Tag color='red' className='m-0'>未索引</Tag>}
+                {(item.vector && item.vector.length === vectorDimension) ? <Tag color='blue' className='m-0'>已索引</Tag> : <Tag color='red' className='m-0'>未索引</Tag>}
               </Tooltip></div>
             </div>,
             children: (

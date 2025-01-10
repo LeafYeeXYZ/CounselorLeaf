@@ -138,7 +138,7 @@ export function ConfigVector() {
           </Tooltip>
         </Space.Compact>
       </Form.Item>
-      <Form.Item label={<span>索引记忆<Tag className='ml-[0.3rem]'>{longTermMemory.filter((item) => item.vector).length} / {longTermMemory.length} 已索引</Tag></span>}>
+      <Form.Item label={<span>索引记忆<Tag className='ml-[0.3rem]'>{longTermMemory.filter((item) => item.vector && item.vector.length === vectorDimension).length} / {longTermMemory.length} 已索引</Tag></span>}>
         <div className='flex justify-between items-center gap-4'>
           <Button 
             block
@@ -149,7 +149,7 @@ export function ConfigVector() {
                 setDisabled('索引记忆中')
                 const memo = clone(longTermMemory)
                 for (const item of memo) {
-                  if (!item.vector) {
+                  if (!item.vector || item.vector.length !== vectorDimension) {
                     const vector = await vectorApi(item.summary)
                     item.vector = vector
                   }
