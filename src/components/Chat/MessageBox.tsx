@@ -62,7 +62,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
   return (
     <Bubble
       header={memo.role === 'user' ? userName : selfName}
-      footer={memo.role === 'assistant' && <div className='flex gap-1'>
+      footer={(memo.role === 'assistant' && memo.memo !== true) && <div className='flex gap-1'>
         <Button 
           type='text' 
           icon={<CopyOutlined />} 
