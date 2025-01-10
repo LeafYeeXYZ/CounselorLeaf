@@ -119,7 +119,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     return memories.slice(0, count)
   },
   chatWithMemory: async (chatApi, model, input, vector, plugins) => {
-    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory } = getState()
+    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory, setShortTermMemory } = getState()
     const worldInfo = await getTrueWorldInfo(plugins)
     let result: { response?: string, updatedSummary?: string, getMemory?: { count?: number, description?: string } } = {}
     let tokens: number = -1
@@ -166,8 +166,11 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     if (result.getMemory.count > 0) {
       const memories = await getMemoryByDescription(vector, result.getMemory.description, result.getMemory.count)
       if (memories.length > 0) {
+        const content = `我想起了一些和"${result.getMemory.description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`
+        const message = { role: 'assistant', content, timestamp: Date.now() }
+        await setShortTermMemory([...input, message])
         return chatWithMemory(chatApi, model, 
-          [...input, { role: 'assistant', memo: true, content: `我想起了一些和"${result.getMemory.description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now() }],
+          [...input, message],
           vector,
           plugins
         )

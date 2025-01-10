@@ -13,7 +13,7 @@ export function MessageBox() {
 
   const memoryList = useMemo(() => {
     const length = shortTermMemory.length
-    if (length !== 0 && shortTermMemory[length - 1].role === 'user') {
+    if (length !== 0 && (shortTermMemory[length - 1].role === 'user' || shortTermMemory[length - 1].memo === true)) {
       return [...shortTermMemory, { role: 'assistant', content: '__loading__', timestamp: -1 }]
     } else {
       return shortTermMemory
