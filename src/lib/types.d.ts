@@ -7,6 +7,7 @@ declare type ShortTermMemory = {
   content: string
   timestamp: number
   memo?: boolean
+  recall?: string[]
 }
 
 declare type LongTermMemory = {
