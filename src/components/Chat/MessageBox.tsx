@@ -3,8 +3,8 @@ import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { Bubble } from '@ant-design/x'
-import { Button } from 'antd'
-import { UserOutlined, CopyOutlined, SoundOutlined, LoadingOutlined } from '@ant-design/icons'
+import { Button, Tooltip } from 'antd'
+import { UserOutlined, CopyOutlined, SoundOutlined, LoadingOutlined, InfoCircleOutlined } from '@ant-design/icons'
 
 export function MessageBox() {
 
@@ -32,8 +32,7 @@ export function MessageBox() {
       {memoryList.map((memo, index) => (
         <BubbleWithFooter 
           key={index} 
-          role={memo.role}
-          content={memo.content}
+          memo={memo}
           audio={audiosCache.find(({ timestamp }) => timestamp === memo.timestamp)?.audio ?? undefined}
         />
       ))}
@@ -41,7 +40,7 @@ export function MessageBox() {
   )
 }
 
-function BubbleWithFooter({ role, content, audio }: { role: string, content: string, audio?: Uint8Array }) {
+function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint8Array }) {
 
   const { userName, selfName } = useMemory()
   const { messageApi } = useStates()
@@ -62,14 +61,14 @@ function BubbleWithFooter({ role, content, audio }: { role: string, content: str
 
   return (
     <Bubble
-      header={role === 'user' ? userName : selfName}
-      footer={role === 'assistant' && <div className='flex gap-1'>
+      header={memo.role === 'user' ? userName : selfName}
+      footer={memo.role === 'assistant' && <div className='flex gap-1'>
         <Button 
           type='text' 
           icon={<CopyOutlined />} 
           size='small'
           onClick={async () => {
-            await navigator.clipboard.writeText(content)
+            await navigator.clipboard.writeText(memo.content)
             messageApi?.success('已复制到剪贴板')
           }}
         />
@@ -89,10 +88,15 @@ function BubbleWithFooter({ role, content, audio }: { role: string, content: str
           }}
         />
       </div>}
-      placement={role === 'user' ? 'end' : 'start'}
-      content={content}
-      loading={content === '__loading__'}
-      avatar={role === 'user' ? 
+      placement={memo.role === 'user' ? 'end' : 'start'}
+      content={memo.memo === true ? 
+        <span className='text-gray-500'>
+          已提取记忆<Tooltip title={memo.content}><InfoCircleOutlined className='ml-[0.3rem]' /></Tooltip>
+        </span> : 
+        memo.content
+      }
+      loading={memo.content === '__loading__'}
+      avatar={memo.role === 'user' ? 
         { icon: <UserOutlined />, className: 'bg-blue-200 text-blue-900' } : 
         { src: '/avatar.jpg' }
       }

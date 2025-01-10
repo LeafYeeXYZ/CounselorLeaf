@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { get, set, save, getTime, uuid, clone, getWeather } from '../utils.ts'
+import { get, set, save, getTime, uuid, clone, getWeather, cosineSimilarity } from '../utils.ts'
 import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
@@ -20,9 +20,19 @@ const UpdateMemoryResponse = z.object({
 const ChatWithMemoryResponse = z.object({
   response: z.string({ description: '回复给用户的内容' }),
   updatedSummary: z.string({ description: '更新后的对话总结' }),
+  getMemory: z.object({
+    count: z.number({ description: '要提取的记忆条数, 最小 1, 最大 3. 如果不需要提取记忆, 请返回 0' }),
+    description: z.string({ description: '提取记忆的描述. 如果不需要提取记忆, 请返回空字符串' }),
+  }),
 })
 
 type Memory = {
+  // 提取记忆
+  getMemoryByDescription: (
+    vector: (text: string) => Promise<number[] | undefined>,
+    description: string, 
+    count?: number
+  ) => Promise<LongTermMemory[]>
   // 相关记忆信息
   selfName: string
   userName: string
@@ -44,7 +54,7 @@ type Memory = {
   updateMemory: (
     chatApi: ChatApi, 
     model: string, 
-    vector?: (text: string) => Promise<number[] | undefined>,
+    vector: (text: string) => Promise<number[] | undefined>,
     plugins?: Plugins
   ) => Promise<{ tokens: number }>
   // 重置和保存
@@ -60,8 +70,9 @@ type Memory = {
     chatApi: ChatApi, 
     model: string, 
     input: ShortTermMemory[], 
+    vector: (text: string) => Promise<number[] | undefined>,
     plugins?: Plugins
-  ) => Promise<{ result: string, tokens: number }>
+  ) => Promise<{ result: string, tokens: number, output: ShortTermMemory[] }>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
   setUseStructuredOutputs: (value: boolean) => Promise<void>
@@ -92,12 +103,27 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
     return `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
   },
-  chatWithMemory: async (chatApi, model, input, plugins) => {
-    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo } = getState()
+  getMemoryByDescription: async (vector, description, count = 2) => {
+    const { longTermMemory } = getState()
+    const vec = await vector(description).catch(() => undefined)
+    if (!vec) {
+      return []
+    }
+    const memories = longTermMemory
+      .filter((item) => item.vector?.length === vec.length)
+      .map((item) => ({
+        ...item,
+        similarity: cosineSimilarity(item.vector!, vec),
+      }))
+    memories.sort((a, b) => b.similarity - a.similarity)
+    return memories.slice(0, count)
+  },
+  chatWithMemory: async (chatApi, model, input, vector, plugins) => {
+    const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory } = getState()
     const worldInfo = await getTrueWorldInfo(plugins)
-    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户对话的过程中, 你需要不断地生成/更新对本段对话的总结. 在你接收到用户最新的输入后, 你需要参考已有总结和你的记忆等信息, 生成对用户的回应和更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 对你的回复的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
-    let result: Record<string, unknown> = {}
+    let result: { response?: string, updatedSummary?: string, getMemory?: { count?: number, description?: string } } = {}
     let tokens: number = -1
+    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户对话的过程中, 你需要不断地生成/更新对本段对话的总结. 在你接收到用户最新的输入后, 你需要参考已有总结和你的记忆等信息, 生成对用户的回应和更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容\n\n你还拥有一个记忆库, 你可以根据用户的要求, 在你的回复中提供相关信息来提取记忆\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 对你的回复的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     if (useStructuredOutputs) {
       const response = await chatApi.beta.chat.completions.parse({
         model,
@@ -127,13 +153,32 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       !result ||
       typeof result.updatedSummary !== 'string' ||
       typeof result.response !== 'string' ||
+      typeof result.getMemory !== 'object' ||
+      typeof result.getMemory!.count !== 'number' ||
+      typeof result.getMemory!.description !== 'string' ||
       result.updatedSummary === '' ||
-      result.response === ''
+      result.response === '' ||
+      result.getMemory!.count < 0 ||
+      result.getMemory!.count > 3
     ) {
       throw new Error('模型返回错误, 请重试')
     }
+    if (result.getMemory.count > 0) {
+      const memories = await getMemoryByDescription(vector, result.getMemory.description, result.getMemory.count)
+      if (memories.length > 0) {
+        return chatWithMemory(chatApi, model, 
+          [...input, { role: 'assistant', memo: true, content: `我想起了一些和"${result.getMemory.description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now() }],
+          vector,
+          plugins
+        )
+      }
+    }
     await setCurrentSummary(result.updatedSummary)
-    return { result: result.response, tokens }
+    return { 
+      result: result.response, 
+      tokens, 
+      output: input,
+      }
   },
   updateMemory: async (chatApi, model, vector, plugins) => {
     const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, getTrueWorldInfo } = getState()

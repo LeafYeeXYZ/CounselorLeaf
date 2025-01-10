@@ -6,6 +6,7 @@ declare type ShortTermMemory = {
   role: string
   content: string
   timestamp: number
+  memo?: boolean
 }
 
 declare type LongTermMemory = {

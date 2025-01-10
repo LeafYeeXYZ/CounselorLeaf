@@ -1,4 +1,4 @@
-import { useChatApi } from '../../lib/hooks/useChatApi.ts'
+import { useVectorApi } from '../../lib/hooks/useVectorApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { clone } from '../../lib/utils.ts'
@@ -15,8 +15,8 @@ export function ConfigVector() {
     setJinaApiKey,
     setJinaEndpoint,
     setVectorDimension,
-    textToVector,
-  } = useChatApi()
+    vectorApi,
+  } = useVectorApi()
   const {
     longTermMemory,
     setLongTermMemory,
@@ -150,7 +150,7 @@ export function ConfigVector() {
                 const memo = clone(longTermMemory)
                 for (const item of memo) {
                   if (!item.vector) {
-                    const vector = await textToVector(item.summary)
+                    const vector = await vectorApi(item.summary)
                     item.vector = vector
                   }
                 }
@@ -174,7 +174,7 @@ export function ConfigVector() {
                 setDisabled('重建索引中')
                 const memo = clone(longTermMemory)
                 for (const item of memo) {
-                  const vector = await textToVector(item.summary)
+                  const vector = await vectorApi(item.summary)
                   item.vector = vector
                 }
                 setLongTermMemory(memo)

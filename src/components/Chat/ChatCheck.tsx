@@ -5,6 +5,7 @@ import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useState, useEffect, type RefObject } from 'react'
 import { usePlugins } from '../../lib/hooks/usePlugins.ts'
+import { useVectorApi } from '../../lib/hooks/useVectorApi.ts'
 
 import { LoadingOutlined } from '@ant-design/icons'
 import { Button } from 'antd'
@@ -13,7 +14,8 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
 
   const { setDisabled, disabled, setForceAllowNav, messageApi } = useStates()
   const { qWeatherApiKey, testQWeatherApiKey } = usePlugins()
-  const { testChat, chat, openaiModelName, setUsedToken, textToVector } = useChatApi()
+  const { testChat, chat, openaiModelName, setUsedToken } = useChatApi()
+  const { vectorApi } = useVectorApi()
   const { testListen } = useListenApi()
   const { testSpeak } = useSpeakApi()
   const { shouldUpdateMemory, updateMemory } = useMemory()
@@ -43,7 +45,7 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
           async (input) => {
             let vec: number[] | undefined = undefined
             try {
-              vec = await textToVector(input)
+              vec = await vectorApi(input)
             } catch {
               messageApi?.warning('记忆索引失败, 请稍后手动索引')
             }
@@ -64,7 +66,7 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
       setDisabled('加载出错')
       setForceAllowNav(true)
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav, testQWeatherApiKey, shortTermMemoryRef, textToVector, messageApi])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav, testQWeatherApiKey, shortTermMemoryRef, vectorApi, messageApi])
   
   return (
     <div 

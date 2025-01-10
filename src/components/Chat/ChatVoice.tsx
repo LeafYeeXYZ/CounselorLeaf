@@ -10,6 +10,7 @@ import { useListenApi } from '../../lib/hooks/useListenApi.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useLive2dApi } from '../../lib/hooks/useLive2dApi.ts'
 import { usePlugins } from '../../lib/hooks/usePlugins.ts'
+import { useVectorApi } from '../../lib/hooks/useVectorApi.ts'
 
 import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
 import { Button, Popover, Popconfirm, type GetRef } from 'antd'
@@ -22,7 +23,8 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
 
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
-  const { chat, usedToken, setUsedToken, openaiModelName, maxToken, textToVector } = useChatApi()
+  const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
+  const { vectorApi } = useVectorApi()
   const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
@@ -63,11 +65,21 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       ]
       await setShortTermMemory(input)
       live2d?.tipsMessage('......', 20000, Date.now())
-      const { result, tokens } = await chatWithMemory(chat, openaiModelName, input, { qWeatherApiKey })
-      const output = [
-        ...input,
-        { role: 'assistant', content: result, timestamp: time },
-      ]
+      const { result, tokens, output } = await chatWithMemory(
+        chat, 
+        openaiModelName, 
+        input, 
+        async (input) => {
+          let vec: number[] | undefined = undefined
+          try {
+            vec = await vectorApi(input)
+          } catch {
+            messageApi?.warning('输出向量化失败, 记忆提取功能将无法使用')
+          }
+          return vec
+        },
+        { qWeatherApiKey }
+      )
       await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
       const emoji = emojiReg()
@@ -84,7 +96,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       let staps = ''
       for (const w of result) {
         current += w
-        await setShortTermMemory([...input, { role: 'assistant', content: current, timestamp: time }])
+        await setShortTermMemory([...output, { role: 'assistant', content: current, timestamp: time }])
         await sleep(30)
         if (w.match(reg)) {
           staps = ''
@@ -96,8 +108,9 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
       }
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
       await say.catch((e) => messageApi?.error(`语音播放失败: ${e instanceof Error ? e.message : e}`))
-      await setShortTermMemory(output)
-      shortTermMemoryRef.current = output
+      const newMemory = [...output, { role: 'assistant', content: result, timestamp: time }]
+      await setShortTermMemory(newMemory)
+      shortTermMemoryRef.current = newMemory
     } catch (error) {
       messageApi?.error(error instanceof Error ? error.message : '未知错误')
       await setShortTermMemory(prev)
@@ -167,7 +180,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
                   async (input) => {
                     let vec: number[] | undefined = undefined
                     try {
-                      vec = await textToVector(input)
+                      vec = await vectorApi(input)
                     } catch {
                       messageApi?.warning('记忆索引失败, 请稍后手动索引')
                     }
