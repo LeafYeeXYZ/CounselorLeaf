@@ -167,7 +167,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       const memories = await getMemoryByDescription(vector, result.getMemory.description, result.getMemory.count)
       if (memories.length > 0) {
         const content = `我想起了一些和"${result.getMemory.description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`
-        const message = { role: 'assistant', content, timestamp: Date.now() }
+        const message = { role: 'assistant', content, timestamp: Date.now(), memo: true }
         await setShortTermMemory([...input, message])
         return chatWithMemory(chatApi, model, 
           [...input, message],
