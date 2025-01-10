@@ -11,9 +11,9 @@ import { Button } from 'antd'
 
 export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: boolean) => void, shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
 
-  const { setDisabled, disabled, setForceAllowNav } = useStates()
+  const { setDisabled, disabled, setForceAllowNav, messageApi } = useStates()
   const { qWeatherApiKey, testQWeatherApiKey } = usePlugins()
-  const { testChat, chat, openaiModelName, setUsedToken } = useChatApi()
+  const { testChat, chat, openaiModelName, setUsedToken, textToVector } = useChatApi()
   const { testListen } = useListenApi()
   const { testSpeak } = useSpeakApi()
   const { shouldUpdateMemory, updateMemory } = useMemory()
@@ -37,7 +37,20 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
       if (shouldUpdateMemory()) {
         setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>)
         setStatusText('更新记忆中')
-        const { tokens } = await updateMemory(chat, openaiModelName, { qWeatherApiKey })
+        const { tokens } = await updateMemory(
+          chat, 
+          openaiModelName, 
+          async (input) => {
+            let vec: number[] | undefined = undefined
+            try {
+              vec = await textToVector(input)
+            } catch {
+              messageApi?.warning('记忆索引失败, 请稍后手动索引')
+            }
+            return vec
+          },
+          { qWeatherApiKey }
+        )
         shortTermMemoryRef.current = []
         await setUsedToken(tokens)
       }
@@ -51,7 +64,7 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
       setDisabled('加载出错')
       setForceAllowNav(true)
     })
-  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav, testQWeatherApiKey, shortTermMemoryRef])
+  }, [setDisabled, testChat, testSpeak, testListen, setReady, statusText, disabled, shouldUpdateMemory, updateMemory, chat, qWeatherApiKey, openaiModelName, setUsedToken, setForceAllowNav, testQWeatherApiKey, shortTermMemoryRef, textToVector, messageApi])
   
   return (
     <div 

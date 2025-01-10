@@ -4,6 +4,16 @@ export { live2dList } from './api/shared/api.live2d.ts'
 export { set, get, save } from './api/web/api.store.ts'
 export { openLink } from './api/web/api.utils.ts'
 
+export function cosineSimilarity(vec1: number[], vec2: number[]): number {
+  if (vec1.length !== vec2.length) {
+    throw new Error('两个向量的维度不一致')
+  }
+  const dotProduct = vec1.reduce((sum, val, idx) => sum + val * vec2[idx], 0)
+  const magnitude1 = Math.sqrt(vec1.reduce((sum, val) => sum + val ** 2, 0))
+  const magnitude2 = Math.sqrt(vec2.reduce((sum, val) => sum + val ** 2, 0))
+  return dotProduct / (magnitude1 * magnitude2)
+}
+
 export async function getWeather(apiKey: string): Promise<string> {
   const timeout = 30_000_000
   const weatherCacheContent = sessionStorage.getItem('weather_cache_content')

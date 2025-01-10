@@ -41,7 +41,12 @@ type Memory = {
   setArchivedMemory: (memory: ArchivedMemory[]) => Promise<void>
   // 记忆更新 (短时记忆 -> 长时记忆, 并递归更新自我概念)
   shouldUpdateMemory: () => boolean
-  updateMemory: (chatApi: ChatApi, model: string, plugins?: Plugins) => Promise<{ tokens: number }>
+  updateMemory: (
+    chatApi: ChatApi, 
+    model: string, 
+    vector?: (text: string) => Promise<number[] | undefined>,
+    plugins?: Plugins
+  ) => Promise<{ tokens: number }>
   // 重置和保存
   resetAllMemory: () => Promise<void>
   saveAllMemory: () => Promise<string>
@@ -51,10 +56,16 @@ type Memory = {
   currentSummary: string
   setCurrentSummary: (content: string) => Promise<void>
   // 聊天
-  chatWithMemory: (chatApi: ChatApi, model: string, input: ShortTermMemory[], plugins?: Plugins) => Promise<{ result: string, tokens: number }>
+  chatWithMemory: (
+    chatApi: ChatApi, 
+    model: string, 
+    input: ShortTermMemory[], 
+    plugins?: Plugins
+  ) => Promise<{ result: string, tokens: number }>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
   setUseStructuredOutputs: (value: boolean) => Promise<void>
+  // 获取真实世界信息
   getTrueWorldInfo: (plugins?: Plugins) => Promise<string>
 }
 
@@ -124,7 +135,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     await setCurrentSummary(result.updatedSummary)
     return { result: result.response, tokens }
   },
-  updateMemory: async (chatApi, model, plugins) => {
+  updateMemory: async (chatApi, model, vector, plugins) => {
     const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, useStructuredOutputs, getTrueWorldInfo } = getState()
     if (shortTermMemory.length === 0) {
       throw new Error('没有需要总结的对话内容')
@@ -170,6 +181,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       throw new Error('模型返回错误, 请重试')
     }
     const prev = clone(shortTermMemory)
+    const vec = vector ? await vector(result.summaryOfMessages).catch(() => undefined) : undefined
     const _uuid = uuid()
     const timestamps = prev.map((item) => item.timestamp)
     await setMemoryAboutSelf(result.updatedMemoryAboutSelf)
@@ -183,6 +195,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
         summary: result.summaryOfMessages || '无总结',
         startTime: Math.min(...timestamps),
         endTime: Math.max(...timestamps),
+        vector: vec,
       },
       ...clone(longTermMemory),
     ])

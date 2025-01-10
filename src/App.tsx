@@ -9,7 +9,7 @@ import { useMemory } from './lib/hooks/useMemory.ts'
 import { useIsMobile } from './lib/hooks/useIsMobile.ts'
 
 import { message, Menu } from 'antd'
-import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined, CloudOutlined } from '@ant-design/icons'
+import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined, CloudOutlined, BoxPlotOutlined } from '@ant-design/icons'
 import { MemoryAction } from './components/Memory/MemoryAction.tsx'
 import { MemoryDiary } from './components/Memory/MemoryDiary.tsx'
 import { MemoryMain } from './components/Memory/MemoryMain.tsx'
@@ -18,6 +18,7 @@ import { ConfigMain } from './components/Config/ConfigMain.tsx'
 import { ConfigVoice } from './components/Config/ConfigVoice.tsx'
 import { ConfigLayout } from './components/Config/ConfigLayout.tsx'
 import { ConfigPlugins } from './components/Config/ConfigPlugins.tsx'
+import { ConfigVector } from './components/Config/ConfigVector.tsx'
 import { ChatIndex } from './components/Chat/ChatIndex.tsx'
 import { Debug } from './components/Debug.tsx'
 
@@ -28,6 +29,7 @@ const PAGES: Record<string, ReactNode> = {
   'memory-action': <MemoryAction />,
   'memory-cloud': <MemoryCloud />,
   'config-main': <ConfigMain />,
+  'config-vector': <ConfigVector />,
   'config-service': <ConfigVoice />,
   'config-layout': <ConfigLayout />,
   'config-plugins': <ConfigPlugins />,
@@ -149,6 +151,7 @@ export default function App() {
                     key: 'config', label: '设置', icon: <SettingOutlined />,
                     children: [
                       { key: 'config-main', label: '推理服务设置', icon: <BlockOutlined /> },
+                      { key: 'config-vector', label: '嵌入服务设置', icon: <BoxPlotOutlined /> },
                       { key: 'config-service', label: '语音服务设置', icon: <ApiOutlined /> },
                       { key: 'config-layout', label: '自定义设置', icon: <LayoutOutlined /> },
                       { key: 'config-plugins', label: '插件设置', icon: <BorderlessTableOutlined /> },

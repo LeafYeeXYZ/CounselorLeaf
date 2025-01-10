@@ -1,11 +1,12 @@
 import { useMemory } from '../../lib/hooks/useMemory.ts'
-import { Collapse, Tag } from 'antd'
+import { Collapse, Tag, Tooltip } from 'antd'
 import { getTime } from '../../lib/utils.ts'
 
 export function MemoryDiary() {
 
   const { 
     longTermMemory,
+    selfName,
   } = useMemory()
 
   return (
@@ -16,7 +17,12 @@ export function MemoryDiary() {
         items={longTermMemory?.length !== 0 ? longTermMemory.map((item) => {
           return {
             key: item.uuid,
-            label: item.title,
+            label: <div className='flex items-center justify-between'>
+              <div>{item.title}</div>
+              <div><Tooltip color='blue' title={`只有经过索引的记忆才能被${selfName}回忆. 在设置->嵌入服务设置中设置相关内容后, 记忆更新时会自动索引`}>
+                {item.vector ? <Tag color='blue' className='m-0'>已索引</Tag> : <Tag color='red' className='m-0'>未索引</Tag>}
+              </Tooltip></div>
+            </div>,
             children: (
               <div className='w-full flex flex-col gap-2'>
                 <div>{item.summary}</div>

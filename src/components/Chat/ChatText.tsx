@@ -20,7 +20,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
 
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
-  const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
+  const { chat, usedToken, setUsedToken, openaiModelName, maxToken, textToVector } = useChatApi()
   const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
@@ -113,7 +113,20 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
             onConfirm={async () => {
               try {
                 flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>更新记忆中 <LoadingOutlined /></p>))
-                const { tokens } = await updateMemory(chat, openaiModelName, { qWeatherApiKey })
+                const { tokens } = await updateMemory(
+                  chat, 
+                  openaiModelName, 
+                  async (input) => {
+                    let vec: number[] | undefined = undefined
+                    try {
+                      vec = await textToVector(input)
+                    } catch {
+                      messageApi?.warning('记忆索引失败, 请稍后手动索引')
+                    }
+                    return vec
+                  },
+                  { qWeatherApiKey }
+                )
                 await setUsedToken(Math.max(usedToken, tokens))
                 shortTermMemoryRef.current = []
                 messageApi?.success('记忆更新成功')

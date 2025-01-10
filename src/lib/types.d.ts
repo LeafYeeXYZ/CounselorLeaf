@@ -14,6 +14,7 @@ declare type LongTermMemory = {
   endTime: number
   title: string
   summary: string
+  vector?: number[]
 }
 
 declare type ArchivedMemory = {
@@ -43,7 +44,10 @@ declare type ConfigKeys =
   's3_bucket_name' |
   'is_full_screen' |
   's3_memory_key' |
-  'audios_cache'
+  'audios_cache' |
+  'jina_endpoint' |
+  'jina_api_key' |
+  'vector_dimension'
 
 declare type MemoryKeys =
   'self_name' |
