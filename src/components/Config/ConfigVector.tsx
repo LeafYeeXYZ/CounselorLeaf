@@ -38,7 +38,6 @@ export function ConfigVector() {
     <Form 
       form={form}
       layout='vertical' 
-      disabled={disabled !== false}
       className='w-full bg-white border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-full'
     >
       <Form.Item label={<span>嵌入服务地址<Tag className='ml-[0.3rem]'>jina-embedding-v3 Endpoint</Tag></span>}>
