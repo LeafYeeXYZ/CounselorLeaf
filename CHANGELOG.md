@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0](https://github.com/LeafYeeXYZ/DigitalLife/compare/v1.2.0...v1.3.0) (2025-01-14)
+
+
+### Features
+
+* 记忆提取功能初步完成 ([46931e9](https://github.com/LeafYeeXYZ/DigitalLife/commit/46931e9286ef4dc262f15cf4391d873d8dad702e))
+* 提取记忆的过程中提早给用户反馈 ([c3df40d](https://github.com/LeafYeeXYZ/DigitalLife/commit/c3df40d240656e65f6751299a7bf9c3d49ada6c6))
+* 长时记忆向量化 ([0a98664](https://github.com/LeafYeeXYZ/DigitalLife/commit/0a986645038414edb5dba5a5d6315583485c9c65))
+
+
+### Bug Fixes
+
+* 修复不正确的组件禁用 ([4dba3f2](https://github.com/LeafYeeXYZ/DigitalLife/commit/4dba3f2310771002698fcfdfa7b3d4c2fc9d011a))
+* 修复了潜在的向量维度不匹配问题 ([97b145a](https://github.com/LeafYeeXYZ/DigitalLife/commit/97b145af05adc8e8193e22aafc88a4056bfee399))
+* 修复中途更新的记忆缺少属性的问题 ([4e80f3d](https://github.com/LeafYeeXYZ/DigitalLife/commit/4e80f3dfb223c8117f72f3d1aff9c6f17a2bc6dd))
+
+
+### Refactoring
+
+* 合并生成回复和更新总结为一次模型调用 ([4a878b3](https://github.com/LeafYeeXYZ/DigitalLife/commit/4a878b37c47c41a596695478a6af35a09ab8efa4))
+
+
+### Improvements
+
+* 记忆提取的数量改为固定的两条 ([519b19e](https://github.com/LeafYeeXYZ/DigitalLife/commit/519b19eccd1d212109475ae296459666c8bdc2b6))
+* 排除记忆提取过程中的重复记忆 ([011a64a](https://github.com/LeafYeeXYZ/DigitalLife/commit/011a64a5c9fb604cb5087c1a5ce4a6b95211d914))
+* 天气信息现在会缓存半个小时 ([726e1da](https://github.com/LeafYeeXYZ/DigitalLife/commit/726e1da269a9c2016cd1fc6ec54bf44689016b3f))
+* 现在文字对话语音生成结束将即时更新 ([61a9fa1](https://github.com/LeafYeeXYZ/DigitalLife/commit/61a9fa19e17dab6a4e2600f51dac337b512cadd8))
+* 优化关于自主回忆的提示词 ([ac8d2aa](https://github.com/LeafYeeXYZ/DigitalLife/commit/ac8d2aa241804b311b447a3815d408a73ce6a23a))
+* 优化记忆提取的提示词 ([a6c1cf8](https://github.com/LeafYeeXYZ/DigitalLife/commit/a6c1cf8cfe78a126293ecddc53d494616d44630b))
+* 优化记忆提取重复时发送给模型的提示词 ([16a4756](https://github.com/LeafYeeXYZ/DigitalLife/commit/16a475694fb1d21d050acb4d00c9b8cfcedc3db9))
+* 优化语音识别 API 的测试流程 ([351f245](https://github.com/LeafYeeXYZ/DigitalLife/commit/351f24579ec404ec8ec88c0c3650fa9046638c9a))
+* 在提取记忆的提示中隐藏底部工具栏 ([0afa1ab](https://github.com/LeafYeeXYZ/DigitalLife/commit/0afa1ab68f9bb625ce47b8db47a01fbd6a136d63))
+
 ## [1.2.0](https://github.com/LeafYeeXYZ/DigitalLife/compare/v1.1.0...v1.2.0) (2025-01-08)
 
 
