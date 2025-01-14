@@ -9,16 +9,16 @@ import { useMemory } from './lib/hooks/useMemory.ts'
 import { useIsMobile } from './lib/hooks/useIsMobile.ts'
 
 import { message, Menu } from 'antd'
-import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined, CloudOutlined, BoxPlotOutlined } from '@ant-design/icons'
+import { SettingOutlined, BookOutlined, CommentOutlined, LoadingOutlined, ExportOutlined, FontSizeOutlined, AudioOutlined, CloudSyncOutlined, IdcardOutlined, ReadOutlined, LayoutOutlined, BlockOutlined, ApiOutlined, BorderlessTableOutlined, BoxPlotOutlined } from '@ant-design/icons'
 import { MemoryAction } from './components/Memory/MemoryAction.tsx'
 import { MemoryDiary } from './components/Memory/MemoryDiary.tsx'
 import { MemoryMain } from './components/Memory/MemoryMain.tsx'
-import { MemoryCloud } from './components/Memory/MemoryCloud.tsx'
 import { ConfigMain } from './components/Config/ConfigMain.tsx'
 import { ConfigVoice } from './components/Config/ConfigVoice.tsx'
 import { ConfigLayout } from './components/Config/ConfigLayout.tsx'
 import { ConfigPlugins } from './components/Config/ConfigPlugins.tsx'
 import { ConfigVector } from './components/Config/ConfigVector.tsx'
+import { ConfigCloud } from './components/Config/ConfigCloud.tsx'
 import { ChatIndex } from './components/Chat/ChatIndex.tsx'
 import { Debug } from './components/Debug.tsx'
 
@@ -27,11 +27,11 @@ const PAGES: Record<string, ReactNode> = {
   'memory-main': <MemoryMain />,
   'memory-diary': <MemoryDiary />,
   'memory-action': <MemoryAction />,
-  'memory-cloud': <MemoryCloud />,
   'config-main': <ConfigMain />,
   'config-vector': <ConfigVector />,
   'config-service': <ConfigVoice />,
   'config-layout': <ConfigLayout />,
+  'config-cloud': <ConfigCloud />,
   'config-plugins': <ConfigPlugins />,
   'chat-text': <ChatIndex to='text' />,
   'chat-voice': <ChatIndex to='voice' />,
@@ -137,7 +137,6 @@ export default function App() {
                       { key: 'memory-main', label: '名字和自我', icon: <IdcardOutlined /> },
                       { key: 'memory-diary', label: `${selfName}的日记本`, icon: <ReadOutlined /> },
                       { key: 'memory-action', label: '导入和导出', icon: <CloudSyncOutlined /> },
-                      { key: 'memory-cloud', label: '云备份和恢复', icon: <CloudOutlined /> },
                     ],
                   },
                   { 
@@ -154,6 +153,7 @@ export default function App() {
                       { key: 'config-vector', label: '嵌入服务设置', icon: <BoxPlotOutlined /> },
                       { key: 'config-service', label: '语音服务设置', icon: <ApiOutlined /> },
                       { key: 'config-layout', label: '自定义设置', icon: <LayoutOutlined /> },
+                      { key: 'config-cloud', label: '云存储设置', icon: <CloudSyncOutlined /> },
                       { key: 'config-plugins', label: '插件设置', icon: <BorderlessTableOutlined /> },
                     ],
                   },

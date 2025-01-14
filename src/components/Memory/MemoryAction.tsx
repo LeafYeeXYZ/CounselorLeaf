@@ -1,8 +1,10 @@
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
-import { Form, Button, Popover, Input, Upload } from 'antd'
-import { ExportOutlined, DeleteOutlined, ImportOutlined } from '@ant-design/icons'
 import { useState, useRef } from 'react'
+import { usePlugins } from '../../lib/hooks/usePlugins.ts'
+import { flushSync } from 'react-dom'
+import { Form, Button, Popover, Input, Upload, Popconfirm, Space, Tooltip } from 'antd'
+import { ExportOutlined, DeleteOutlined, ImportOutlined, SaveOutlined, CloudUploadOutlined, CloudDownloadOutlined } from '@ant-design/icons'
 
 export function MemoryAction() {
 
@@ -10,8 +12,21 @@ export function MemoryAction() {
     resetAllMemory,
     saveAllMemory,
     importAllMemory,
+    exportAllMemory,
   } = useMemory()
-  const { messageApi } = useStates()
+  const {
+    setS3MemoryKey,
+    s3MemoryKey,
+    putToS3,
+    getFromS3,
+  } = usePlugins()
+  const { 
+    messageApi,
+    disabled,
+    setDisabled,
+  } = useStates()
+
+  const [s3MemoryKeyModified, setS3MemoryKeyModified] = useState(false)
 
   const [openDeleteMemory, setOpenDeleteMemory] = useState<boolean>(false)
   const deleteMemoryText = useRef<string>('')
@@ -22,6 +37,9 @@ export function MemoryAction() {
       form={form}
       layout='vertical' 
       className='w-full bg-white border border-blue-900 rounded-md p-5 pb-1 overflow-auto max-h-full'
+      initialValues={{
+        s3MemoryKey,
+      }}
     >
       <Form.Item label='导出记忆'>
         <Button 
@@ -104,6 +122,101 @@ export function MemoryAction() {
             重置所有记忆
           </Button>
         </Popover>
+      </Form.Item>
+      <hr className='border-t border-blue-900 mb-4' />
+      <Form.Item label='云存储键名'>
+        <Space.Compact block>
+          <Tooltip title='清除已保存的值' color='blue'>
+            <Button 
+              icon={<DeleteOutlined />}
+              onClick={async () => {
+                await setS3MemoryKey()
+                setS3MemoryKeyModified(false)
+                form.setFieldsValue({ s3MemoryKey: '' })
+                messageApi?.success('记忆键名已清除')
+              }}
+            />
+          </Tooltip>
+          <Form.Item noStyle name='s3MemoryKey'>
+            <Input className='w-full' onChange={() => setS3MemoryKeyModified(true)} />
+          </Form.Item>
+          <Tooltip title='保存修改' color='blue'>
+            <Button
+              type={s3MemoryKeyModified ? 'primary' : 'default'}
+              onClick={async () => {
+                const key = form.getFieldValue('s3MemoryKey')
+                await setS3MemoryKey(key || '')
+                setS3MemoryKeyModified(false)
+                messageApi?.success('记忆键名已更新')
+              }}
+              icon={<SaveOutlined />}
+            />
+          </Tooltip>
+        </Space.Compact>
+      </Form.Item>
+      <Form.Item>
+        <div className='flex justify-between items-center gap-4'>
+          <Popconfirm
+            title='此操作将覆盖云端记忆，确定要继续吗？'
+            onConfirm={async () => {
+              if (!s3MemoryKey) {
+                messageApi?.error('请先设置用于存储记忆的键名')
+                return
+              }
+              try {
+                flushSync(() => setDisabled('上传记忆中'))
+                const memory = await exportAllMemory()
+                await putToS3(s3MemoryKey, memory)
+                messageApi?.success(`记忆已上传至 ${s3MemoryKey} 中`)
+              } catch (e) {
+                messageApi?.error(`记忆上传失败: ${e instanceof Error ? e.message : e}`)
+              } finally {
+                setDisabled(false)
+              }
+            }}
+            okText='确定'
+            cancelText='取消'
+          >
+            <Button 
+              block
+              disabled={disabled === '下载记忆中' || disabled === '上传记忆中'}
+              loading={disabled === '上传记忆中'}
+              icon={<CloudUploadOutlined />}
+            >
+              上传记忆至云端
+            </Button>
+          </Popconfirm>
+          <Popconfirm
+            title='此操作将覆盖本地记忆，确定要继续吗？'
+            onConfirm={async () => {
+              if (!s3MemoryKey) {
+                messageApi?.error('请先设置用于存储记忆的键名')
+                return
+              }
+              try {
+                flushSync(() => setDisabled('下载记忆中'))
+                const memory = await getFromS3(s3MemoryKey)
+                await importAllMemory(memory || '')
+                messageApi?.success(`已从 ${s3MemoryKey} 中导入记忆`)
+              } catch (e) {
+                messageApi?.error(`记忆下载失败: ${e instanceof Error ? e.message : e}`)
+              } finally {
+                setDisabled(false)
+              }
+            }}
+            okText='确定'
+            cancelText='取消'
+          >
+            <Button 
+              block
+              disabled={disabled === '上传记忆中' || disabled === '下载记忆中'}
+              loading={disabled === '下载记忆中'}
+              icon={<CloudDownloadOutlined />}
+            >
+              从云端导入记忆
+            </Button>
+          </Popconfirm>
+        </div>
       </Form.Item>
     </Form>
   )
