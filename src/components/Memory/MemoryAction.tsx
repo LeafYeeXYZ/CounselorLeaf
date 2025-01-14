@@ -124,7 +124,7 @@ export function MemoryAction() {
         </Popover>
       </Form.Item>
       <hr className='border-t border-blue-900 mb-4' />
-      <Form.Item label='云存储键名'>
+      <Form.Item label='云存储中用于存储记忆的键名'>
         <Space.Compact block>
           <Tooltip title='清除已保存的值' color='blue'>
             <Button 

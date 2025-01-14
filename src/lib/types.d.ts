@@ -46,6 +46,7 @@ declare type ConfigKeys =
   's3_bucket_name' |
   'is_full_screen' |
   's3_memory_key' |
+  's3_config_key' |
   'audios_cache' |
   'jina_endpoint' |
   'jina_api_key' |
@@ -70,6 +71,7 @@ declare type Plugins = {
   s3SecretKey?: string
   s3BucketName?: string
   s3MemoryKey?: string
+  s3ConfigKey?: string
 }
 
 declare type ChatApi = import('openai').OpenAI
