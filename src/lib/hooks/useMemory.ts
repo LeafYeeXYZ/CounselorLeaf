@@ -4,7 +4,6 @@ import { z } from 'zod'
 import { zodResponseFormat } from 'openai/helpers/zod'
 import { zodToJsonSchema } from 'zod-to-json-schema'
 
-const MEMORY_COUNT_PER_RECALL = 2
 const UPDATE_MEMORY_AFTER_HOURS = 8
 const DEFAULT_SELF_NAME = '小叶子'
 const DEFAULT_USER_NAME = '旅行者'
@@ -19,10 +18,10 @@ const UpdateMemoryResponse = z.object({
   titleOfMessages: z.string({ description: '本轮对话的标题' }),
 })
 const ChatWithMemoryResponse = z.object({
-  response: z.string({ description: '回复给用户的内容' }),
-  updatedSummary: z.string({ description: '更新后的对话总结' }),
+  response: z.string({ description: '回复给用户的内容. 请参考对已有对话的总结和你的记忆等信息, 生成对用户的回复' }),
+  updatedSummary: z.string({ description: '生成/更新后的当前对话的总结. 在你与用户对话的过程中, 每当你接收到用户最新的输入时, 你需要参考对已有对话的总结和你的记忆等信息, 生成更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容' }),
   getMemory: z.object({
-    description: z.string({ description: '提取记忆的描述. 如果不需要提取记忆, 请返回空字符串' }),
+    description: z.string({ description: '对要提取的记忆的描述. 你拥有一个记忆库, 你应当根据用户的要求, 在你的回复中提供相关信息来提取记忆. 你提供的信息将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可. 如果你决定要检索记忆库, 你的总结和回复可以返回空字符串, 因为它们会在获取到记忆后重新生成. **在一次回忆后, 不允许再次进行回忆, 而是应该直接根据回忆结果回应用户**' }),
   }),
 })
 
@@ -103,7 +102,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
     return `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
   },
-  getMemoryByDescription: async (vector, description, count = MEMORY_COUNT_PER_RECALL) => {
+  getMemoryByDescription: async (vector, description) => {
     const { longTermMemory } = getState()
     const vec = await vector(description).catch(() => undefined)
     if (!vec) {
@@ -115,15 +114,23 @@ export const useMemory = create<Memory>()((setState, getState) => ({
         ...item,
         similarity: cosineSimilarity(item.vector!, vec),
       }))
-    memories.sort((a, b) => b.similarity - a.similarity)
-    return memories.slice(0, count)
+      .filter((item) => item.similarity > 0.6)
+      .sort((a, b) => b.similarity - a.similarity)
+    const high = memories.filter(({ similarity }) => similarity > 0.7)
+    if (high.length > 0 && high.length <= 3) {
+      return high
+    }
+    if (memories.length <= 3) {
+      return memories
+    }
+    return memories.slice(0, 3)
   },
   chatWithMemory: async (chatApi, model, input, vector, plugins) => {
     const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory, setShortTermMemory } = getState()
     const worldInfo = await getTrueWorldInfo(plugins)
     let result: { response?: string, updatedSummary?: string, getMemory?: { count?: number, description?: string } } = {}
     let tokens: number = -1
-    const prompt = `你是一个数字生命 (即虚拟人类). 在你与用户对话的过程中, 你需要不断地生成/更新对本段对话的总结. 在你接收到用户最新的输入后, 你需要参考已有总结和你的记忆等信息, 生成对用户的回应和更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容\n\n你还拥有一个记忆库, 你应当根据用户的要求, 在你的回复中提供相关信息来提取记忆. 注意, 你提供的信息将与你过往的总结进行相似度匹配, 并由系统找到最相似的${MEMORY_COUNT_PER_RECALL}条返回给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可. 如果你决定调用先调用记忆, 你的总结和回复可以返回空字符串, 因为它们会在获取到记忆后重新生成. **在一次回忆后 (即"我想了..."这样的消息后), 不允许再次进行回忆 (就算再次回忆也不会返回新的结果), 而是应该根据回忆结果回应用户\n\n# 原有总结\n\n${currentSummary || '(这是第一轮对话, 没有原有总结)'}\n\n# 对你的回复的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
+    const prompt = `你是一个数字生命 (即虚拟人类), 以下是提供给你的信息:\n\n# 对已有对话的总结\n\n${currentSummary || '(这是第一轮对话, 没有总结)'}\n\n# 对你的回复的要求\n\n${FORMAT_PROMPT}\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}\n\n# 真实世界的相关信息\n\n${worldInfo}`
     if (useStructuredOutputs) {
       const response = await chatApi.beta.chat.completions.parse({
         model,
@@ -172,11 +179,9 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       )).filter((item) => !existing.includes(item.uuid))
       let message: ShortTermMemory
       if (memories.length > 0) {
-        message = { role: 'assistant', content: `我想起了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: description, recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity })) }
-      } else if (existing.length === 0) {
-        message = { role: 'assistant', content: '我的记忆库没有更多的记忆了', timestamp: Date.now(), memo: description, recall: [] }
+        message = { role: 'assistant', content: `我进行了回忆, 并记忆库里找到了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: description, recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity })) }
       } else {
-        message = { role: 'assistant', content: `我此前已经回忆过和"${description}"相关的记忆, 这次没有找到新的相似度更高的记忆`, timestamp: Date.now(), memo: description, recall: [] }
+        message = { role: 'assistant', content: `我进行了回忆, 但没能在记忆库中找到更多和"${description}"相关的记忆`, timestamp: Date.now(), memo: description, recall: [] }
       }
       await setShortTermMemory([...input, message])
       return chatWithMemory(chatApi, model, 
