@@ -17,12 +17,16 @@ const UpdateMemoryResponse = z.object({
   summaryOfMessages: z.string({ description: '对本轮对话的总结' }),
   titleOfMessages: z.string({ description: '本轮对话的标题' }),
 })
-const ChatWithMemoryResponse = z.object({
+const ChatWithMemoryResponseA = z.object({
   response: z.string({ description: '回复给用户的内容. 请参考对已有对话的总结和你的记忆等信息, 生成对用户的回复' }),
   updatedSummary: z.string({ description: '生成/更新后的当前对话的总结. 在你与用户对话的过程中, 每当你接收到用户最新的输入时, 你需要参考对已有对话的总结和你的记忆等信息, 生成更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容' }),
   getMemory: z.object({
-    description: z.string({ description: '对要提取的记忆的描述. 你拥有一个记忆库, 你应当根据用户的要求, 在你的回复中提供相关信息来提取记忆. 你提供的信息将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可. 如果你决定要检索记忆库, 你的总结和回复可以返回空字符串, 因为它们会在获取到记忆后重新生成. **在一次回忆后, 不允许再次进行回忆, 而是应该直接根据回忆结果回应用户**' }),
+    description: z.string({ description: '对要提取的记忆的描述. 你拥有一个记忆库, 你应当根据用户的要求, 在你的回复中提供相关信息来提取记忆. 你提供的信息将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可. 如果你决定要检索记忆库, 你的总结和回复可以返回空字符串, 因为它们会在获取到记忆后重新生成' }),
   }),
+})
+const ChatWithMemoryResponseB = z.object({
+  response: z.string({ description: '回复给用户的内容. 请参考对已有对话的总结和你的记忆等信息, 生成对用户的回复' }),
+  updatedSummary: z.string({ description: '生成/更新后的当前对话的总结. 在你与用户对话的过程中, 每当你接收到用户最新的输入时, 你需要参考对已有对话的总结和你的记忆等信息, 生成更新后的总结. 你的总结中可以包含这轮对话的主要内容、用户提到的重要信息和事实、你的回答和建议, 以及你对这轮对话的感受和反思等等等等内容. 如果你觉得没有需要更新的内容, 也可以直接返回原有的总结内容' }),
 })
 
 type Memory = {
@@ -70,7 +74,8 @@ type Memory = {
     model: string, 
     input: ShortTermMemory[], 
     vector: (text: string) => Promise<number[] | undefined>,
-    plugins?: Plugins
+    plugins?: Plugins,
+    canSearchMemory?: boolean
   ) => Promise<{ result: string, tokens: number, output: ShortTermMemory[] }>
   // 是否使用最新的 Structured Output API
   useStructuredOutputs: boolean
@@ -125,7 +130,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     }
     return memories.slice(0, 3)
   },
-  chatWithMemory: async (chatApi, model, input, vector, plugins) => {
+  chatWithMemory: async (chatApi, model, input, vector, plugins, canSearchMemory = true) => {
     const { setCurrentSummary, currentSummary, useStructuredOutputs, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory, setShortTermMemory } = getState()
     const worldInfo = await getTrueWorldInfo(plugins)
     let result: { response?: string, updatedSummary?: string, getMemory?: { count?: number, description?: string } } = {}
@@ -135,7 +140,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       const response = await chatApi.beta.chat.completions.parse({
         model,
         stream: false,
-        response_format: zodResponseFormat(ChatWithMemoryResponse, 'response'),
+        response_format: zodResponseFormat(canSearchMemory ? ChatWithMemoryResponseA : ChatWithMemoryResponseB, 'response'),
         messages: [
           { role: 'system', content: '**请按格式返回JSON字符串**\n\n' + prompt },
           ...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[],
@@ -149,7 +154,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
         stream: false,
         response_format: { type: 'json_object' },
         messages: [
-          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(ChatWithMemoryResponse), null, 2)}\n\n` + prompt },
+          { role: 'system', content: `**请按格式返回JSON字符串**, JSON Schema 为:\n\n${JSON.stringify(zodToJsonSchema(canSearchMemory ? ChatWithMemoryResponseA : ChatWithMemoryResponseB), null, 2)}\n\n` + prompt },
           ...input.map(({ role, content }) => ({ role, content })) as { role: 'user' | 'assistant', content: string }[],
         ],
       })
@@ -159,13 +164,11 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     if (
       !result ||
       typeof result.updatedSummary !== 'string' ||
-      typeof result.response !== 'string' ||
-      typeof result.getMemory !== 'object' ||
-      typeof result.getMemory!.description !== 'string'
+      typeof result.response !== 'string'
     ) {
       throw new Error('模型返回错误, 请重试')
     }
-    const description = result.getMemory.description
+    const description = result.getMemory?.description
     if (description) {
       const existing = input
         .filter((item) => item.memo !== undefined)
@@ -187,7 +190,8 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       return chatWithMemory(chatApi, model, 
         [...input, message],
         vector,
-        plugins
+        plugins,
+        false
       )
     }
     await setCurrentSummary(result.updatedSummary)
