@@ -6,8 +6,8 @@ declare type ShortTermMemory = {
   role: string
   content: string
   timestamp: number
-  memo?: boolean
-  recall?: string[]
+  memo?: string
+  recall?: { uuid: string, similarity: number }[]
 }
 
 declare type LongTermMemory = {

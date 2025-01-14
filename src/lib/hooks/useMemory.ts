@@ -32,7 +32,7 @@ type Memory = {
     vector: (text: string) => Promise<number[] | undefined>,
     description: string, 
     count?: number
-  ) => Promise<LongTermMemory[]>
+  ) => Promise<(LongTermMemory & { similarity: number })[]>
   // 相关记忆信息
   selfName: string
   userName: string
@@ -158,19 +158,25 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     ) {
       throw new Error('模型返回错误, 请重试')
     }
-    if (result.getMemory.description) {
-      const existing = input.filter((item) => item.memo).map((item) => item.recall!).flat()
+    const description = result.getMemory.description
+    if (description) {
+      const existing = input
+        .filter((item) => item.memo !== undefined)
+        .map((item) => item.recall!)
+        .flat()
+        .map((item) => item.uuid)
+        .flat()
       const memories = (await getMemoryByDescription(
         vector, 
-        result.getMemory.description, 
+        description, 
       )).filter((item) => !existing.includes(item.uuid))
       let message: ShortTermMemory
       if (memories.length > 0) {
-        message = { role: 'assistant', content: `我想起了一些和"${result.getMemory.description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: true, recall: memories.map((item) => item.uuid) }
+        message = { role: 'assistant', content: `我想起了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: description, recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity })) }
       } else if (existing.length === 0) {
-        message = { role: 'assistant', content: '我的记忆库没有更多的记忆了', timestamp: Date.now(), memo: true, recall: [] }
+        message = { role: 'assistant', content: '我的记忆库没有更多的记忆了', timestamp: Date.now(), memo: description, recall: [] }
       } else {
-        message = { role: 'assistant', content: `我此前已经回忆过和"${result.getMemory.description}"相关的记忆, 这次没有找到新的相似度更高的记忆`, timestamp: Date.now(), memo: true, recall: [] }
+        message = { role: 'assistant', content: `我此前已经回忆过和"${description}"相关的记忆, 这次没有找到新的相似度更高的记忆`, timestamp: Date.now(), memo: description, recall: [] }
       }
       await setShortTermMemory([...input, message])
       return chatWithMemory(chatApi, model, 

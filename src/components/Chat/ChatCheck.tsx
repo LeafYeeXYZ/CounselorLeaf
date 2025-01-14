@@ -33,7 +33,6 @@ export function ChatCheck({ setReady, shortTermMemoryRef }: { setReady: (ready: 
       testChat(),
       typeof testSpeak === 'function' ? testSpeak() : Promise.resolve(true),
       typeof testListen === 'function' ? testListen() : Promise.resolve(true),
-      typeof testListen === 'function' ? navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => stream.getTracks().forEach((track) => track.stop())) : Promise.resolve(true),
       qWeatherApiKey ? testQWeatherApiKey() : Promise.resolve(true),
     ]).then(async () => {
       if (shouldUpdateMemory()) {

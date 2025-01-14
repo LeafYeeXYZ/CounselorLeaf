@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState, useRef } from 'react'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
+import { getDate } from '../../lib/utils.ts'
 import { Bubble } from '@ant-design/x'
-import { Button, Tooltip } from 'antd'
+import { Button, Popover, Tag } from 'antd'
 import { UserOutlined, CopyOutlined, SoundOutlined, LoadingOutlined, InfoCircleOutlined } from '@ant-design/icons'
 
 export function MessageBox() {
@@ -13,7 +14,7 @@ export function MessageBox() {
 
   const memoryList = useMemo(() => {
     const length = shortTermMemory.length
-    if (length !== 0 && (shortTermMemory[length - 1].role === 'user' || shortTermMemory[length - 1].memo === true)) {
+    if (length !== 0 && (shortTermMemory[length - 1].role === 'user' || shortTermMemory[length - 1].memo !== undefined)) {
       return [...shortTermMemory, { role: 'assistant', content: '__loading__', timestamp: -1 }]
     } else {
       return shortTermMemory
@@ -42,7 +43,7 @@ export function MessageBox() {
 
 function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint8Array }) {
 
-  const { userName, selfName } = useMemory()
+  const { userName, selfName, longTermMemory } = useMemory()
   const { messageApi } = useStates()
   const [playing, setPlaying] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -62,7 +63,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
   return (
     <Bubble
       header={memo.role === 'user' ? userName : selfName}
-      footer={(memo.role === 'assistant' && memo.memo !== true) && <div className='flex gap-1'>
+      footer={(memo.role === 'assistant' && !memo.memo) && <div className='flex gap-1'>
         <Button 
           type='text' 
           icon={<CopyOutlined />} 
@@ -89,9 +90,25 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
         />
       </div>}
       placement={memo.role === 'user' ? 'end' : 'start'}
-      content={memo.memo === true ? 
+      content={(memo.memo) ?
         <span className='text-gray-500'>
-          已提取记忆<Tooltip title={memo.content}><InfoCircleOutlined className='ml-[0.3rem]' /></Tooltip>
+          已提取记忆<Popover content={(
+            <div className='flex flex-col gap-2'>
+              <div key={-1}>
+                {memo.content.split('\n')[0]}
+              </div>
+              {memo.recall!.map((item, index) => {
+                const m = longTermMemory.find(({ uuid }) => uuid === item.uuid)!
+                return (
+                  <div key={index} className='flex gap-2'>
+                    <Tag className='m-0' color='blue'>{m.title}</Tag>
+                    <Tag className='m-0'>{getDate(m.startTime)}</Tag>
+                    <Tag className='m-0'>相似度: {item.similarity.toFixed(2)}</Tag>
+                  </div>
+                )
+              })}
+            </div>
+          )}><InfoCircleOutlined className='ml-[0.3rem]' /></Popover>
         </span> : 
         memo.content
       }

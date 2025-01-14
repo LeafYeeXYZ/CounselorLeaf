@@ -227,7 +227,7 @@ export function MemoryCloud() {
           >
             <Button 
               block
-              disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || !s3MemoryKey || disabled !== false}
+              disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || !s3MemoryKey || disabled === '下载记忆中' || disabled === '上传记忆中'}
               loading={disabled === '上传记忆中'}
               icon={<CloudUploadOutlined />}
             >
@@ -257,7 +257,7 @@ export function MemoryCloud() {
           >
             <Button 
               block
-              disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || !s3MemoryKey || disabled !== false}
+              disabled={!s3Endpoint || !s3AccessKey || !s3SecretKey || !s3BucketName || !s3MemoryKey || disabled === '上传记忆中' || disabled === '下载记忆中'}
               loading={disabled === '下载记忆中'}
               icon={<CloudDownloadOutlined />}
             >
