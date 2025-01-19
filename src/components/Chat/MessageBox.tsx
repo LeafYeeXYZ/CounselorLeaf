@@ -13,11 +13,11 @@ export function MessageBox() {
   const { audiosCache, setAudiosCache } = useSpeakApi()
 
   const memoryList = useMemo(() => {
-    const length = shortTermMemory.length
-    if (length !== 0 && (shortTermMemory[length - 1].role === 'user' || shortTermMemory[length - 1].memo !== undefined)) {
-      return [...shortTermMemory, { role: 'assistant', content: '__loading__', timestamp: -1 }]
+    const memo = shortTermMemory.filter(item => !item.tool_calls)
+    if (memo.length !== 0 && memo[memo.length - 1].role !== 'assistant') {
+      return [...memo, { role: 'assistant', content: '__loading__', timestamp: -1 }]
     } else {
-      return shortTermMemory
+      return memo
     }
   }, [shortTermMemory])
 
@@ -63,7 +63,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
   return (
     <Bubble
       header={memo.role === 'user' ? userName : selfName}
-      footer={(memo.role === 'assistant' && !memo.memo) && <div className='flex gap-1'>
+      footer={(memo.role === 'assistant') && <div className='flex gap-1'>
         <Button 
           type='text' 
           icon={<CopyOutlined />} 
@@ -90,12 +90,12 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
         />
       </div>}
       placement={memo.role === 'user' ? 'end' : 'start'}
-      content={(memo.memo) ?
+      content={memo.role === 'tool' ?
         <span className='text-gray-500'>
           已提取记忆<Popover content={(
             <div className='flex flex-col gap-2'>
               <div key={-1}>
-                {memo.content.split('\n')[0]}
+                {memo.recall!.length === 0 ? '没能在记忆库中找到更多和相关的记忆' : `在记忆库里找到了一些和"${memo.recall![0].desc}"相关的记忆`}
               </div>
               {memo.recall!.map((item, index) => {
                 const m = longTermMemory.find(({ uuid }) => uuid === item.uuid)!

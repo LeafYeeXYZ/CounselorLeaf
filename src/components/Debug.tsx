@@ -4,7 +4,7 @@ import { Popover, Button } from 'antd'
 
 export function Debug() {
 
-  const { currentSummary, resetAllMemory, archivedMemory } = useMemory()
+  const { currentSummary, resetAllMemory, archivedMemory, shortTermMemory } = useMemory()
   const { messageApi } = useStates()
 
   return (
@@ -14,6 +14,7 @@ export function Debug() {
       content={<div className='flex flex-col items-center justify-center gap-2 text-sm'>
         <div>当前摘要: {currentSummary}</div>
         <div>已存档记忆数量: {archivedMemory.length}</div>
+        <div>函数调用信息: {JSON.stringify(shortTermMemory.filter(item => item.tool_calls).map(item => item.tool_calls![0]))}</div>
         <Button
           block
           danger

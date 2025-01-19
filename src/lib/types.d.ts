@@ -6,8 +6,9 @@ declare type ShortTermMemory = {
   role: string
   content: string
   timestamp: number
-  memo?: string
-  recall?: { uuid: string, similarity: number }[]
+  tool_calls?: import('openai/resources/index.mjs').ChatCompletionMessageToolCall[] // 出现于模型调用 (role === 'assistant')
+  tool_call_id?: string // 出现于模型调用结果 (role === 'tool')
+  recall?: { uuid: string, similarity: number, desc: string }[] // 出现于模型调用结果 (role === 'tool')
 }
 
 declare type LongTermMemory = {
