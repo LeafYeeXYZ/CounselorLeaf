@@ -182,7 +182,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       )).filter((item) => !existing.includes(item.uuid))
       let message: ShortTermMemory
       if (memories.length > 0) {
-        message = { role: 'assistant', content: `我进行了回忆, 并记忆库里找到了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: description, recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity })) }
+        message = { role: 'assistant', content: `我进行了回忆, 并在记忆库里找到了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), memo: description, recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity })) }
       } else {
         message = { role: 'assistant', content: `我进行了回忆, 但没能在记忆库中找到更多和"${description}"相关的记忆`, timestamp: Date.now(), memo: description, recall: [] }
       }
