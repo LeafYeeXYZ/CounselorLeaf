@@ -4,7 +4,7 @@ import { Popover, Button } from 'antd'
 
 export function Debug() {
 
-  const { currentSummary, resetAllMemory, archivedMemory, shortTermMemory } = useMemory()
+  const { currentSummary, resetAllMemory, archivedMemory, shortTermMemory, setShortTermMemory } = useMemory()
   const { messageApi } = useStates()
 
   return (
@@ -15,6 +15,15 @@ export function Debug() {
         <div>当前摘要: {currentSummary}</div>
         <div>已存档记忆数量: {archivedMemory.length}</div>
         <div>函数调用信息: {JSON.stringify(shortTermMemory.filter(item => item.tool_calls).map(item => item.tool_calls![0]))}</div>
+        <Button
+          block
+          onClick={async () => {
+            await setShortTermMemory(shortTermMemory.slice(0, -1))
+            messageApi?.success('已删除最后一条短时记忆')
+          }}
+        >
+          删除最后一条短时记忆
+        </Button>
         <Button
           block
           danger
