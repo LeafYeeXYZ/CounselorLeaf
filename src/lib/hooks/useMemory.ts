@@ -164,7 +164,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     const worldInfo = await getTrueWorldInfo(plugins)
     const prompt = 
       CHAT_WITH_MEMORY_PROMPT +
-      (canSearchMemory ? '\n\n你拥有一个记忆库, 你可以根据用户的要求, 通过 get_memory 函数来提取记忆. 你需要提供用于检索记忆的描述, 该描述将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可' : '') +
+      (canSearchMemory ? '\n\n你拥有一个记忆库. 你可以根据需要, 通过函数调用 (function calling), 调用 get_memory 函数来提取记忆. 你需要提供用于检索记忆的描述, 该描述将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可' : '') +
       `\n\n# 对本次对话中已有内容的总结\n\n${currentSummary || '(这是第一轮对话, 没有总结)'}` + 
       `\n\n# 你对自己的记忆\n\n我叫${selfName}. ${memoryAboutSelf || ''}` +
       `\n\n# 你对用户的记忆\n\n用户叫${userName}. ${memoryAboutUser || ''}` +
