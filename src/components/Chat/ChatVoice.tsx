@@ -198,7 +198,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
                   },
                   { qWeatherApiKey }
                 )
-                await setUsedToken(Math.max(usedToken, tokens))
+                await setUsedToken(tokens)
                 shortTermMemoryRef.current = []
                 messageApi?.success('记忆更新成功')
               } catch (error) {

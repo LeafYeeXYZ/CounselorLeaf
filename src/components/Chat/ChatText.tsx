@@ -96,7 +96,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         await sleep(30)
         if (w.match(reg)) {
           staps = ''
-          await sleep(1200)
+          await sleep(1000) // ChatVoice.tsx 那里会比这里慢一点, 是故意的
         } else {
           staps += w
           live2d?.tipsMessage(staps, 10000, Date.now())
@@ -150,7 +150,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
                   },
                   { qWeatherApiKey }
                 )
-                await setUsedToken(Math.max(usedToken, tokens))
+                await setUsedToken(tokens)
                 shortTermMemoryRef.current = []
                 messageApi?.success('记忆更新成功')
                 setInputValue('')
