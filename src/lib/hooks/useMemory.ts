@@ -206,9 +206,21 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       )).filter((item) => !existing.includes(item.uuid))
       let message: ShortTermMemory
       if (memories.length > 0) {
-        message = { role: 'tool', content: `在记忆库里找到了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, timestamp: Date.now(), recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity, desc: description })), tool_call_id: tollCall.id }
+        message = { 
+          role: 'tool', 
+          content: `在记忆库里找到了一些和"${description}"相关的记忆:\n\n${memories.map((item) => `- ${item.title} (${getTime(item.startTime)}-${getTime(item.endTime)}): ${item.summary}`).join('\n')}`, 
+          timestamp: Date.now(), 
+          recall: memories.map((item) => ({ uuid: item.uuid, similarity: item.similarity, desc: description })), 
+          tool_call_id: tollCall.id 
+        }
       } else {
-        message = { role: 'tool', content: `没能在记忆库中找到更多和"${description}"相关的记忆`, timestamp: Date.now(), recall: [], tool_call_id: tollCall.id }
+        message = { 
+          role: 'tool', 
+          content: `没能在记忆库中找到更多和"${description}"相关的记忆`, 
+          timestamp: Date.now(), 
+          recall: [], 
+          tool_call_id: tollCall.id 
+        }
       }
       const newInput = [
         ...input, 
@@ -334,7 +346,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       ...clone(longTermMemory),
     ])
     await setArchivedMemory([
-      ...prev.map(({ role, content, timestamp }) => ({ role, content, timestamp, belongTo: _uuid })),
+      ...prev.map(item => ({ ...item, belongTo: _uuid })),
       ...clone(archivedMemory),
     ])
     return { tokens }

@@ -22,10 +22,7 @@ declare type LongTermMemory = {
 
 declare type ArchivedMemory = {
   belongTo: string // uuid in long term memory
-  role: string
-  content: string
-  timestamp: number
-}
+} & ShortTermMemory
 
 declare type ConfigKeys =
   'default_live2d' |

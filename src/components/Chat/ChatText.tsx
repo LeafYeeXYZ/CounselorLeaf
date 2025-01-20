@@ -2,7 +2,7 @@ import { flushSync } from 'react-dom'
 import { sleep } from '../../lib/utils.ts'
 import emojiReg from 'emoji-regex'
 
-import { useRef, useEffect, useState, useMemo, type RefObject } from 'react'
+import { useRef, useEffect, useState, type RefObject } from 'react'
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useChatApi } from '../../lib/hooks/useChatApi.ts'
@@ -14,7 +14,7 @@ import { usePlugins } from '../../lib/hooks/usePlugins.ts'
 
 import { MessageBox } from './MessageBox.tsx'
 import { Button, Popover, Popconfirm, type GetRef } from 'antd'
-import { ClearOutlined, LoadingOutlined, RestOutlined } from '@ant-design/icons'
+import { ClearOutlined, LoadingOutlined, RestOutlined, DashboardOutlined } from '@ant-design/icons'
 import { Sender } from '@ant-design/x'
 
 export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject<ShortTermMemory[]> }) {
@@ -27,8 +27,14 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
   const { listen } = useListenApi()
   const { live2d } = useLive2dApi()
   const { chatWithMemory, updateMemory, shortTermMemory, setShortTermMemory, selfName, setCurrentSummary, updateCurrentSummary } = useMemory()
-  const memoryPressure = useMemo<number | undefined>(() => usedToken && usedToken / maxToken, [usedToken, maxToken])
   const [recognition, setRecognition] = useState<ReturnType<ListenApi> | null>(null)
+
+  const [reduceMessage, setReduceMessage] = useState<number>(0)
+  useEffect(() => {
+    if (shortTermMemory.length === 0) {
+      setReduceMessage(0)
+    }
+  }, [shortTermMemory])
 
   const senderRef = useRef<GetRef<typeof Sender>>(null)
   useEffect(() => {
@@ -60,10 +66,10 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       ]
       await setShortTermMemory(input)
       live2d?.tipsMessage('......', 20000, Date.now())
-      const { result, tokens, output } = await chatWithMemory(
+      const { result, tokens, output: o } = await chatWithMemory(
         chat, 
         openaiModelName, 
-        input, 
+        input.slice(reduceMessage),
         async (input) => {
           let vec: number[] | undefined = undefined
           try {
@@ -75,6 +81,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         },
         { qWeatherApiKey }
       )
+      const output = [...input.slice(0, reduceMessage), ...o]
       const updateSummary = updateCurrentSummary(
         chat, 
         openaiModelName, 
@@ -105,7 +112,16 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待更新记忆结束 <LoadingOutlined /></p>))
       const r = await updateSummary
       await setCurrentSummary(r.result)
-      await setUsedToken(Math.max(tokens, r.tokens))
+      const currentTokens = Math.max(tokens, r.tokens)
+      const pressure = currentTokens / maxToken
+      if (pressure > 0.9) {
+        setReduceMessage((prev) => prev + 2)
+      } else if (pressure > 0.85) {
+        setReduceMessage((prev) => prev + 1)
+      } else if (pressure < 0.75) {
+        setReduceMessage(0)
+      }
+      await setUsedToken(currentTokens)
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待语音生成结束 <LoadingOutlined /></p>))
       await tts
       const newMemory = [...output, { role: 'assistant', content: result, timestamp: time }]
@@ -202,12 +218,15 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
             </Button>
           </Popconfirm>
           {(typeof usedToken === 'number' && usedToken > 0) && (
-            <Popover content={`${usedToken} / ${maxToken}`}>
-              <div
-                color={memoryPressure! > 0.8 ? 'red' : memoryPressure! > 0.6 ? 'orange' : 'green'}
-                className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9] text-ellipsis text-nowrap overflow-hidden'
-              >
-                记忆负荷: {(memoryPressure! * 100).toFixed(0)}%
+            <Popover 
+              title='记忆负荷'
+              content={<div className='flex flex-col gap-1'>
+                <div>上次词元用量: {usedToken} / {maxToken}</div>
+                <div>下次消息输入: {shortTermMemory.length - reduceMessage} / {shortTermMemory.length}</div>
+              </div>}
+            >
+              <div className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9] text-ellipsis text-nowrap overflow-hidden cursor-pointer'>
+                <DashboardOutlined className='mr-[0.3rem]' />{(usedToken / maxToken * 100).toFixed(0)}%
               </div>
             </Popover>
           )}
