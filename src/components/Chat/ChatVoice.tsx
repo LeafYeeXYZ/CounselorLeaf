@@ -272,6 +272,7 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
               <Button
                 size='small'
                 icon={<DashboardOutlined />}
+                disabled={disabled !== false}
               >
                 <span className='text-xs'>{(usedToken / maxToken * 100).toFixed(0)}%</span>
               </Button>
