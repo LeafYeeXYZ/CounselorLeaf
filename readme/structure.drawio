@@ -1,13 +1,13 @@
 <mxfile host="65bd71144e">
     <diagram id="7fxDRhzaZWtfy4DjNToR" name="第 1 页">
-        <mxGraphModel dx="1238" dy="1682" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="1124" dy="1665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="296" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;fontColor=#666666;" edge="1" parent="1" source="286" target="214">
+                <mxCell id="296" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;strokeColor=#000000;fontColor=#666666;" parent="1" source="286" target="214" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="285" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontColor=#666666;" edge="1" parent="1" source="284" target="192">
+                <mxCell id="285" style="edgeStyle=none;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;fontColor=#666666;" parent="1" source="284" target="192" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="139" value="" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -22,50 +22,43 @@
                 <mxCell id="113" style="edgeStyle=none;html=1;entryX=0.4;entryY=0.1;entryDx=0;entryDy=0;entryPerimeter=0;" parent="1" source="101" target="105" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="73" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" source="65" target="69" edge="1">
+                <mxCell id="304" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="65" target="297">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="65" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="450" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="140" y="570" width="80" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="74" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="66" target="69" edge="1">
+                <mxCell id="302" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="66" target="69">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="66" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="530" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="140" y="510" width="80" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="70" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="68" target="69" edge="1">
+                <mxCell id="306" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="68" target="71">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="307" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="68" target="297">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="308" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="68" target="69">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="362" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="68" target="361">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="68" value="本轮对话摘要&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[对话内不断&lt;br&gt;更新的总结]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="380" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="120" y="630" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="72" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="69" target="71" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="94" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="69" target="76" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="186" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="69" target="78" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
+                <mxCell id="303" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="69">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="499" y="530" as="targetPoint"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="69" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="530" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="330" y="515" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="71" value="加入长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="310" y="680" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="277" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" source="76" target="256" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="76" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="450" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="275" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="78" target="256" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="78" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="530" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="300" y="680" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="116" style="edgeStyle=none;html=1;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="98" edge="1">
                     <mxGeometry relative="1" as="geometry">
@@ -282,10 +275,10 @@
                     <mxGeometry x="580" y="1910" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="181" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="455" y="510" width="50" height="30" as="geometry"/>
+                    <mxGeometry x="414" y="560" width="50" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="187" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="455" y="560" width="50" height="30" as="geometry"/>
+                    <mxGeometry x="414" y="500" width="50" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="195" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="189" target="192" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
@@ -313,7 +306,7 @@
                         <mxPoint x="500" y="149.9999999999999" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="287" style="edgeStyle=none;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontColor=#666666;dashed=1;dashPattern=1 1;strokeColor=#666666;" edge="1" parent="1" source="191" target="286">
+                <mxCell id="287" style="edgeStyle=none;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontColor=#666666;dashed=1;dashPattern=1 1;strokeColor=#666666;" parent="1" source="191" target="286" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="191" value="用户输入" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -337,7 +330,7 @@
                 <mxCell id="203" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="197" target="193" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="288" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;fontColor=#666666;strokeColor=#666666;" edge="1" parent="1" source="197" target="286">
+                <mxCell id="288" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;fontColor=#666666;strokeColor=#666666;" parent="1" source="197" target="286" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="197" value="模型回复" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -369,7 +362,7 @@
                         <mxPoint x="1010" y="149.9999999999999" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="293" style="edgeStyle=none;html=1;entryX=-0.008;entryY=0.375;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;dashPattern=1 1;strokeColor=#666666;fontColor=#666666;" edge="1" parent="1" source="212" target="291">
+                <mxCell id="293" style="edgeStyle=none;html=1;entryX=-0.008;entryY=0.375;entryDx=0;entryDy=0;entryPerimeter=0;dashed=1;dashPattern=1 1;strokeColor=#666666;fontColor=#666666;" parent="1" source="212" target="291" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="212" value="用户输入" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -393,7 +386,7 @@
                 <mxCell id="216" style="edgeStyle=none;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;dashed=1;" parent="1" source="217" target="215" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="292" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;strokeColor=#666666;fontColor=#666666;" edge="1" parent="1" source="217" target="291">
+                <mxCell id="292" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;dashed=1;dashPattern=1 1;strokeColor=#666666;fontColor=#666666;" parent="1" source="217" target="291" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="217" value="模型回复" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
@@ -470,128 +463,181 @@
                 <mxCell id="244" value="可选函数调用提取记忆" style="whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" parent="1" vertex="1">
                     <mxGeometry x="1320" y="260" width="140" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="249" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="247" target="69" edge="1">
+                <mxCell id="309" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="247" target="69">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="310" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="247" target="297">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="247" value="其他固定信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="120" y="610" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="276" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="250" target="256" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="250" value="其他固定信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="520" y="610" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="251" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="252" target="256" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="252" value="本轮对话摘要&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color);&quot; color=&quot;#666666&quot;&gt;[对话内不断&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;更新的总结]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="710" y="380" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="253" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="256" target="257" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="254" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="256" target="258" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="255" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="256" target="259" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="256" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-                    <mxGeometry x="710" y="530" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="257" value="加入长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="710" y="680" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="280" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" parent="1" source="258" target="268" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="258" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="920" y="450" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="279" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="259" target="268" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="259" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="920" y="530" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="260" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="855" y="510" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="261" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="855" y="560" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="278" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" parent="1" source="262" target="268" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="262" value="其他固定信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="920" y="610" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="263" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="264" target="268" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="264" value="本轮对话摘要&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;font style=&quot;border-color: var(--border-color);&quot; color=&quot;#666666&quot;&gt;[对话内不断&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;更新的总结]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1110" y="380" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="265" style="edgeStyle=none;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="268" target="269" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="266" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="268" target="270" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="267" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="268" target="271" edge="1">
-                    <mxGeometry relative="1" as="geometry"/>
-                </mxCell>
-                <mxCell id="268" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" parent="1" vertex="1">
-                    <mxGeometry x="1110" y="530" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="269" value="加入长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" parent="1" vertex="1">
-                    <mxGeometry x="1110" y="680" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="270" value="自我概念" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1320" y="450" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="271" value="用户画像" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1320" y="530" width="120" height="60" as="geometry"/>
-                </mxCell>
-                <mxCell id="272" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="1255" y="510" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="273" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="1255" y="560" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="274" value="其他固定信息" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="1320" y="610" width="120" height="60" as="geometry"/>
+                    <mxGeometry x="140" y="450" width="80" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="281" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="364" y="625" width="50" height="30" as="geometry"/>
+                    <mxGeometry x="250" y="670" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="282" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="770" y="625" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="283" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
-                    <mxGeometry x="1170" y="625" width="50" height="30" as="geometry"/>
-                </mxCell>
-                <mxCell id="284" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="284" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="80" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="286" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="286" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="590" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="289" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="289" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="520" y="-10" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="290" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="290" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="527.5" y="45" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="291" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                <mxCell id="291" value="本轮对话历史消息&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[根据记忆压力情况&lt;br&gt;可能不是所有消息]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="1100" width="120" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="294" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="294" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1030" y="-10" width="50" height="30" as="geometry"/>
                 </mxCell>
-                <mxCell id="295" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                <mxCell id="295" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" parent="1" vertex="1">
                     <mxGeometry x="1040" y="40" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="305" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="297">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="499" y="590" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="297" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="330" y="575" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="326" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="327" target="340">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="327" value="自我概念" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="499" y="570" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="328" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="329" target="334">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="329" value="用户画像" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="499" y="510" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="330" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="333" target="335">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="331" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="333" target="340">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="332" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="333" target="334">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="366" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="333" target="365">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="333" value="本轮对话摘要&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[对话内不断&lt;br&gt;更新的总结]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="479" y="630" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="357" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="334" target="344">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="334" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="689" y="515" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="335" value="加入长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="659" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="336" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="338" target="334">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="337" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="338" target="340">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="338" value="其他固定信息" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="499" y="450" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="339" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="609" y="670" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="358" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="340" target="342">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="340" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="689" y="575" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="341" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="342" target="355">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="342" value="自我概念" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="860" y="570" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="343" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="344" target="349">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="344" value="用户画像" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="860" y="510" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="345" style="edgeStyle=none;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="348" target="350">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="346" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="348" target="355">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="347" style="edgeStyle=none;html=1;entryX=0;entryY=1;entryDx=0;entryDy=0;" edge="1" parent="1" source="348" target="349">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="368" style="edgeStyle=none;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="348" target="364">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="348" value="本轮对话摘要&lt;br&gt;&lt;font color=&quot;#666666&quot;&gt;[对话内不断&lt;br&gt;更新的总结]&lt;/font&gt;" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="840" y="630" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="349" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="1050" y="515" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="350" value="加入长时记忆&lt;br&gt;[本轮对话总结]" style="whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+                    <mxGeometry x="1020" y="680" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="351" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="353" target="349">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="352" style="edgeStyle=none;html=1;entryX=0;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="353" target="355">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="353" value="其他固定信息" style="whiteSpace=wrap;html=1;" vertex="1" parent="1">
+                    <mxGeometry x="860" y="450" width="80" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="354" value="添加" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="970" y="670" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="355" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="1050" y="575" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="359" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="779" y="500" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="360" value="更新" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="779" y="560" width="50" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="363" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="361" target="71">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="361" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="150" y="710" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="369" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="364" target="350">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="364" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="870" y="710" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="367" style="edgeStyle=none;html=1;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="365" target="335">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="365" value="模型" style="whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+                    <mxGeometry x="510" y="710" width="60" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="370" value="生成标题" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="210" y="700" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="371" value="生成标题" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="570" y="700" width="70" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="372" value="生成标题" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+                    <mxGeometry x="930" y="700" width="70" height="30" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

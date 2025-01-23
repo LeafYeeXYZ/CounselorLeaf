@@ -37,7 +37,6 @@ declare type ConfigKeys =
   'openai_api_key' |
   'openai_endpoint' |
   'openai_model_name' |
-  'use_structured_outputs' |
   's3_endpoint' |
   's3_access_key' |
   's3_secret_key' |

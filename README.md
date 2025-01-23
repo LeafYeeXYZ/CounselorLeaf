@@ -1,6 +1,6 @@
 # Digital Life / 数字生命
 
-创造一个有自我概念、长时记忆的"数字生命". 同时支持 Web 和桌面端、支持多种推理、TTS、STT 服务
+一个有自我概念、长时记忆的"数字生命"; 长时记忆包括对话内记忆、对话间记忆、自我概念、用户画像; 所有推理功能都可在 `3000` 总 `tokens` 内完成, 对端侧小模型友好, 也可在设置中提高 `tokens` 上限. 同时支持 Web 和桌面端、支持多种推理、TTS、STT 服务
 
 如果您想快速体验本项目, 可在 <https://deepseek.com> 等平台注册一个免费账号, 获取 `API Key`, 并访问 <https://being.leafyee.xyz>, 在应用内设置 `Endpoint`、`API Key`、`Model Name` 即可使用 (也可直接本地运行 `ollama`, 见[2 开发和部署](#2-开发和部署))
 
@@ -19,7 +19,7 @@
   - [5 Live2d 模型版权声明](#5-live2d-模型版权声明)
   - [6 参考文献](#6-参考文献)
 
-> **临时引用信息**: `叶一杉. (2025). DigitalLife: 具有长时记忆、自我概念、听说读写能力的"数字生命". https://github.com/LeafYeeXYZ/DigitalLife`
+> **临时引用信息**: `叶一杉. (2025). DigitalLife: 具有长时记忆和自我概念的"数字生命". https://github.com/LeafYeeXYZ/DigitalLife`
 
 ## 1 项目说明
 
@@ -30,11 +30,11 @@
 | 模块 | 可选项 | 说明 |
 | :---: | :---: | :---: |
 | 推理模型 | 任意兼容 `OpenAI` 规范的服务 | 默认使用 `ollama`, 可在应用内修改 `Endpoint`、`API Key`、`Model Name` 等 |
-| 嵌入模型 | `jina-embeddings-v3` | 用于记忆提取, 需在应用内设置 `Endpoint` 和/或 `API Key` |
+| 嵌入模型 | `jina-embeddings-v3` | 用于记忆提取, 需在应用内设置官方 `API Key` 或自部署 `/server/vector.py`<br />注意: 自部署版本的向量维度暂时只支持 `1024` 维 |
 | 语音生成 `TTS` | [`F5 TTS` 服务](https://github.com/jianchang512/f5-tts-api) | 默认服务地址为 `'http://127.0.0.1:5010/api'`, 可在应用内修改 |
 | | [`Fish Speech` 服务](https://speech.fish.audio/zh/inference/#http-api) | 默认服务地址为 `'http://127.0.0.1:8080'`, 可在应用内修改 |
 | 语音输入 `STT` | [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API) | 使用浏览器内置的 `STT` 功能 |
-| `Live2d` | - | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
+| 动态形象 | `Live2d` | 使用 <https://github.com/oh-my-live2d/oh-my-live2d> 项目 |
 | 其他 | 天气信息 | 默认关闭, 可在应用内设置[和风天气 API Key](https://dev.qweather.com/)开启 |
 | | 时间信息 | 模型可获知当前设备时间、对话开始时间、首次相遇时间 |
 | | 图片输入 | 🚧 WIP |
