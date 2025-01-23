@@ -2,6 +2,35 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.4.0](https://github.com/LeafYeeXYZ/DigitalLife/compare/v1.3.0...v1.4.0) (2025-01-23)
+
+
+### Features
+
+* 根据记忆压力动态调整输入给模型的历史消息长度 ([f1a4b21](https://github.com/LeafYeeXYZ/DigitalLife/commit/f1a4b213419268f9db2008ba1d4fa91658922524))
+* 支持配置密钥等信息的云备份 ([0d24cdd](https://github.com/LeafYeeXYZ/DigitalLife/commit/0d24cdd69357b8ed3d76ce8ab4c953d133ea847a))
+
+
+### Bug Fixes
+
+* 解决模型可能会连续回忆的问题 ([36b70bd](https://github.com/LeafYeeXYZ/DigitalLife/commit/36b70bd52af477b93f7405d8f8c05b9f1e613c83))
+
+
+### Refactoring
+
+* 改用函数调用来提取记忆, 将生成回复和更新总结拆分为两次 ([c8c0b7c](https://github.com/LeafYeeXYZ/DigitalLife/commit/c8c0b7c7c63f0af09b5f81cc47d42fe59ab1d3df))
+* 更新记忆使用对话内总结, 大幅缩减 Token 量 ([236cd42](https://github.com/LeafYeeXYZ/DigitalLife/commit/236cd42f2fdbe4d6f2911dd8b65f0f592d14b171))
+* 优化记忆模型, 提升小模型的推理表现 ([1b40656](https://github.com/LeafYeeXYZ/DigitalLife/commit/1b406563ac0b55fcc0cf0b6c92e17fdba6d72d59))
+
+
+### Improvements
+
+* 将云备份设置和记忆云存储分离 ([3c18d04](https://github.com/LeafYeeXYZ/DigitalLife/commit/3c18d04fcfba5a829029a9a1407aa749fff7d979))
+* 优化笨笨小模型的记忆提取效果 ([3bd9f7b](https://github.com/LeafYeeXYZ/DigitalLife/commit/3bd9f7bd5fb00ac70e9ab79e1e48530c4494820d))
+* 优化记忆提取 ([97cf3ec](https://github.com/LeafYeeXYZ/DigitalLife/commit/97cf3ec1e221d716051cfa693ae09ab22dd2e474))
+* 优化记忆消息的展示效果 ([57495ea](https://github.com/LeafYeeXYZ/DigitalLife/commit/57495ea4d5bde5fceeee7eea47868d81540f46f7))
+* 优化提示词, 提升对话和总结效果 ([195d72b](https://github.com/LeafYeeXYZ/DigitalLife/commit/195d72b3496659df9ca3948ef6acc60527cc7e11))
+
 ## [1.3.0](https://github.com/LeafYeeXYZ/DigitalLife/compare/v1.2.0...v1.3.0) (2025-01-14)
 
 
