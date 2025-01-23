@@ -228,11 +228,10 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
           >
             <Button 
               size='small'
-              className='rounded-lg text-xs'
               icon={<ClearOutlined />} 
               disabled={disabled !== false || shortTermMemory.length === 0 || recognition !== null}
             >
-              更新记忆
+              <span className='text-xs'>更新记忆</span>
             </Button>
           </Popconfirm>
           <Popconfirm
@@ -256,11 +255,10 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
           >
             <Button 
               size='small'
-              className='rounded-lg text-xs'
               icon={<RestOutlined />}
               disabled={disabled !== false || shortTermMemory.length === 0 || recognition !== null}
             >
-              清除当前对话
+              <span className='text-xs'>清除当前对话</span>
             </Button>
           </Popconfirm>
           {(typeof usedToken === 'number' && usedToken > 0) && (
@@ -271,9 +269,12 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
                 <div>下次消息输入: {shortTermMemory.length - reduceMessage} / {shortTermMemory.length}</div>
               </div>}
             >
-              <div className='block rounded-lg text-xs px-2 py-[0.15rem] border border-[#d9d9d9] text-ellipsis text-nowrap overflow-hidden cursor-pointer'>
-                <DashboardOutlined className='mr-[0.3rem]' />{(usedToken / maxToken * 100).toFixed(0)}%
-              </div>
+              <Button
+                size='small'
+                icon={<DashboardOutlined />}
+              >
+                <span className='text-xs'>{(usedToken / maxToken * 100).toFixed(0)}%</span>
+              </Button>
             </Popover>
           )}
         </div>}

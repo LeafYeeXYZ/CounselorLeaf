@@ -111,7 +111,7 @@ export default function App() {
         className='h-dvh overflow-hidden float-left' 
         style={{ width: isMobile ? '100dvw' : `${x}px`}}
       >
-        <div className='w-full h-full overflow-hidden grid grid-rows-[1fr,3.2rem,2.8rem]'>
+        <div className='w-full h-full overflow-hidden grid grid-rows-[1fr_3.2rem_2.8rem]'>
           {/* Page */}
           <div 
             className='w-full h-full overflow-hidden flex flex-col justify-center items-center py-4'
@@ -123,7 +123,7 @@ export default function App() {
           </div>
           {/* Nav */}
           <div className='w-full h-full flex justify-center items-center'>
-            <div className='flex justify-center items-center bg-white border border-blue-900 rounded-md'>
+            <div className='flex justify-center items-center bg-white border border-blue-900 rounded-md overflow-hidden'>
               <Menu
                 className='border-none justify-center bg-transparent'
                 mode='horizontal'
@@ -163,7 +163,7 @@ export default function App() {
           </div>
           {/* Footer */}
           <div className='w-full h-full flex items-center justify-center text-xs'>
-            <div className='grid grid-cols-[5.8rem,1fr,5.8rem] gap-3'>
+            <div className='grid grid-cols-[5.8rem_1fr_5.8rem] gap-3'>
               <div className='flex justify-center items-center border border-blue-900 rounded-md py-[0.1rem] bg-white'>
                 <div className='mr-1'>数字生命</div>
                 <div>{version}</div>

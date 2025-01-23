@@ -29,7 +29,7 @@ export function MessageBox() {
   }, [shortTermMemory, setAudiosCache])
 
   return (
-    <div className='w-full flex flex-col gap-3 pr-[0.2rem] py-1'>
+    <div className='w-full flex flex-col pr-[0.2rem] py-1'>
       {memoryList.map((memo, index) => (
         <BubbleWithFooter 
           key={index} 
@@ -62,6 +62,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
 
   return (
     <Bubble
+      style={{ marginBottom: memo.role === 'user' ? '1rem' : '0' }}
       header={memo.role === 'user' ? userName : selfName}
       footer={(memo.role === 'assistant') && <div className='flex gap-1'>
         <Button 
@@ -101,9 +102,9 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
                 const m = longTermMemory.find(({ uuid }) => uuid === item.uuid)!
                 return (
                   <div key={index} className='flex gap-2'>
-                    <Tag className='m-0' color='blue'>{m.title}</Tag>
-                    <Tag className='m-0'>{getDate(m.startTime)}</Tag>
-                    <Tag className='m-0'>相似度: {item.similarity.toFixed(2)}</Tag>
+                    <Tag color='blue'>{m.title}</Tag>
+                    <Tag>{getDate(m.startTime)}</Tag>
+                    <Tag>相似度: {item.similarity.toFixed(2)}</Tag>
                   </div>
                 )
               })}
@@ -114,7 +115,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
       }
       loading={memo.content === '__loading__'}
       avatar={memo.role === 'user' ? 
-        { icon: <UserOutlined />, className: 'bg-blue-200 text-blue-900' } : 
+        { icon: <UserOutlined />, style: { backgroundColor: 'oklch(0.882 0.059 254.128)', color: 'oklch(0.379 0.146 265.522)' } } :
         { src: '/avatar.jpg' }
       }
     />
