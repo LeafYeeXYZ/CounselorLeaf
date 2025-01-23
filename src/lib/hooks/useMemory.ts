@@ -67,7 +67,6 @@ type Memory = {
     chatApi: ChatApi, 
     model: string, 
     vector: (text: string) => Promise<number[] | undefined>,
-    plugins?: Plugins
   ) => Promise<{ tokens: number }>
   // 重置和保存
   resetAllMemory: () => Promise<void>
@@ -81,7 +80,6 @@ type Memory = {
     chatApi: ChatApi,
     model: string,
     input: ShortTermMemory[],
-    plugins?: Plugins
   ) => Promise<{ 
     result: string, 
     tokens: number 
@@ -99,8 +97,6 @@ type Memory = {
     tokens: number, 
     output: ShortTermMemory[] 
   }>
-  // 获取真实世界信息
-  getTrueWorldInfo: (plugins?: Plugins) => Promise<string>
 }
 
 const localSelfName = await get('self_name')
@@ -115,11 +111,6 @@ const localCurrentSummary = await get('current_summary')
 const firstEncounterTime = localArchivedMemory?.length ? Math.min(...localArchivedMemory.map((item) => item.timestamp)) : Date.now()
 
 export const useMemory = create<Memory>()((setState, getState) => ({
-  getTrueWorldInfo: async (plugins) => {
-    const { shortTermMemory } = getState()
-    const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
-    return `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
-  },
   getMemoryByDescription: async (vector, description) => {
     const { longTermMemory } = getState()
     const vec = await vector(description).catch(e => {
@@ -145,9 +136,10 @@ export const useMemory = create<Memory>()((setState, getState) => ({
     }
     return memories.slice(0, 3)
   },
-  chatWithMemory: async (chatApi, model, input, vector, plugins, canSearchMemory = true) => {
-    const { currentSummary, userName, selfName, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo, getMemoryByDescription, chatWithMemory, setShortTermMemory } = getState()
-    const worldInfo = await getTrueWorldInfo(plugins)
+  chatWithMemory: async (chatApi, model, input, vector, plugins, canSearchMemory = false) => {
+    const { currentSummary, userName, selfName, memoryAboutSelf, memoryAboutUser, shortTermMemory, getMemoryByDescription, chatWithMemory, setShortTermMemory } = getState()
+    const weather = plugins?.qWeatherApiKey ? await getWeather(plugins.qWeatherApiKey) : ''
+    const worldInfo = `- 当前的时间: ${getTime(Date.now())}\n- 本轮对话开始的时间: ${getTime(shortTermMemory[0].timestamp)}\n- 你首次和用户相遇的时间: ${getTime(firstEncounterTime)}${weather ? `\n- 当前天气信息: ${weather}` : ''}`
     const prompt = 
       CHAT_WITH_MEMORY_PROMPT +
       (canSearchMemory ? '\n\n你拥有一个记忆库. 你可以根据需要, 通过函数调用 (function calling), 调用 get_memory 函数来提取记忆. 你需要提供用于检索记忆的描述, 该描述将被用于与你过往的记忆进行相似度匹配, 并由系统根据相似度来返回0-3条给你; 请不要把你和用户的名字包含在记忆描述中, 用"我"代表自己, 用"用户"代表用户即可' : '') +
@@ -227,26 +219,21 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       output: input,
     }
   },
-  updateCurrentSummary: async (chatApi, model, input, plugins) => {
-    const { currentSummary, memoryAboutSelf, memoryAboutUser, getTrueWorldInfo } = getState()
-    const worldInfo = await getTrueWorldInfo(plugins)
+  updateCurrentSummary: async (chatApi, model, input) => {
+    const { currentSummary } = getState()
     const { updatedSummary, tokensUsed } = await updateSummary({
       chatApi,
       modelName: model,
       newMessages: input,
       currentSummary,
-      memoryAboutSelf,
-      memoryAboutUser,
-      extraPrompt: `# 真实世界的相关信息\n\n${worldInfo}`
     })
     return { result: updatedSummary, tokens: tokensUsed }
   },
-  updateMemory: async (chatApi, model, vector, plugins) => {
-    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, getTrueWorldInfo, currentSummary } = getState()
-    const worldInfo = await getTrueWorldInfo(plugins)
+  updateMemory: async (chatApi, model, vector) => {
+    const { shortTermMemory, longTermMemory, setShortTermMemory, setLongTermMemory, setMemoryAboutSelf, setMemoryAboutUser, setCurrentSummary, memoryAboutSelf, memoryAboutUser, archivedMemory, setArchivedMemory, currentSummary } = getState()
     if (!currentSummary) { throw new Error('请先进行对话, 再更新记忆') }
-    const selfMemo = await updateSelfInfo({ chatApi, modelName: model, chatSummary: currentSummary, currentSelfInfo: memoryAboutSelf, extraPrompt: `# 真实世界的相关信息\n\n${worldInfo}` })
-    const userMemo = await updateUserInfo({ chatApi, modelName: model, chatSummary: currentSummary, currentUserInfo: memoryAboutUser, extraPrompt: `# 真实世界的相关信息\n\n${worldInfo}` })
+    const selfMemo = await updateSelfInfo({ chatApi, modelName: model, chatSummary: currentSummary, currentSelfInfo: memoryAboutSelf })
+    const userMemo = await updateUserInfo({ chatApi, modelName: model, chatSummary: currentSummary, currentUserInfo: memoryAboutUser })
     const title = await createTitle({ chatApi, modelName: model, chatSummary: currentSummary })
     const prev = clone(shortTermMemory)
     const vec = vector ? await vector(currentSummary).catch(() => undefined) : undefined

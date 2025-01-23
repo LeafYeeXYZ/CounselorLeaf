@@ -21,8 +21,8 @@ export function MemoryDiary() {
         items={longTermMemory?.length !== 0 ? longTermMemory.map((item) => {
           return {
             key: item.uuid,
-            label: <div className='flex items-center justify-between'>
-              <div>{item.title}</div>
+            label: <div className='grid grid-cols-[1fr_auto] gap-2'>
+              <div className='text-nowrap text-ellipsis overflow-hidden'>{item.title}</div>
               <div><Tooltip color='blue' title={`只有经过索引的记忆才能被${selfName}回忆. 在设置->嵌入服务设置中设置相关内容后, 记忆更新时会自动索引`}>
                 {(item.vector && item.vector.length === vectorDimension) ? <Tag color='blue' style={{ marginInline: 0 }}>已索引</Tag> : <Tag color='red' style={{ marginInline: 0 }}>未索引</Tag>}
               </Tooltip></div>
