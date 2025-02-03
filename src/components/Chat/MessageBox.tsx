@@ -1,16 +1,22 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useMemory } from '../../lib/hooks/useMemory.ts'
 import { useSpeakApi } from '../../lib/hooks/useSpeakApi.ts'
+import { useChatApi } from '../../lib/hooks/useChatApi.ts'
 import { useStates } from '../../lib/hooks/useStates.ts'
 import { getDate } from '../../lib/utils.ts'
 import { Bubble } from '@ant-design/x'
-import { Button, Popover, Tag } from 'antd'
-import { UserOutlined, CopyOutlined, SoundOutlined, LoadingOutlined, InfoCircleOutlined } from '@ant-design/icons'
+import { Button, Popover, Tag, Typography } from 'antd'
+import { UserOutlined, CopyOutlined, SoundOutlined, LoadingOutlined, InfoCircleOutlined, BulbOutlined } from '@ant-design/icons'
+// @ts-expect-error markdown-it is not type-safe
+import markdownit from 'markdown-it'
+
+const md = markdownit({ html: true, breaks: true })
 
 export function MessageBox() {
 
   const { shortTermMemory } = useMemory()
   const { audiosCache, setAudiosCache } = useSpeakApi()
+  const { thinkCache, setThinkCache } = useChatApi()
 
   const memoryList = useMemo(() => {
     const memo = shortTermMemory.filter(item => !item.tool_calls)
@@ -26,22 +32,24 @@ export function MessageBox() {
       return
     }
     setAudiosCache([])
-  }, [shortTermMemory, setAudiosCache])
+    setThinkCache([])
+  }, [shortTermMemory, setAudiosCache, setThinkCache])
 
   return (
     <div className='w-full flex flex-col pr-[0.2rem] py-1'>
       {memoryList.map((memo, index) => (
-        <BubbleWithFooter 
+        <BubbleX
           key={index} 
           memo={memo}
           audio={audiosCache.find(({ timestamp }) => timestamp === memo.timestamp)?.audio ?? undefined}
+          think={thinkCache.find(({ timestamp }) => timestamp === memo.timestamp)?.content ?? undefined}
         />
       ))}
     </div>
   )
 }
 
-function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint8Array }) {
+function BubbleX({ memo, audio, think }: { memo: ShortTermMemory, audio?: Uint8Array, think?: string }) {
 
   const { userName, selfName, longTermMemory } = useMemory()
   const { messageApi } = useStates()
@@ -63,7 +71,17 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
   return (
     <Bubble
       style={{ marginBottom: memo.role !== 'assistant' ? '1rem' : '0' }}
-      header={memo.role === 'user' ? userName : selfName}
+      header={memo.role === 'user' ? userName : think ? <div>
+        {selfName}<Popover 
+          title='思考过程'
+          content={<Typography>
+            <div 
+              className='pt-[14px] max-w-lg'
+              dangerouslySetInnerHTML={{ __html: md.render(think.trim()) }} 
+            />
+          </Typography>}
+        ><BulbOutlined className='ml-[0.3rem]' /></Popover>
+      </div> : selfName}
       footer={(memo.role === 'assistant') && <div className='flex gap-1'>
         <Button 
           type='text' 
@@ -110,8 +128,7 @@ function BubbleWithFooter({ memo, audio }: { memo: ShortTermMemory, audio?: Uint
               })}
             </div>
           )}><InfoCircleOutlined className='ml-[0.3rem]' /></Popover>
-        </span> : 
-        memo.content
+        </span> : memo.content
       }
       loading={memo.content === '__loading__'}
       avatar={memo.role === 'user' ? 

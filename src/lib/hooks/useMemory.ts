@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { get, set, save, getTime, uuid, clone, getWeather, cosineSimilarity } from '../utils.ts'
+import { get, set, save, getTime, uuid, clone, getWeather, cosineSimilarity, parseThink } from '../utils.ts'
 import type { ChatCompletionTool } from 'openai/resources/index.mjs'
 import { updateSummary } from '../memo/updateSummary.ts'
 import { updateSelfInfo } from '../memo/updateSelfInfo.ts'
@@ -80,10 +80,7 @@ type Memory = {
     chatApi: ChatApi,
     model: string,
     input: ShortTermMemory[],
-  ) => Promise<{ 
-    result: string, 
-    tokens: number 
-  }>
+  ) => Promise<{ result: string, tokens: number }>
   // 聊天
   chatWithMemory: (
     chatApi: ChatApi, 
@@ -94,6 +91,7 @@ type Memory = {
     canSearchMemory?: boolean
   ) => Promise<{ 
     result: string, 
+    think?: string,
     tokens: number, 
     output: ShortTermMemory[] 
   }>
@@ -165,8 +163,7 @@ export const useMemory = create<Memory>()((setState, getState) => ({
       ]
     })
     const tokens = response.usage?.total_tokens || -1
-    const result = response.choices[0].message
-    const tollCall = result.tool_calls?.[0]
+    const tollCall = response.choices[0].message.tool_calls?.[0]
     if (tollCall) {
       const existing = input
         .filter((item) => item.role === 'tool')
@@ -213,8 +210,10 @@ export const useMemory = create<Memory>()((setState, getState) => ({
         false
       )
     }
+    const { content: result, think } = parseThink(response)
     return { 
-      result: result.content!,
+      result,
+      think,
       tokens, 
       output: input,
     }

@@ -45,6 +45,7 @@ declare type ConfigKeys =
   's3_memory_key' |
   's3_config_key' |
   'audios_cache' |
+  'think_cache' |
   'jina_endpoint' |
   'jina_api_key' |
   'vector_dimension'

@@ -1,3 +1,5 @@
+import { parseThink } from '../utils.ts'
+
 type UpdateUserInfoParams = {
   chatApi: ChatApi,
   modelName: string,
@@ -44,5 +46,6 @@ export async function updateUserInfo({
   if (typeof result !== 'string') {
     throw new Error('模型在更新用户记忆时返回错误, 请重试')
   }
-  return { updatedUserInfo: result, tokensUsed: tokens }
+  const { content } = parseThink(result)
+  return { updatedUserInfo: content, tokensUsed: tokens }
 }

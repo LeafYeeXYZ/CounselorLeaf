@@ -1,4 +1,4 @@
-import { getTime } from '../utils.ts'
+import { getTime, parseThink } from '../utils.ts'
 
 type UpdateSummaryParams = {
   chatApi: ChatApi,
@@ -58,5 +58,6 @@ export async function updateSummary({
   if (typeof result !== 'string') {
     throw new Error('模型在更新总结时返回错误, 请重试')
   }
-  return { updatedSummary: result, tokensUsed: tokens }
+  const { content } = parseThink(result)
+  return { updatedSummary: content, tokensUsed: tokens }
 }

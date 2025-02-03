@@ -1,8 +1,37 @@
+import type { ChatCompletion } from 'openai/resources/index.mjs'
+
 export { speakApiList } from './api/shared/api.speak.ts'
 export { listenApiList } from './api/shared/api.listen.ts'
 export { live2dList } from './api/shared/api.live2d.ts'
 export { set, get, save } from './api/web/api.store.ts'
 export { openLink } from './api/web/api.utils.ts'
+
+/**
+ * 解析消息中的思考过程
+ * @param raw 原始消息
+ * @returns 纯消息和思考过程
+ */
+export function parseThink(raw: ChatCompletion | string): { content: string, think?: string } {
+  let msg: string = ''
+  if (typeof raw !== 'string') {
+    msg = raw.choices[0].message.content ?? ''
+  } else {
+    msg = raw
+  }
+  if (!msg) {
+    throw new Error('解析模型输出时出现错误')
+  }
+  const reg = /<think>[\s\S]*?<\/think>/
+  const match = msg.match(reg)
+  if (match) {
+    return {
+      content: msg.replace(reg, ''),
+      think: match[0].slice(7, -8)
+    }
+  } else {
+    return { content: msg }
+  }
+}
 
 export function cosineSimilarity(vec1: number[], vec2: number[]): number {
   if (vec1.length !== vec2.length) {

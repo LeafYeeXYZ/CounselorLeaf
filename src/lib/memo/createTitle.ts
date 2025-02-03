@@ -1,3 +1,5 @@
+import { parseThink } from '../utils.ts'
+
 type CreateTitleParams = {
   chatApi: ChatApi,
   modelName: string,
@@ -37,5 +39,6 @@ export async function createTitle({
   if (typeof result !== 'string') {
     throw new Error('模型在生成标题时返回错误, 请重试')
   }
-  return { title: result, tokensUsed: tokens }
+  const { content } = parseThink(result)
+  return { title: content, tokensUsed: tokens }
 }

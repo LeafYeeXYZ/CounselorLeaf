@@ -15,6 +15,10 @@ type API = {
   setOpenaiModelName: (name?: string) => Promise<void>
   usedToken: number // -1 means unknown
   setUsedToken: (token: number | undefined) => Promise<void>
+
+  thinkCache: { timestamp: number, content: string }[]
+  setThinkCache: (value: { timestamp: number, content: string }[]) => Promise<void>
+  addThinkCache: (value: { timestamp: number, content: string }) => Promise<void>
 }
 
 const DEFAULT_MAX_TOKEN = 8_000
@@ -24,6 +28,7 @@ const DEFAULT_OPENAI_MODEL_NAME = 'qwen2.5:7b'
 
 const localUsedToken = await get('last_used_token')
 const localMaxToken = await get('model_max_tokens')
+const localThinkCache = await get('think_cache')
 const defaultUsedToken = localUsedToken ? Number(localUsedToken) : -1
 const defaultMaxToken = localMaxToken ? Number(localMaxToken) : DEFAULT_MAX_TOKEN
 const defaultOpenaiEndpoint = await get('openai_endpoint') ?? DEFAULT_OPENAI_ENDPOINT
@@ -32,6 +37,17 @@ const defaultOpenaiModelName = await get('openai_model_name') ?? DEFAULT_OPENAI_
 const defaultChatApi = new OpenAI({ baseURL: defaultOpenaiEndpoint, apiKey: defaultOpenaiApiKey, dangerouslyAllowBrowser: true })
 
 export const useChatApi = create<API>()((setState, getState) => ({
+  thinkCache: localThinkCache ?? [],
+  setThinkCache: async (value) => {
+    setState({ thinkCache: value })
+    await set('think_cache', value)
+  },
+  addThinkCache: async (value) => {
+    const { thinkCache } = getState()
+    const newCache = [value, ...thinkCache]
+    setState({ thinkCache: newCache })
+    await set('think_cache', newCache)
+  },
   chat: defaultChatApi,
   usedToken: defaultUsedToken,
   setUsedToken: async (token) => {

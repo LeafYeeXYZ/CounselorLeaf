@@ -21,7 +21,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
 
   const { disabled, setDisabled, messageApi } = useStates()
   const { qWeatherApiKey } = usePlugins()
-  const { chat, usedToken, setUsedToken, openaiModelName, maxToken } = useChatApi()
+  const { chat, usedToken, setUsedToken, openaiModelName, maxToken, addThinkCache } = useChatApi()
   const { vectorApi } = useVectorApi()
   const { speak, addAudioCache } = useSpeakApi()
   const { listen } = useListenApi()
@@ -66,7 +66,7 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       ]
       await setShortTermMemory(input)
       live2d?.tipsMessage('......', 20000, Date.now())
-      const { result, tokens, output: o } = await chatWithMemory(
+      const { result, tokens, output: o, think } = await chatWithMemory(
         chat, 
         openaiModelName, 
         input.slice(reduceMessage),
@@ -81,12 +81,14 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
         },
         { qWeatherApiKey }
       )
+      if (think) {
+        await addThinkCache({ timestamp: time, content: think })
+      }
       const output = [...input.slice(0, reduceMessage), ...o]
       const updateSummary = updateCurrentSummary(
         chat, 
         openaiModelName, 
         output.filter(out => !prev.some(p => p.timestamp === out.timestamp)),
-        { qWeatherApiKey }
       )
       await setUsedToken(tokens)
       const reg = /。|？|！|,|，|;|；|~|～|!|\?|\. |…|\n|\r|\r\n|:|：|……/
@@ -164,7 +166,6 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
                     }
                     return vec
                   },
-                  { qWeatherApiKey }
                 )
                 await setUsedToken(tokens)
                 shortTermMemoryRef.current = []
