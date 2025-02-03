@@ -50,7 +50,7 @@ export async function updateSummary({
     model: modelName,
     stream: false,
     messages: [
-      { role: 'system', content: prompt },
+      { role: 'user', content: prompt },
     ]
   })
   const tokens = response.usage?.total_tokens || -1

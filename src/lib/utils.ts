@@ -12,25 +12,25 @@ export { openLink } from './api/web/api.utils.ts'
  * @returns 纯消息和思考过程
  */
 export function parseThink(raw: ChatCompletion | string): { content: string, think?: string } {
-  let msg: string = ''
+  let content: string = ''
+  let think: string | undefined = undefined
   if (typeof raw !== 'string') {
-    msg = raw.choices[0].message.content ?? ''
+    content = raw.choices[0].message.content ?? ''
+    // @ts-expect-error DeepSeek 官方 API 的自定义字段
+    think = raw.choices[0].message.reasoning_content ?? undefined
   } else {
-    msg = raw
+    content = raw
   }
-  if (!msg) {
+  if (!content) {
     throw new Error('解析模型输出时出现错误')
   }
   const reg = /<think>[\s\S]*?<\/think>/
-  const match = msg.match(reg)
+  const match = content.match(reg)
   if (match) {
-    return {
-      content: msg.replace(reg, ''),
-      think: match[0].slice(7, -8)
-    }
-  } else {
-    return { content: msg }
+    think = match[0].slice(7, -8).trim()
+    content = content.replace(reg, '').trim()
   }
+  return { content, think }
 }
 
 export function cosineSimilarity(vec1: number[], vec2: number[]): number {
