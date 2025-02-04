@@ -116,11 +116,15 @@ export function ChatText({ shortTermMemoryRef }: { shortTermMemoryRef: RefObject
       await setCurrentSummary(r.result)
       const currentTokens = Math.max(tokens, r.tokens)
       const pressure = currentTokens / maxToken
-      if (pressure > 0.9) {
-        setReduceMessage((prev) => prev + 2)
+      if (pressure > 0.95) {
+        setReduceMessage((prev) => prev + 4)
+      } else if (pressure > 0.9) {
+        setReduceMessage((prev) => prev + 3)
       } else if (pressure > 0.85) {
+        setReduceMessage((prev) => prev + 2)
+      } else if (pressure > 0.8) {
         setReduceMessage((prev) => prev + 1)
-      } else if (pressure < 0.75) {
+      } else if (pressure <= 0.8) {
         setReduceMessage(0)
       }
       await setUsedToken(currentTokens)
