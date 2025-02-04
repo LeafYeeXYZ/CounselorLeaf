@@ -134,8 +134,14 @@ export function ChatVoice({ shortTermMemoryRef }: { shortTermMemoryRef: RefObjec
         setReduceMessage((prev) => prev + 2)
       } else if (pressure > 0.8) {
         setReduceMessage((prev) => prev + 1)
-      } else if (pressure <= 0.8) {
-        setReduceMessage(0)
+      } else if (pressure > 0.75) {
+        setReduceMessage((prev) => prev + 0)
+      } else if (pressure > 0.7) {
+        setReduceMessage((prev) => Math.max(prev - 1, 0))
+      } else if (pressure > 0.65) {
+        setReduceMessage((prev) => Math.max(prev - 2, 0))
+      } else if (pressure > 0.6) {
+        setReduceMessage((prev) => Math.max(prev - 3, 0))
       }
       await setUsedToken(currentTokens)
       flushSync(() => setDisabled(<p className='flex justify-center items-center gap-[0.3rem]'>等待对话结束 <LoadingOutlined /></p>))
